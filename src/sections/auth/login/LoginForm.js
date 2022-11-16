@@ -32,8 +32,8 @@ export default function LoginForm() {
   });
 
   const defaultValues = {
-    email: 'demo@minimals.cc',
-    password: 'demo1234',
+    email: '',
+    password: '',
     remember: true
   };
 
@@ -49,7 +49,9 @@ export default function LoginForm() {
     formState: { errors, isSubmitting }
   } = methods;
 
-  const onSubmit = async (data) => {};
+  const onSubmit = async (data) => {
+    console.log(`${data.password} ${data.email}`);
+  };
 
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>

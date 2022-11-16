@@ -3,7 +3,6 @@ import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import reportWebVitals from './reportWebVitals';
-import './fonts/index.css';
 import App from './App';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));

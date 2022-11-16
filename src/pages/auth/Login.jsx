@@ -77,8 +77,7 @@ export default function Login() {
         <HeaderStyle>
           <Logo />
         </HeaderStyle>
-
-        {smUp && (
+        {smUp ? (
           <SectionStyle>
             <Typography variant="h3" sx={{ px: 5, mt: 10, mb: 5 }}>
               Hi, Welcome Back
@@ -91,7 +90,7 @@ export default function Login() {
             />
             <LoginForm />
           </SectionStyle>
-        )}
+        ) : null}
       </RootStyle>
     </Page>
   );
