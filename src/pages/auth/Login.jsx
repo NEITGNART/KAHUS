@@ -13,6 +13,9 @@ import {
 import Logo from '../../components/Logo';
 import useResponsive from '../../hooks/useResponsive';
 import Image from '../../components/Image';
+import { LoginForm } from '../../sections/auth/login';
+import loginImage from '../../static/illustrations/illustration_login.png';
+import Page from '../../components/Page';
 // routes
 // hooks
 // components
@@ -69,27 +72,27 @@ export default function Login() {
   const mdUp = useResponsive('up', 'md');
 
   return (
-    <RootStyle>
-      <HeaderStyle>
-        <Logo />
-        <Typography variant="body2" sx={{ mt: { md: -2 } }}>
-          Don’t have an account?
-        </Typography>
-      </HeaderStyle>
+    <Page title="login">
+      <RootStyle>
+        <HeaderStyle>
+          <Logo />
+        </HeaderStyle>
 
-      {mdUp && (
-        <SectionStyle>
-          <Typography variant="h3" sx={{ px: 5, mt: 10, mb: 5 }}>
-            Hi, Welcome Back
-          </Typography>
-          <Image
-            visibleByDefault
-            disabledEffect
-            alt="login"
-            src="https://minimal-assets-api.vercel.app/assets/illustrations/illustration_login.png"
-          />
-        </SectionStyle>
-      )}
-    </RootStyle>
+        {smUp && (
+          <SectionStyle>
+            <Typography variant="h3" sx={{ px: 5, mt: 10, mb: 5 }}>
+              Hi, Welcome Back
+            </Typography>
+            <Image
+              visibleByDefault
+              disabledEffect
+              alt="login"
+              src={loginImage}
+            />
+            <LoginForm />
+          </SectionStyle>
+        )}
+      </RootStyle>
+    </Page>
   );
 }
