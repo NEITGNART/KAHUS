@@ -10,12 +10,14 @@ import {
   Container,
   Typography
 } from '@mui/material';
+import { useEffect } from 'react';
 import Logo from '../../components/Logo';
 import useResponsive from '../../hooks/useResponsive';
 import Image from '../../components/Image';
 import { LoginForm } from '../../sections/auth/login';
 import loginImage from '../../static/illustrations/illustration_login.png';
 import Page from '../../components/Page';
+import axios from '../../utils/Axios';
 // routes
 // hooks
 // components
@@ -68,11 +70,18 @@ const ContentStyle = styled('div')(({ theme }) => ({
 
 export default function Login() {
   const smUp = useResponsive('up', 'sm');
-
   const mdUp = useResponsive('up', 'md');
 
+  useEffect(() => {
+    axios
+      .get('https://jsonplaceholder.typicode.com/todos/1')
+      .then((response) => {
+        console.log(response.data);
+      });
+  }, []);
+
   return (
-    <Page title="login">
+    <Page title="Login">
       <RootStyle>
         <HeaderStyle>
           <Logo />

@@ -29,6 +29,7 @@
                 "semi": true
             }
         ],
+        "import/no-extraneous-dependencies": ["error", {"devDependencies": ["**/*.test.ts", "**/*.test.tsx"]}],
         "no-unused-vars": "off",
         "react/require-default-props": "off",
         "react/jsx-props-no-spreading": "off",
@@ -36,6 +37,5 @@
         "react/jsx-no-useless-fragment" : "off",
         "no-use-before-define": "off",
         "import/prefer-default-export" : "off"
-
     }
 }
