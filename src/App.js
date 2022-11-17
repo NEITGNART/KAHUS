@@ -1,13 +1,11 @@
-import { Box } from '@mui/material';
-import { Route, Routes } from 'react-router-dom';
-import Login from './pages/auth/Login';
+import Router from './routes';
+import ThemeProvider from './theme';
 
 function App() {
   return (
-    <Routes>
-      <Route path="/" element={<Login />} />
-      <Route path="/login" element={<Login />} />
-    </Routes>
+    <ThemeProvider>
+      <Router />
+    </ThemeProvider>
   );
 }
 
