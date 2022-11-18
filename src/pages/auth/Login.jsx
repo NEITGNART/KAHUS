@@ -1,6 +1,6 @@
 // @mui
 import { styled } from '@mui/material/styles';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import {
   Box,
   Card,
@@ -13,6 +13,7 @@ import {
   Button
 } from '@mui/material';
 import { capitalCase } from 'change-case';
+import { GoogleLogin, useGoogleLogin } from '@react-oauth/google';
 import Logo from '../../components/Logo';
 import useResponsive from '../../hooks/useResponsive';
 import Image from '../../components/Image';
@@ -28,52 +29,25 @@ import Iconify from '../../components/Iconify';
 
 // ----------------------------------------------------------------------
 
-const RootStyle = styled('div')(({ theme }) => ({
-  [theme.breakpoints.up('md')]: {
-    display: 'flex'
-  }
-}));
-
-const HeaderStyle = styled('header')(({ theme }) => ({
-  top: 0,
-  zIndex: 9,
-  lineHeight: 0,
-  width: '100%',
-  display: 'flex',
-  alignItems: 'center',
-  position: 'absolute',
-  padding: theme.spacing(3),
-  justifyContent: 'space-between',
-  [theme.breakpoints.up('md')]: {
-    alignItems: 'flex-start',
-    padding: theme.spacing(7, 5, 0, 7)
-  }
-}));
-
-const SectionStyle = styled(Card)(({ theme }) => ({
-  width: '100%',
-  maxWidth: 464,
-  display: 'flex',
-  flexDirection: 'column',
-  justifyContent: 'center',
-  margin: theme.spacing(2, 0, 2, 2)
-}));
-
-const ContentStyle = styled('div')(({ theme }) => ({
-  maxWidth: 480,
-  margin: 'auto',
-  display: 'flex',
-  minHeight: '100vh',
-  flexDirection: 'column',
-  justifyContent: 'center',
-  padding: theme.spacing(12, 0)
-}));
-
 // ----------------------------------------------------------------------
 
 export default function Login() {
   const smUp = useResponsive('up', 'sm');
   const mdUp = useResponsive('up', 'md');
+  const navigate = useNavigate();
+  const responseGoogle = (tokenResponse) => {
+    console.log(tokenResponse.access_token);
+    navigate('/');
+  };
+
+  const responseGoogleFail = (response) => {
+    console.log(response);
+  };
+
+  const login = useGoogleLogin({
+    onSuccess: responseGoogle,
+    onFailure: responseGoogleFail
+  });
 
   return (
     <Page title="Login">
@@ -129,7 +103,15 @@ export default function Login() {
             </Stack>
 
             <Stack direction="row" spacing={2}>
-              <Button fullWidth size="large" color="inherit" variant="outlined">
+              <Button
+                fullWidth
+                size="large"
+                color="inherit"
+                variant="outlined"
+                onClick={() => {
+                  login();
+                }}
+              >
                 <Iconify
                   icon="eva:google-fill"
                   color="#DF3E30"
@@ -146,7 +128,6 @@ export default function Login() {
                   height={22}
                 />
               </Button>
-
               <Button fullWidth size="large" color="inherit" variant="outlined">
                 <Iconify
                   icon="eva:twitter-fill"
@@ -182,3 +163,44 @@ export default function Login() {
     </Page>
   );
 }
+
+const RootStyle = styled('div')(({ theme }) => ({
+  [theme.breakpoints.up('md')]: {
+    display: 'flex'
+  }
+}));
+
+const HeaderStyle = styled('header')(({ theme }) => ({
+  top: 0,
+  zIndex: 9,
+  lineHeight: 0,
+  width: '100%',
+  display: 'flex',
+  alignItems: 'center',
+  position: 'absolute',
+  padding: theme.spacing(3),
+  justifyContent: 'space-between',
+  [theme.breakpoints.up('md')]: {
+    alignItems: 'flex-start',
+    padding: theme.spacing(7, 5, 0, 7)
+  }
+}));
+
+const SectionStyle = styled(Card)(({ theme }) => ({
+  width: '100%',
+  maxWidth: 464,
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'center',
+  margin: theme.spacing(2, 0, 2, 2)
+}));
+
+const ContentStyle = styled('div')(({ theme }) => ({
+  maxWidth: 480,
+  margin: 'auto',
+  display: 'flex',
+  minHeight: '100vh',
+  flexDirection: 'column',
+  justifyContent: 'center',
+  padding: theme.spacing(12, 0)
+}));
