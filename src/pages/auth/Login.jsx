@@ -13,7 +13,6 @@ import {
   Button
 } from '@mui/material';
 import { capitalCase } from 'change-case';
-import { GoogleLogin, useGoogleLogin } from '@react-oauth/google';
 import Logo from '../../components/Logo';
 import useResponsive from '../../hooks/useResponsive';
 import Image from '../../components/Image';
@@ -34,20 +33,6 @@ import Iconify from '../../components/Iconify';
 export default function Login() {
   const smUp = useResponsive('up', 'sm');
   const mdUp = useResponsive('up', 'md');
-  const navigate = useNavigate();
-  const responseGoogle = (tokenResponse) => {
-    console.log(tokenResponse.access_token);
-    navigate('/');
-  };
-
-  const responseGoogleFail = (response) => {
-    console.log(response);
-  };
-
-  const login = useGoogleLogin({
-    onSuccess: responseGoogle,
-    onFailure: responseGoogleFail
-  });
 
   return (
     <Page title="Login">
@@ -109,7 +94,10 @@ export default function Login() {
                 color="inherit"
                 variant="outlined"
                 onClick={() => {
-                  login();
+                  window.open(
+                    'http://localhost:5001/auth/login/google',
+                    '_self'
+                  );
                 }}
               >
                 <Iconify
