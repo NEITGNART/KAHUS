@@ -1,4 +1,4 @@
-import { createContext, useEffect, useReducer } from 'react';
+import { createContext, useEffect, useReducer, useMemo } from 'react';
 import PropTypes from 'prop-types';
 // utils
 import axios from '../utils/axios';
@@ -149,20 +149,18 @@ function AuthProvider({ children }) {
     dispatch({ type: 'LOGOUT' });
   };
 
-  return (
-    <AuthContext.Provider
-      /* eslint-disable-next-line react/jsx-no-constructed-context-values */
-      value={{
-        ...state,
-        method: 'jwt',
-        login,
-        logout,
-        register
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
+  const auth = useMemo(
+    () => ({
+      ...state,
+      method: 'jwt',
+      login,
+      logout,
+      register
+    }),
+    [state]
   );
+
+  return <AuthContext.Provider value={auth}>{children}</AuthContext.Provider>;
 }
 
 export { AuthContext, AuthProvider };

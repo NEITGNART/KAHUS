@@ -37,13 +37,14 @@
         "devDependencies": ["**/*.test.ts", "**/*.test.tsx"]
       }
     ],
-    "no-unused-vars": "off",
+    "no-unused-consts": "off",
     "react/require-default-props": "off",
     "react/jsx-props-no-spreading": "off",
     "react/forbid-prop-types": "off",
     "react/jsx-no-useless-fragment": "off",
     "no-use-before-define": "off",
     "import/prefer-default-export": "off",
-    "react/jsx-boolean-value": "off"
+    "react/jsx-boolean-value": "off",
+    "no-unused-vars": "warn"
   }
 }

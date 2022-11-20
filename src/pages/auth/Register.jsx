@@ -3,6 +3,7 @@ import { Link as RouterLink } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
 import { Box, Card, Link, Container, Typography, Tooltip } from '@mui/material';
 // hooks
+import { capitalCase } from 'change-case';
 import useResponsive from '../../hooks/useResponsive';
 // routes
 import { PATH_AUTH } from '../../routes/paths';
@@ -82,12 +83,10 @@ export default function Register() {
           )}
         </HeaderStyle>
 
-        <RegisterForm />
-
         {mdUp && (
           <SectionStyle>
             <Typography variant="h3" sx={{ px: 5, mt: 10, mb: 5 }}>
-              Manage the job more effectively with Minimal
+              Realtime learning platform with KAHUS
             </Typography>
             <Image
               visibleByDefault
@@ -97,6 +96,45 @@ export default function Register() {
             />
           </SectionStyle>
         )}
+
+        <Container>
+          <ContentStyle>
+            <Box sx={{ mb: 5, display: 'flex', alignItems: 'center' }}>
+              <Box sx={{ flexGrow: 1 }}>
+                <Typography variant="h4" gutterBottom>
+                  Get started absolutely free.
+                </Typography>
+                <Typography sx={{ color: 'text.secondary' }}>
+                  Free forever. No credit card needed.
+                </Typography>
+              </Box>
+              <Tooltip title={capitalCase('jwt')}>
+                <>
+                  <Image
+                    disabledEffect
+                    src={`https://minimal-assets-api.vercel.app/assets/icons/auth/ic_${'jwt'}.png`}
+                    sx={{ width: 32, height: 32 }}
+                  />
+                </>
+              </Tooltip>
+            </Box>
+
+            <RegisterForm />
+
+            {!smUp && (
+              <Typography variant="body2" sx={{ mt: 3, textAlign: 'center' }}>
+                Already have an account?{' '}
+                <Link
+                  variant="subtitle2"
+                  to={PATH_AUTH.login}
+                  component={RouterLink}
+                >
+                  Login
+                </Link>
+              </Typography>
+            )}
+          </ContentStyle>
+        </Container>
       </RootStyle>
     </Page>
   );

@@ -55,8 +55,12 @@ export default function Router() {
         { element: <Navigate to="/dashboard/classes" replace />, index: true },
         { path: 'classes', element: <ClassroomList /> }
       ]
+    },
+    {
+      path: '/',
+      element: <HomePage />
     }
-    // { path: '*', element: <Navigate to='/404' replace /> }
+    // { path: '*', element: <Navigate to="/404" replace /> }
   ]);
 }
 
