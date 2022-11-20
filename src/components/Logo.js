@@ -3,6 +3,7 @@ import { Link as RouterLink } from 'react-router-dom';
 // @mui
 import { useTheme } from '@mui/material/styles';
 import { Box } from '@mui/material';
+import logoIcon from './logo.svg';
 
 // ----------------------------------------------------------------------
 
@@ -13,40 +14,115 @@ export default function Logo({ disabledLink = false, sx }) {
   const PRIMARY_DARK = theme.palette.primary.dark;
 
   const logo = (
-    <Box sx={{ width: 40, height: 40, ...sx }}>
+    <Box sx={{ width: 50, height: 50, ...sx }}>
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        width="100%"
-        height="100%"
-        viewBox="0 0 512 512"
+        viewBox="0 0 333333 287879"
+        shapeRendering="geometricPrecision"
+        textRendering="geometricPrecision"
+        imageRendering="optimizeQuality"
+        fillRule="evenodd"
+        clipRule="evenodd"
       >
         <defs>
-          <linearGradient id="BG1" x1="100%" x2="50%" y1="9.946%" y2="50%">
-            <stop offset="0%" stopColor={PRIMARY_DARK} />
-            <stop offset="100%" stopColor={PRIMARY_MAIN} />
+          <mask id="id0">
+            <linearGradient
+              id="id1"
+              gradientUnits="userSpaceOnUse"
+              x1={246054}
+              y1={287879}
+              x2={246054}
+              y2={257576}
+            >
+              <stop offset={0} stopOpacity={0.2} stopColor="#fff" />
+              <stop offset={1} stopOpacity={0.02} stopColor="#fff" />
+            </linearGradient>
+            <path fill="url(#id1)" d="M196693 257426h98722v30603h-98722z" />
+          </mask>
+          <mask id="id2">
+            <radialGradient
+              id="id3"
+              gradientUnits="userSpaceOnUse"
+              cx={-1213540}
+              cy={-1071900}
+              r={17594400}
+              fx={-1213540}
+              fy={-1071900}
+            >
+              <stop offset={0} stopOpacity={0.102} stopColor="#fff" />
+              <stop offset={1} stopOpacity={0} stopColor="#fff" />
+              <stop offset={1} stopColor="#fff" />
+            </radialGradient>
+            <path fill="url(#id3)" d="M-150-150h333633v288179H-150z" />
+          </mask>
+          <radialGradient
+            id="id5"
+            gradientUnits="userSpaceOnUse"
+            cx={13333.5}
+            cy={8636.22}
+            r={166667}
+            fx={13333.5}
+            fy={8636.22}
+          >
+            <stop offset={0} stopColor="#fff" />
+            <stop offset={1} stopColor="#fff" />
+            <stop offset={1} stopColor="#fff" />
+          </radialGradient>
+          <linearGradient
+            id="id4"
+            gradientUnits="userSpaceOnUse"
+            x1={246054}
+            y1={287879}
+            x2={246054}
+            y2={257576}
+          >
+            <stop offset={0} stopColor="#bf360c" />
+            <stop offset={1} stopColor="#bf360c" />
           </linearGradient>
-          <linearGradient id="BG2" x1="50%" x2="50%" y1="0%" y2="100%">
-            <stop offset="0%" stopColor={PRIMARY_LIGHT} />
-            <stop offset="100%" stopColor={PRIMARY_MAIN} />
-          </linearGradient>
-          <linearGradient id="BG3" x1="50%" x2="50%" y1="0%" y2="100%">
-            <stop offset="0%" stopColor={PRIMARY_LIGHT} />
-            <stop offset="100%" stopColor={PRIMARY_MAIN} />
-          </linearGradient>
+          <style>{'.fil5{fill:#fff;fill-opacity:.2}'}</style>
         </defs>
-        <g fill={PRIMARY_MAIN} fillRule="evenodd" stroke="none" strokeWidth="1">
-          <path
-            fill="url(#BG1)"
-            d="M183.168 285.573l-2.918 5.298-2.973 5.363-2.846 5.095-2.274 4.043-2.186 3.857-2.506 4.383-1.6 2.774-2.294 3.939-1.099 1.869-1.416 2.388-1.025 1.713-1.317 2.18-.95 1.558-1.514 2.447-.866 1.38-.833 1.312-.802 1.246-.77 1.18-.739 1.111-.935 1.38-.664.956-.425.6-.41.572-.59.8-.376.497-.537.69-.171.214c-10.76 13.37-22.496 23.493-36.93 29.334-30.346 14.262-68.07 14.929-97.202-2.704l72.347-124.682 2.8-1.72c49.257-29.326 73.08 1.117 94.02 40.927z"
-          />
-          <path
-            fill="url(#BG2)"
-            d="M444.31 229.726c-46.27-80.956-94.1-157.228-149.043-45.344-7.516 14.384-12.995 42.337-25.267 42.337v-.142c-12.272 0-17.75-27.953-25.265-42.337C189.79 72.356 141.96 148.628 95.69 229.584c-3.483 6.106-6.828 11.932-9.69 16.996 106.038-67.127 97.11 135.667 184 137.278V384c86.891-1.611 77.962-204.405 184-137.28-2.86-5.062-6.206-10.888-9.69-16.994"
-          />
-          <path
-            fill="url(#BG3)"
-            d="M450 384c26.509 0 48-21.491 48-48s-21.491-48-48-48-48 21.491-48 48 21.491 48 48 48"
-          />
+        <g id="Layer_x0020_1">
+          <g id="google-classroom.svg">
+            <path fill="#0f9d58" d="M30303 30303h272727v227273H30303z" />
+            <path
+              d="M227272 151515c9407 0 17046-7639 17046-17045 0-9407-7639-17046-17046-17046-9406 0-17045 7639-17045 17046 0 9406 7639 17045 17045 17045zm0 11364c-18245 0-37879 9659-37879 21654v12437h75758v-12437c0-11995-19634-21654-37879-21654zm-121212-11364c9406 0 17045-7639 17045-17045 0-9407-7639-17046-17045-17046-9407 0-17046 7639-17046 17046 0 9406 7639 17045 17046 17045zm0 11364c-18245 0-37879 9659-37879 21654v12437h75758v-12437c0-11995-19634-21654-37879-21654z"
+              fill="#57bb8a"
+            />
+            <path
+              d="M166667 136364c12563 0 22727-10164 22727-22728 0-12563-10164-22727-22727-22727s-22727 10164-22727 22727 10164 22728 22727 22728zm0 15151c-25568 0-53030 13573-53030 30303v15152h106061v-15152c0-16730-27462-30303-53030-30303z"
+              fill="#f7f7f7"
+            />
+            <path fill="#f1f1f1" d="M196970 242424h68182v15152h-68182z" />
+            <path
+              d="M310606 0H22727C10164 0 0 10164 0 22727v242424c0 12563 10164 22727 22727 22727h287879c12563 0 22727-10164 22727-22727V22727C333333 10164 323169 0 310606 0zm-7576 257576H30302V30304h272728v227272z"
+              fill="#f4b400"
+            />
+            <path
+              className="fil5"
+              d="M310606 0H22727C10164 0 0 10164 0 22727v1894C0 12058 10164 1894 22727 1894h287879c12563 0 22727 10164 22727 22727v-1894C333333 10164 323169 0 310606 0z"
+            />
+            <path
+              d="M310606 285985H22727C10164 285985 0 275821 0 263258v1894c0 12563 10164 22727 22727 22727h287879c12563 0 22727-10164 22727-22727v-1894c0 12563-10164 22727-22727 22727z"
+              fill="#bf360c"
+              fillOpacity={0.2}
+            />
+            <path
+              mask="url(#id0)"
+              fill="url(#id4)"
+              d="M265025 257576h-68182l30303 30303h68119z"
+            />
+            <path
+              fill="#263238"
+              fillOpacity={0.2}
+              d="M30303 28409h272727v1894H30303z"
+            />
+            <path className="fil5" d="M30303 257576h272727v1894H30303z" />
+            <path
+              d="M310606 0H22727C10164 0 0 10164 0 22727v242424c0 12563 10164 22727 22727 22727h287879c12563 0 22727-10164 22727-22727V22727C333333 10164 323169 0 310606 0z"
+              mask="url(#id2)"
+              fill="url(#id5)"
+            />
+          </g>
         </g>
       </svg>
     </Box>

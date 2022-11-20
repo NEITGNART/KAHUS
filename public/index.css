@@ -2,17 +2,30 @@
   font-family: 'CircularStd';
   font-weight: 400;
   font-style: normal;
-  src: local('CircularStd'), url('src/fonts/CircularStd-Book.otf') format('opentype');
+  src: local('CircularStd'),
+    url('src/fonts/CircularStd-Book.otf') format('opentype');
 }
 @font-face {
   font-family: 'CircularStd';
   font-weight: 500;
   font-style: normal;
-  src: local('CircularStd'), url('src/fonts/CircularStd-Medium.otf') format('opentype');
+  src: local('CircularStd'),
+    url('src/fonts/CircularStd-Medium.otf') format('opentype');
 }
 @font-face {
   font-family: 'CircularStd';
   font-weight: 700;
   font-style: normal;
-  src: local('CircularStd'), url('src/fonts/CircularStd-Bold.otf') format('opentype');
+  src: local('CircularStd'),
+    url('src/fonts/CircularStd-Bold.otf') format('opentype');
+}
+
+.logo {
+  text-transform: uppercase;
+  background: linear-gradient(to right, #30cfd0 0%, #330867 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-size: 15px;
+  font-weight: bold;
+  text-underline: none;
 }

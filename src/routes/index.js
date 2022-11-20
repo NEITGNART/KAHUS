@@ -1,7 +1,16 @@
 import { Suspense, lazy } from 'react';
 import { Navigate, useRoutes, useLocation } from 'react-router-dom';
+// guard
+import AuthGuard from '../guards/AuthGuard';
 import HomePage from '../pages/Home';
 // layouts
+
+// ----------------------------------------------------------------------
+
+import LoadingScreen from '../components/LoadingScreen';
+import { PATH_AFTER_LOGIN } from '../config';
+import DashboardLayout from '../layout/dashboard';
+import { ROOTS_DASHBOARD } from './paths';
 
 // ----------------------------------------------------------------------
 
@@ -10,7 +19,11 @@ const Loadable = (Component) =>
     const { pathname } = useLocation();
 
     return (
-      <Suspense>
+      <Suspense
+        fallback={
+          <LoadingScreen isDashboard={pathname.includes('/dashboard')} />
+        }
+      >
         <Component {...props} />
       </Suspense>
     );
@@ -32,10 +45,18 @@ export default function Router() {
       ]
     },
     {
-      path: '/',
-      element: <HomePage />
-    },
-    { path: '*', element: <Navigate to="/404" replace /> }
+      path: 'dashboard',
+      element: (
+        <AuthGuard>
+          <DashboardLayout />
+        </AuthGuard>
+      ),
+      children: [
+        { element: <Navigate to="/dashboard/classes" replace />, index: true },
+        { path: 'classes', element: <ClassroomList /> }
+      ]
+    }
+    // { path: '*', element: <Navigate to='/404' replace /> }
   ]);
 }
 
@@ -46,4 +67,6 @@ const Register = Loadable(lazy(() => import('../pages/auth/Register')));
 // const VerifyCode = Loadable(lazy(() => import('../pages/auth/VerifyCode')));
 //
 // // MAIN
-// const HomePage = Loadable(lazy(() => import('../pages/Home')));
+const ClassroomList = Loadable(
+  lazy(() => import('../pages/dashboard/ClassroomList'))
+);
