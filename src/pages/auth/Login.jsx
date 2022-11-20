@@ -10,9 +10,11 @@ import {
   Tooltip,
   Container,
   Typography,
-  Button
+  Button,
+  Divider
 } from '@mui/material';
 import { capitalCase } from 'change-case';
+import OauthPopup from 'react-oauth-popup';
 import Logo from '../../components/Logo';
 import useResponsive from '../../hooks/useResponsive';
 import Image from '../../components/Image';
@@ -33,6 +35,11 @@ import Iconify from '../../components/Iconify';
 export default function Login() {
   const smUp = useResponsive('up', 'sm');
   const mdUp = useResponsive('up', 'md');
+
+  const onCode = (code, params) => {
+    console.log(code);
+  };
+  const onClose = () => console.log('closed!');
 
   return (
     <Page title="Login">
@@ -87,52 +94,40 @@ export default function Login() {
               </Tooltip>
             </Stack>
 
-            <Stack direction="row" spacing={2}>
-              <Button
-                fullWidth
-                size="large"
-                color="inherit"
-                variant="outlined"
-                onClick={() => {
-                  window.open(
-                    'http://localhost:5001/auth/login/google',
-                    '_self'
-                  );
-                }}
-              >
-                <Iconify
-                  icon="eva:google-fill"
-                  color="#DF3E30"
-                  width={22}
-                  height={22}
-                />
-              </Button>
+            <OauthPopup
+              onClose={onClose}
+              onCode={onCode}
+              title="Login with Google"
+              url="http://localhost:5001/auth/login/google"
+            >
+              <Stack direction="row" spacing={2}>
+                <Button
+                  fullWidth
+                  size="large"
+                  color="inherit"
+                  variant="outlined"
+                >
+                  <Iconify
+                    icon="eva:google-fill"
+                    color="#DF3E30"
+                    width={22}
+                    height={22}
+                  />
+                </Button>
+              </Stack>
+            </OauthPopup>
 
-              <Button fullWidth size="large" color="inherit" variant="outlined">
-                <Iconify
-                  icon="eva:facebook-fill"
-                  color="#1877F2"
-                  width={22}
-                  height={22}
-                />
-              </Button>
-              <Button fullWidth size="large" color="inherit" variant="outlined">
-                <Iconify
-                  icon="eva:twitter-fill"
-                  color="#1C9CEA"
-                  width={22}
-                  height={22}
-                />
-              </Button>
-            </Stack>
+            <Divider sx={{ my: 3 }}>
+              <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                OR
+              </Typography>
+            </Divider>
 
-            <Alert severity="info" sx={{ mt: 5, mb: 3 }}>
+            <Alert severity="info" sx={{ mt: 1, mb: 3 }}>
               Use email : <strong>demo@kahus.com</strong> / password :
               <strong> demo1234</strong>
             </Alert>
-
             <LoginForm />
-
             {!smUp && (
               <Typography variant="body2" align="center" sx={{ mt: 3 }}>
                 Don’t have an account?{' '}
@@ -192,3 +187,17 @@ const ContentStyle = styled('div')(({ theme }) => ({
   justifyContent: 'center',
   padding: theme.spacing(12, 0)
 }));
+
+// style OauthPopup with full width
+
+// const GoogleButton = styled(Button)(({ theme }) => ({
+//   [theme.breakpoints.down('md')]: {
+//     width: '140px'
+//   },
+//   [theme.breakpoints.down('sm')]: {
+//     width: '107px'
+//   },
+//   [theme.breakpoints.down('lg')]: {
+//     width: '135px'
+//   }
+// }));
