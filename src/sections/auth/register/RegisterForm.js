@@ -11,10 +11,13 @@ import useIsMountedRef from '../../../hooks/useIsMountedRef';
 // components
 import Iconify from '../../../components/Iconify';
 import { FormProvider, RHFTextField } from '../../../components/hook-form';
+import useAuth from '../../../hooks/useAuth';
 
 // ----------------------------------------------------------------------
 
 export default function RegisterForm() {
+  const { register } = useAuth();
+
   const isMountedRef = useIsMountedRef();
 
   const [showPassword, setShowPassword] = useState(false);
@@ -42,13 +45,22 @@ export default function RegisterForm() {
 
   const {
     reset,
-
     setError,
     handleSubmit,
     formState: { errors, isSubmitting }
   } = methods;
 
-  const onSubmit = async (data) => {};
+  const onSubmit = async (data) => {
+    try {
+      await register(data.email, data.password, data.firstName, data.lastName);
+    } catch (error) {
+      console.error(error);
+      reset();
+      if (isMountedRef.current) {
+        setError('afterSubmit', { ...error, message: error.message });
+      }
+    }
+  };
 
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
