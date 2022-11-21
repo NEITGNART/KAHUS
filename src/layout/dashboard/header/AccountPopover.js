@@ -56,7 +56,6 @@ export default function AccountPopover() {
     try {
       await logout();
       navigate(PATH_AUTH.login, { replace: true });
-
       if (isMountedRef.current) {
         handleClose();
       }

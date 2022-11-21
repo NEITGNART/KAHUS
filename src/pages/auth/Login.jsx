@@ -35,6 +35,7 @@ import useAuth from '../../hooks/useAuth';
 
 export default function Login() {
   const { googleLogin } = useAuth();
+  const navigate = useNavigate();
   const smUp = useResponsive('up', 'sm');
   const mdUp = useResponsive('up', 'md');
 
@@ -42,7 +43,9 @@ export default function Login() {
 
   const onCode = async (code, params) => {
     await googleLogin(code, JSON.parse(params.get('user')));
+    navigate('/dashboard', { replace: true });
   };
+
   const onClose = () => console.log('closed!');
 
   return (
@@ -191,17 +194,3 @@ const ContentStyle = styled('div')(({ theme }) => ({
   justifyContent: 'center',
   padding: theme.spacing(12, 0)
 }));
-
-// style OauthPopup with full width
-
-// const GoogleButton = styled(Button)(({ theme }) => ({
-//   [theme.breakpoints.down('md')]: {
-//     width: '140px'
-//   },
-//   [theme.breakpoints.down('sm')]: {
-//     width: '107px'
-//   },
-//   [theme.breakpoints.down('lg')]: {
-//     width: '135px'
-//   }
-// }));

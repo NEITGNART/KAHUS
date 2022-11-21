@@ -8,6 +8,7 @@ import { Link, Stack, Alert, IconButton, InputAdornment } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 // routes
 // hooks
+import { useNavigate } from 'react-router-dom';
 import useIsMountedRef from '../../../hooks/useIsMountedRef';
 // components
 import Iconify from '../../../components/Iconify';
@@ -23,6 +24,7 @@ import useAuth from '../../../hooks/useAuth';
 export default function LoginForm() {
   const { login } = useAuth();
   const isMountedRef = useIsMountedRef();
+  const navigate = useNavigate();
 
   const [showPassword, setShowPassword] = useState(false);
 
@@ -55,6 +57,10 @@ export default function LoginForm() {
     const { email, password, remember } = data;
     try {
       await login(email, password, remember);
+      // adding status later
+
+      navigate('/dashboard', { replace: true });
+
       if (!remember) reset();
     } catch (error) {
       setError('afterSubmit', { ...error, message: error.message });
