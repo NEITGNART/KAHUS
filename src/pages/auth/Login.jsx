@@ -23,6 +23,7 @@ import loginImage from '../../assets/illustrations/illustration_login.png';
 import Page from '../../components/Page';
 import { PATH_AUTH } from '../../routes/paths';
 import Iconify from '../../components/Iconify';
+import useAuth from '../../hooks/useAuth';
 // routes
 // hooks
 // components
@@ -33,11 +34,14 @@ import Iconify from '../../components/Iconify';
 // ----------------------------------------------------------------------
 
 export default function Login() {
+  const { googleLogin } = useAuth();
   const smUp = useResponsive('up', 'sm');
   const mdUp = useResponsive('up', 'md');
 
-  const onCode = (code, params) => {
-    console.log(code);
+  const URL_AUTH = 'http://localhost:5001/auth/login/google';
+
+  const onCode = async (code, params) => {
+    await googleLogin(code, JSON.parse(params.get('user')));
   };
   const onClose = () => console.log('closed!');
 
@@ -98,7 +102,7 @@ export default function Login() {
               onClose={onClose}
               onCode={onCode}
               title="Login with Google"
-              url="http://localhost:5001/auth/login/google"
+              url={URL_AUTH}
             >
               <Stack direction="row" spacing={2}>
                 <Button

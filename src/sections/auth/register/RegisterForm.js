@@ -53,12 +53,9 @@ export default function RegisterForm() {
   const onSubmit = async (data) => {
     try {
       await register(data.email, data.password, data.firstName, data.lastName);
-    } catch (error) {
-      console.error(error);
       reset();
-      if (isMountedRef.current) {
-        setError('afterSubmit', { ...error, message: error.message });
-      }
+    } catch (error) {
+      setError('afterSubmit', { ...error, message: error.message });
     }
   };
 
@@ -67,6 +64,10 @@ export default function RegisterForm() {
       <Stack spacing={3}>
         {!!errors.afterSubmit && (
           <Alert severity="error">{errors.afterSubmit.message}</Alert>
+        )}
+
+        {!errors.afterSubmit && (
+          <Alert severity="success">Register successfully</Alert>
         )}
 
         <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>

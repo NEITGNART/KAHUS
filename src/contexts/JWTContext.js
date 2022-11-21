@@ -1,4 +1,4 @@
-import { createContext, useEffect, useReducer, useMemo } from 'react';
+import { createContext, useEffect, useMemo, useReducer } from 'react';
 import PropTypes from 'prop-types';
 // utils
 import axios from '../utils/axios';
@@ -35,16 +35,7 @@ const handlers = {
     ...state,
     isAuthenticated: false,
     user: null
-  }),
-  REGISTER: (state, action) => {
-    const { user } = action.payload;
-
-    return {
-      ...state,
-      isAuthenticated: true,
-      user
-    };
-  }
+  })
 };
 
 const reducer = (state, action) =>
@@ -54,6 +45,7 @@ const AuthContext = createContext({
   ...initialState,
   method: 'jwt',
   login: () => Promise.resolve(),
+  googleLogin: () => Promise.resolve(),
   logout: () => Promise.resolve(),
   register: () => Promise.resolve()
 });
@@ -74,8 +66,7 @@ function AuthProvider({ children }) {
 
         if (accessToken && isValidToken(accessToken)) {
           setSession(accessToken);
-
-          const response = await axios.get('/api/account/my-account');
+          const response = await axios.get('/api/user/profile');
           const { user } = response.data;
 
           dispatch({
@@ -95,7 +86,6 @@ function AuthProvider({ children }) {
           });
         }
       } catch (err) {
-        // eslint-disable-next-line no-console
         console.error(err);
         dispatch({
           type: 'INITIALIZE',
@@ -110,12 +100,15 @@ function AuthProvider({ children }) {
     initialize();
   }, []);
 
-  const login = async (email, password) => {
+  const emailLogin = async (email, password) => {
     const response = await axios.post('/api/account/login', {
       email,
       password
     });
     const { accessToken, user } = response.data;
+
+    console.log(`Here is the access token ${accessToken}`);
+    console.log(user);
 
     setSession(accessToken);
     dispatch({
@@ -127,17 +120,23 @@ function AuthProvider({ children }) {
   };
 
   const register = async (email, password, firstName, lastName) => {
-    const response = await axios.post('/api/account/register', {
-      email,
-      password,
-      firstName,
-      lastName
-    });
-    const { accessToken, user } = response.data;
+    try {
+      await axios.post('/api/account/register', {
+        email,
+        password,
+        firstName,
+        lastName
+      });
+    } finally {
+      /* empty */
+    }
+  };
 
-    window.localStorage.setItem('accessToken', accessToken);
+  const googleLogin = async (accessToken, user) => {
+    setSession(accessToken);
+    console.log(accessToken);
     dispatch({
-      type: 'REGISTER',
+      type: 'LOGIN',
       payload: {
         user
       }
@@ -153,9 +152,10 @@ function AuthProvider({ children }) {
     () => ({
       ...state,
       method: 'jwt',
-      login,
+      login: emailLogin,
       logout,
-      register
+      register,
+      googleLogin
     }),
     [state]
   );

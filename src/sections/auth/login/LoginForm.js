@@ -16,10 +16,12 @@ import {
   RHFTextField,
   RHFCheckbox
 } from '../../../components/hook-form';
+import useAuth from '../../../hooks/useAuth';
 
 // ----------------------------------------------------------------------
 
 export default function LoginForm() {
+  const { login } = useAuth();
   const isMountedRef = useIsMountedRef();
 
   const [showPassword, setShowPassword] = useState(false);
@@ -50,7 +52,13 @@ export default function LoginForm() {
   } = methods;
 
   const onSubmit = async (data) => {
-    console.log(`${data.password} ${data.email}`);
+    const { email, password, remember } = data;
+    try {
+      await login(email, password, remember);
+      if (!remember) reset();
+    } catch (error) {
+      setError('afterSubmit', { ...error, message: error.message });
+    }
   };
 
   return (
