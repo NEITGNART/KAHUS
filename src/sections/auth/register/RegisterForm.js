@@ -47,7 +47,7 @@ export default function RegisterForm() {
     reset,
     setError,
     handleSubmit,
-    formState: { errors, isSubmitting }
+    formState: { errors, isSubmitting, isSubmitSuccessful }
   } = methods;
 
   const onSubmit = async (data) => {
@@ -66,7 +66,7 @@ export default function RegisterForm() {
           <Alert severity="error">{errors.afterSubmit.message}</Alert>
         )}
 
-        {!errors.afterSubmit && (
+        {isSubmitSuccessful && (
           <Alert severity="success">Register successfully</Alert>
         )}
 
