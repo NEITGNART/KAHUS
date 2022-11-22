@@ -1,6 +1,8 @@
-import { Suspense, lazy } from 'react';
+import { Suspense, lazy, useState } from 'react';
 import { Navigate, useRoutes, useLocation } from 'react-router-dom';
 // guard
+import PropTypes from 'prop-types';
+import { useSnackbar } from 'notistack';
 import AuthGuard from '../guards/AuthGuard';
 import HomePage from '../pages/Home';
 // layouts
@@ -11,7 +13,7 @@ import LoadingScreen from '../components/LoadingScreen';
 import { PATH_AFTER_LOGIN } from '../config';
 import DashboardLayout from '../layout/dashboard';
 import { ROOTS_DASHBOARD } from './paths';
-
+import useAuth from '../hooks/useAuth';
 // ----------------------------------------------------------------------
 
 const Loadable = (Component) =>
@@ -29,6 +31,22 @@ const Loadable = (Component) =>
     );
   };
 
+SuccessVerify.propTypes = {
+  children: PropTypes.node
+};
+
+function SuccessVerify({ children }) {
+  const { isInitialized } = useAuth();
+  const { enqueueSnackbar } = useSnackbar();
+
+  if (isInitialized) {
+    enqueueSnackbar('Verify success', {
+      variant: 'success'
+    });
+  }
+  return <>{children}</>;
+}
+
 export default function Router() {
   return useRoutes([
     {
@@ -37,6 +55,14 @@ export default function Router() {
         {
           path: 'login',
           element: <Login />
+        },
+        {
+          path: 'login/success',
+          element: (
+            <SuccessVerify>
+              <Login />
+            </SuccessVerify>
+          )
         },
         {
           path: 'register',
@@ -54,6 +80,7 @@ export default function Router() {
       children: [
         { element: <Navigate to="/dashboard/classes" replace />, index: true },
         { path: 'classes', element: <ClassroomList /> },
+        { path: 'classes/create', element: <CreateClass /> },
         { path: 'user/account', element: <ProfileManagement /> }
       ]
     },
@@ -74,6 +101,10 @@ const Register = Loadable(lazy(() => import('../pages/auth/Register')));
 // // MAIN
 const ClassroomList = Loadable(
   lazy(() => import('../pages/dashboard/ClassroomList'))
+);
+
+const CreateClass = Loadable(
+  lazy(() => import('../pages/dashboard/CreateClass'))
 );
 
 const ProfileManagement = Loadable(

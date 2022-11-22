@@ -35,7 +35,10 @@ const navConfig = [
       {
         title: 'Classroom',
         path: PATH_DASHBOARD.general.classroom,
-        icon: ICONS.dashboard
+        icon: ICONS.dashboard,
+        children: [
+          { title: 'Create class room', path: PATH_DASHBOARD.general.create }
+        ]
       }
     ]
   },
