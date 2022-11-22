@@ -78,10 +78,31 @@ export default function Router() {
         // </AuthGuard>
       ),
       children: [
-        { element: <Navigate to="/dashboard/classes" replace />, index: true },
-        { path: 'classes', element: <ClassroomList /> },
-        { path: 'classes/create', element: <CreateClass /> },
-        { path: 'user/account', element: <ProfileManagement /> }
+        {
+          element: <Navigate to="/dashboard/classroom" replace />,
+          index: true
+        },
+        {
+          path: 'classroom',
+          children: [
+            {
+              element: <Navigate to="/dashboard/classroom/classes" replace />,
+              index: true
+            },
+            { path: 'classes', element: <ClassroomList /> },
+            { path: 'create', element: <CreateClass /> }
+          ]
+        },
+        {
+          path: 'user',
+          children: [
+            {
+              element: <Navigate to="/dashboard/user/account" replace />,
+              index: true
+            },
+            { path: 'account', element: <ProfileManagement /> }
+          ]
+        }
       ]
     },
     {
