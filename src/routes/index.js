@@ -47,13 +47,14 @@ export default function Router() {
     {
       path: 'dashboard',
       element: (
-        <AuthGuard>
-          <DashboardLayout />
-        </AuthGuard>
+        // <AuthGuard>
+        <DashboardLayout />
+        // </AuthGuard>
       ),
       children: [
         { element: <Navigate to="/dashboard/classes" replace />, index: true },
-        { path: 'classes', element: <ClassroomList /> }
+        { path: 'classes', element: <ClassroomList /> },
+        { path: 'classes/create', element: <CreateClass /> }
       ]
     },
     {
@@ -73,4 +74,8 @@ const Register = Loadable(lazy(() => import('../pages/auth/Register')));
 // // MAIN
 const ClassroomList = Loadable(
   lazy(() => import('../pages/dashboard/ClassroomList'))
+);
+
+const CreateClass = Loadable(
+  lazy(() => import('../pages/dashboard/CreateClass'))
 );

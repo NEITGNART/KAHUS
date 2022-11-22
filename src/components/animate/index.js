@@ -1,6 +1,6 @@
 // ----------------------------------------------------------------------
 
-// export * from './variants';
+export * from './variants';
 //
 // export { default as DialogAnimate } from './DialogAnimate';
 // export { default as TextAnimate } from './TextAnimate';
