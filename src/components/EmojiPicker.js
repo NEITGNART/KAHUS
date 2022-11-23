@@ -1,6 +1,7 @@
 // import 'emoji-mart/css/emoji-mart.css';
 import PropTypes from 'prop-types';
-import { Picker } from 'emoji-mart';
+import data from '@emoji-mart/data';
+import Picker from '@emoji-mart/react';
 import { useState } from 'react';
 // @mui
 import { useTheme, styled } from '@mui/material/styles';
@@ -82,28 +83,27 @@ export default function EmojiPicker({
   ...other
 }) {
   const theme = useTheme();
-  const [emojiPickerState, SetEmojiPicker] = useState(false);
+  const [emojiPickerState, setEmojiPicker] = useState(false);
 
   let emojiPicker;
   if (emojiPickerState) {
     emojiPicker = (
       <Picker
-        color={theme.palette.primary.main}
-        title="Pick your emoji…"
-        emoji="point_up"
+        data={data}
         /* eslint-disable-next-line no-unsafe-optional-chaining */
-        onSelect={(emoji) => setValue(value + emoji?.native)}
+        onEmojiSelect={(emoji) => setValue(value + emoji?.native)}
+        theme="light"
       />
     );
   }
 
   const triggerPicker = (event) => {
     event.preventDefault();
-    SetEmojiPicker(!emojiPickerState);
+    setEmojiPicker(!emojiPickerState);
   };
 
   const handleClickAway = () => {
-    SetEmojiPicker(false);
+    setEmojiPicker(false);
   };
 
   return (

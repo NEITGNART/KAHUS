@@ -36,8 +36,8 @@ PostCard.propTypes = {
 };
 
 export default function PostCard({ post }) {
-  const { user } = useAuth();
-
+  // const { user } = useAuth();
+  const user = { firstName: 'Thai', lastName: 'Tran' };
   const commentInputRef = useRef(null);
 
   const fileInputRef = useRef(null);
@@ -86,7 +86,7 @@ export default function PostCard({ post }) {
             color="text.primary"
             component={RouterLink}
           >
-            {user?.displayName}
+            {`${user?.firstName} ${user?.lastName}`}
           </Link>
         }
         subheader={

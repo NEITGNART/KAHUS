@@ -1,5 +1,6 @@
 import { capitalCase } from 'change-case';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
+import { useParams } from 'react-router';
 // @mui
 import { styled } from '@mui/material/styles';
 import { Tab, Box, Card, Tabs, Container } from '@mui/material';
@@ -20,6 +21,9 @@ import {
   ClassroomMember,
   ClassroomWork
 } from '../../sections/@dashboard/classroom/room';
+import { _userAbout, _userFeeds, _userMembers } from '../../_mock';
+import axios from '../../utils/axios';
+import useIsMountedRef from '../../hooks/useIsMountedRef';
 
 // ----------------------------------------------------------------------
 
@@ -46,27 +50,59 @@ export default function ClassroomPage() {
 
   const { user } = useAuth();
 
-  const { currentTab, onChangeTab } = useTabs('stream');
+  const { classId } = useParams();
 
-  const [findFriends, setFindFriends] = useState('');
+  const isMountedRef = useIsMountedRef();
+
+  const [classroom, setClassroom] = useState(null);
+
+  const [error, setError] = useState(null);
+
+  const { currentTab, onChangeTab } = useTabs('feeds');
+
+  const [findMembers, setFindMembers] = useState('');
 
   const handleFindFriends = (value) => {
-    setFindFriends(value);
+    setFindMembers(value);
   };
+
+  // const getClassroom = useCallback(async () => {
+  //   try {
+  //     const response = await axios.get('/api/blog/post', {
+  //       params: { classId }
+  //     });
+  //
+  //     if (isMountedRef.current) {
+  //       setClassroom(response.data.classroom);
+  //     }
+  //   } catch (err) {
+  //     // eslint-disable-next-line no-console
+  //     console.error(err);
+  //     setError(err.message);
+  //   }
+  // }, [isMountedRef, classId]);
 
   const PROFILE_TABS = [
     {
-      value: 'stream',
-      icon: <Iconify icon="ic:round-account-box" width={20} height={20} />
-      // component: <Classroom classInfo={_userAbout} posts={_userFeeds} />
+      value: 'feeds',
+      icon: <Iconify icon="ic:round-account-box" width={20} height={20} />,
+      component: (
+        <Classroom
+          classInfo={{
+            description:
+              'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim.'
+          }}
+          posts={_userFeeds}
+        />
+      )
     },
     {
       value: 'people',
       icon: <Iconify icon="eva:people-fill" width={20} height={20} />,
       component: (
         <ClassroomMember
-          // members={_userFriends}
-          findMembers={findFriends}
+          members={_userMembers}
+          findMembers={findMembers}
           onFindMembers={handleFindFriends}
         />
       )
@@ -82,7 +118,7 @@ export default function ClassroomPage() {
     <Page title="Classroom">
       <Container maxWidth={themeStretch ? false : 'lg'}>
         <HeaderBreadcrumbs
-          heading="Profile"
+          heading="className"
           links={[
             { name: 'Dashboard', href: PATH_DASHBOARD.root },
             { name: 'User', href: PATH_DASHBOARD.user.root },
@@ -92,12 +128,11 @@ export default function ClassroomPage() {
         <Card
           sx={{
             mb: 3,
-            height: 280,
+            height: 300,
             position: 'relative'
           }}
         >
-          {/* <ClassroomCover classInfo={_userAbout} /> */}
-
+          <ClassroomCover classInfo={_userAbout} />
           <TabsWrapperStyle>
             <Tabs
               allowScrollButtonsMobile

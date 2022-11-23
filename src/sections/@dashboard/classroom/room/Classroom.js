@@ -19,8 +19,7 @@ export default function Classroom({ classInfo, posts }) {
     <Grid container spacing={3}>
       <Grid item xs={12} md={4}>
         <Stack spacing={3}>
-          <ClassroomAbout profile={classInfo} />
-          <ProfileSocialInfo profile={classInfo} />
+          <ClassroomAbout description={classInfo.description} />
         </Stack>
       </Grid>
 

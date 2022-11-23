@@ -46,10 +46,10 @@ ClassroomCover.propTypes = {
 };
 
 export default function ClassroomCover({ classInfo }) {
-  const { user } = useAuth();
-
+  // const { user } = useAuth();
+  const user = { displayName: 'Teacher Thái' };
   const { position, cover } = classInfo;
-
+  const className = 'Cách nuôi trăn trong quần';
   return (
     <RootStyle>
       <InfoStyle>
@@ -71,8 +71,10 @@ export default function ClassroomCover({ classInfo }) {
             textAlign: { xs: 'center', md: 'left' }
           }}
         >
-          <Typography variant="h4">{user?.displayName}</Typography>
-          <Typography sx={{ opacity: 0.72 }}>{position}</Typography>
+          <Typography variant="h4">{className}</Typography>
+          <Typography sx={{ opacity: 0.72, marginBottom: 5 }}>
+            {user?.displayName}
+          </Typography>
         </Box>
       </InfoStyle>
       <Image

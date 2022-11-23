@@ -43,7 +43,7 @@ export default function ClassroomMember({
         stretchStart={240}
         value={findMembers}
         onChange={(event) => onFindMembers(event.target.value)}
-        placeholder="Find friends..."
+        placeholder="Find members..."
         InputProps={{
           startAdornment: (
             <InputAdornment position="start">
@@ -60,7 +60,7 @@ export default function ClassroomMember({
       <Grid container spacing={3}>
         {memberFiltered.map((member) => (
           <Grid key={member.id} item xs={12} md={4}>
-            <FriendCard friend={member} />
+            <MemberCard member={member} />
           </Grid>
         ))}
       </Grid>
@@ -76,13 +76,13 @@ export default function ClassroomMember({
 
 // ----------------------------------------------------------------------
 
-FriendCard.propTypes = {
-  friend: PropTypes.object
+MemberCard.propTypes = {
+  member: PropTypes.object
 };
 
-function FriendCard({ friend }) {
-  const { name, role, avatarUrl } = friend;
-
+function MemberCard({ member }) {
+  const { firstName, lastName, role, avatarUrl } = member;
+  const fullname = `${firstName} ${lastName}`;
   return (
     <Card
       sx={{
@@ -94,12 +94,12 @@ function FriendCard({ friend }) {
       }}
     >
       <Avatar
-        alt={name}
+        alt={fullname}
         src={avatarUrl}
         sx={{ width: 64, height: 64, mb: 3 }}
       />
       <Link href variant="subtitle1" color="text.primary">
-        {name}
+        {fullname}
       </Link>
 
       <Typography variant="body2" sx={{ color: 'text.secondary', mb: 1 }}>
@@ -118,7 +118,10 @@ function FriendCard({ friend }) {
 function applyFilter(array, query) {
   if (query) {
     return array.filter(
-      (friend) => friend.name.toLowerCase().indexOf(query.toLowerCase()) !== -1
+      (member) =>
+        `${member.firstName} ${member.lastName}`
+          .toLowerCase()
+          .indexOf(query.toLowerCase()) !== -1
     );
   }
 
