@@ -80,7 +80,8 @@ export default function Router() {
       children: [
         { element: <Navigate to="/dashboard/classes" replace />, index: true },
         { path: 'classes', element: <ClassroomList /> },
-        { path: 'classes/create', element: <CreateClass /> }
+        { path: 'classes/create', element: <CreateClass /> },
+        { path: 'classes/memberlist', element: <MemberList /> }
       ]
     },
     {
@@ -104,4 +105,8 @@ const ClassroomList = Loadable(
 
 const CreateClass = Loadable(
   lazy(() => import('../pages/dashboard/CreateClass'))
+);
+
+const MemberList = Loadable(
+  lazy(() => import('../pages/dashboard/MemberList'))
 );

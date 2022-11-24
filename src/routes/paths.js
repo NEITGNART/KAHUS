@@ -36,7 +36,8 @@ export const PATH_DASHBOARD = {
   root: ROOTS_DASHBOARD,
   general: {
     classroom: path(ROOTS_DASHBOARD, '/classes'),
-    create: path(ROOTS_DASHBOARD, '/classes/create')
+    create: path(ROOTS_DASHBOARD, '/classes/create'),
+    memberlist: path(ROOTS_DASHBOARD, '/classes/memberlist')
   },
   mail: {
     root: path(ROOTS_DASHBOARD, '/mail'),

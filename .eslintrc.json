@@ -17,6 +17,7 @@
   "plugins": ["react"],
   "rules": {
     "import/extensions": "off",
+    "import/no-cycle": [2, {"maxDepth": 1 }],
     "react/react-in-jsx-scope": "off",
     "react/jsx-filename-extension": [
       1,
@@ -45,6 +46,7 @@
     "no-use-before-define": "off",
     "import/prefer-default-export": "off",
     "react/jsx-boolean-value": "off",
-    "no-unused-vars": "warn"
+    "no-unused-vars": "warn",
+    "no-param-reassign": 0
   }
 }
