@@ -18,7 +18,7 @@ const IconStyle = styled(Iconify)(({ theme }) => ({
 // ----------------------------------------------------------------------
 
 ClassroomAbout.propTypes = {
-  description: PropTypes.object
+  description: PropTypes.string
 };
 
 export default function ClassroomAbout({ description }) {

@@ -1,10 +1,18 @@
 import { capitalCase } from 'change-case';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 // @mui
 import { styled } from '@mui/material/styles';
-import { Tab, Box, Card, Tabs, Container } from '@mui/material';
+import {
+  Tab,
+  Box,
+  Card,
+  Tabs,
+  Container,
+  CircularProgress
+} from '@mui/material';
 // routes
+import { useQuery } from '@tanstack/react-query';
 import { PATH_DASHBOARD } from '../../routes/paths';
 // hooks
 import useAuth from '../../hooks/useAuth';
@@ -24,6 +32,7 @@ import {
 import { _userAbout, _userFeeds, _userMembers } from '../../_mock';
 import axios from '../../utils/axios';
 import useIsMountedRef from '../../hooks/useIsMountedRef';
+import LoadingScreen from '../../components/LoadingScreen';
 
 // ----------------------------------------------------------------------
 
@@ -45,18 +54,48 @@ const TabsWrapperStyle = styled('div')(({ theme }) => ({
 
 // ----------------------------------------------------------------------
 
+const fetchClassroom = async (id) => {
+  const response = await axios.get(`/api/group/${id}`);
+  return response.data;
+};
+
+const fetchUserById = async (id) => {
+  const response = await axios.get(`/api/user/${id}`);
+  return response.data;
+};
+
+function useGetClassRoomById(id) {
+  return useQuery(['classroom', id], () => fetchClassroom(id));
+}
+
+function useGetUserById(id) {
+  return useQuery({
+    queryKey: ['user', id],
+    queryFn: () => fetchUserById(id),
+    enabled: !!id
+  });
+}
+
+const fetchAllMemberClass = async (classId) => {
+  const response = await axios.post(`/api/group/members`, {
+    groupId: classId
+  });
+  return response.data;
+};
+
+function useGetAllMemberClass(classId) {
+  return useQuery({
+    queryKey: ['members', classId],
+    queryFn: () => fetchAllMemberClass(classId)
+  });
+}
+
 export default function ClassroomPage() {
   const { themeStretch } = useSettings();
 
   const { user } = useAuth();
 
   const { classId } = useParams();
-
-  const isMountedRef = useIsMountedRef();
-
-  const [classroom, setClassroom] = useState(null);
-
-  const [error, setError] = useState(null);
 
   const { currentTab, onChangeTab } = useTabs('feeds');
 
@@ -66,21 +105,20 @@ export default function ClassroomPage() {
     setFindMembers(value);
   };
 
-  // const getClassroom = useCallback(async () => {
-  //   try {
-  //     const response = await axios.get('/api/blog/post', {
-  //       params: { classId }
-  //     });
-  //
-  //     if (isMountedRef.current) {
-  //       setClassroom(response.data.classroom);
-  //     }
-  //   } catch (err) {
-  //     // eslint-disable-next-line no-console
-  //     console.error(err);
-  //     setError(err.message);
-  //   }
-  // }, [isMountedRef, classId]);
+  const {
+    data: classRoom,
+    isLoading: isLoadinClassRoom,
+    error
+  } = useGetClassRoomById(classId);
+
+  const { data: owner, isLoading: isLoadingOwner } = useGetUserById(
+    classRoom?.owner
+  );
+
+  const { data: members } = useGetAllMemberClass(classId);
+
+  if (isLoadinClassRoom || isLoadingOwner) return <LoadingScreen />;
+  if (error) return <div>Something went wrong ...</div>;
 
   const PROFILE_TABS = [
     {
@@ -89,19 +127,18 @@ export default function ClassroomPage() {
       component: (
         <Classroom
           classInfo={{
-            description:
-              'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim.'
+            description: classRoom.description
           }}
           posts={_userFeeds}
         />
       )
     },
     {
-      value: 'people',
+      value: 'member',
       icon: <Iconify icon="eva:people-fill" width={20} height={20} />,
       component: (
         <ClassroomMember
-          members={_userMembers}
+          members={members || []}
           findMembers={findMembers}
           onFindMembers={handleFindFriends}
         />
@@ -132,7 +169,7 @@ export default function ClassroomPage() {
             position: 'relative'
           }}
         >
-          <ClassroomCover classInfo={_userAbout} />
+          <ClassroomCover classInfo={{ owner, classRoom }} />
           <TabsWrapperStyle>
             <Tabs
               allowScrollButtonsMobile

@@ -36,7 +36,7 @@ export default function ClassroomMember({
   return (
     <Box sx={{ mt: 5 }}>
       <Typography variant="h4" sx={{ mb: 3 }}>
-        People
+        Members
       </Typography>
 
       <InputStyle
@@ -56,7 +56,6 @@ export default function ClassroomMember({
         }}
         sx={{ mb: 5 }}
       />
-
       <Grid container spacing={3}>
         {memberFiltered.map((member) => (
           <Grid key={member.id} item xs={12} md={4}>
@@ -81,8 +80,8 @@ MemberCard.propTypes = {
 };
 
 function MemberCard({ member }) {
-  const { firstName, lastName, role, avatarUrl } = member;
-  const fullname = `${firstName} ${lastName}`;
+  const { firstName, lastName, avatar } = member;
+  const fullName = `${firstName} ${lastName}`;
   return (
     <Card
       sx={{
@@ -94,17 +93,14 @@ function MemberCard({ member }) {
       }}
     >
       <Avatar
-        alt={fullname}
-        src={avatarUrl}
+        alt={fullName}
+        referrerPolicy="no-referrer"
+        src={avatar || 'https://i.pravatar.cc/300'}
         sx={{ width: 64, height: 64, mb: 3 }}
       />
-      <Link href variant="subtitle1" color="text.primary">
-        {fullname}
+      <Link href="/" variant="subtitle1" color="text.primary">
+        {fullName}
       </Link>
-
-      <Typography variant="body2" sx={{ color: 'text.secondary', mb: 1 }}>
-        {role}
-      </Typography>
 
       <IconButton sx={{ top: 8, right: 8, position: 'absolute' }}>
         <Iconify icon="eva:more-vertical-fill" width={20} height={20} />

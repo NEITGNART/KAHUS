@@ -14,7 +14,6 @@ import Image from '../../../../components/Image';
 
 const RootStyle = styled('div')(({ theme }) => ({
   '&:before': {
-    ...cssStyles().bgBlur({ blur: 2, color: theme.palette.primary.darker }),
     top: 0,
     zIndex: 9,
     content: "''",
@@ -35,7 +34,7 @@ const InfoStyle = styled('div')(({ theme }) => ({
     display: 'flex',
     alignItems: 'center',
     left: theme.spacing(3),
-    bottom: theme.spacing(3)
+    bottom: theme.spacing(5)
   }
 }));
 
@@ -47,22 +46,11 @@ ClassroomCover.propTypes = {
 
 export default function ClassroomCover({ classInfo }) {
   // const { user } = useAuth();
-  const user = { displayName: 'Teacher Thái' };
-  const { position, cover } = classInfo;
-  const className = 'Cách nuôi trăn trong quần';
+  const { owner, classRoom } = classInfo;
+
   return (
     <RootStyle>
       <InfoStyle>
-        <MyAvatar
-          sx={{
-            mx: 'auto',
-            borderWidth: 2,
-            borderStyle: 'solid',
-            borderColor: 'common.white',
-            width: { xs: 80, md: 128 },
-            height: { xs: 80, md: 128 }
-          }}
-        />
         <Box
           sx={{
             ml: { md: 3 },
@@ -71,15 +59,16 @@ export default function ClassroomCover({ classInfo }) {
             textAlign: { xs: 'center', md: 'left' }
           }}
         >
-          <Typography variant="h4">{className}</Typography>
-          <Typography sx={{ opacity: 0.72, marginBottom: 5 }}>
-            {user?.displayName}
+          <Typography variant="h2">{classRoom.name}</Typography>
+          <Typography sx={{ marginBottom: 5 }}>
+            Created by{' '}
+            {owner?.displayName || `${owner.firstName}  ${owner.lastName}`}
           </Typography>
         </Box>
       </InfoStyle>
       <Image
         alt="profile cover"
-        src={cover}
+        src="https://gstatic.com/classroom/themes/img_breakfast.jpg"
         sx={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
       />
     </RootStyle>
