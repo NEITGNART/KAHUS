@@ -14,7 +14,7 @@ import { ClassroomCard } from '../../sections/@dashboard/classroom/cards';
 
 // ----------------------------------------------------------------------
 
-export default function UserCards() {
+export default function ClassroomList() {
   const { themeStretch } = useSettings();
 
   return (

@@ -84,7 +84,7 @@ export default function AccountPopover() {
           })
         }}
       >
-        <MyAvatar />
+        <MyAvatar src={user?.avatar || 'https://i.pravatar.cc/300'} />
       </IconButtonAnimate>
 
       <MenuPopover

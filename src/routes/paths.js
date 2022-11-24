@@ -35,9 +35,9 @@ export const PATH_PAGE = {
 export const PATH_DASHBOARD = {
   root: ROOTS_DASHBOARD,
   general: {
-    classroom: path(ROOTS_DASHBOARD, '/classes'),
-    create: path(ROOTS_DASHBOARD, '/classes/create'),
-    memberlist: path(ROOTS_DASHBOARD, '/classes/memberlist')
+    classroom: path(ROOTS_DASHBOARD, '/classroom/classes'),
+    create: path(ROOTS_DASHBOARD, '/classroom/create'),
+    memberlist: path(ROOTS_DASHBOARD, '/classroom/member')
   },
   mail: {
     root: path(ROOTS_DASHBOARD, '/mail'),
@@ -52,13 +52,7 @@ export const PATH_DASHBOARD = {
   kanban: path(ROOTS_DASHBOARD, '/kanban'),
   user: {
     root: path(ROOTS_DASHBOARD, '/user'),
-    new: path(ROOTS_DASHBOARD, '/user/new'),
-    list: path(ROOTS_DASHBOARD, '/user/list'),
-    cards: path(ROOTS_DASHBOARD, '/user/cards'),
-    profile: path(ROOTS_DASHBOARD, '/user/profile'),
-    account: path(ROOTS_DASHBOARD, '/user/account'),
-    edit: (name) => path(ROOTS_DASHBOARD, `/user/${name}/edit`),
-    demoEdit: path(ROOTS_DASHBOARD, `/user/reece-chung/edit`)
+    account: path(ROOTS_DASHBOARD, '/user/account')
   },
   eCommerce: {
     root: path(ROOTS_DASHBOARD, '/e-commerce'),

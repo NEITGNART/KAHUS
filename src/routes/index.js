@@ -78,15 +78,38 @@ export default function Router() {
         // </AuthGuard>
       ),
       children: [
-        { element: <Navigate to="/dashboard/classes" replace />, index: true },
-        { path: 'classes', element: <ClassroomList /> },
-        { path: 'classes/create', element: <CreateClass /> },
-        { path: 'classes/memberlist', element: <MemberList /> }
+        {
+          element: <Navigate to="/dashboard/classroom" replace />,
+          index: true
+        },
+        {
+          path: 'classroom',
+          children: [
+            {
+              element: <Navigate to="/dashboard/classroom/classes" replace />,
+              index: true
+            },
+            { path: 'classes', element: <ClassroomList /> },
+            { path: 'create', element: <CreateClass /> },
+            { path: 'class/:classId', element: <ClassroomPage /> },
+            { path: 'member', element: <MemberList /> }
+          ]
+        },
+        {
+          path: 'user',
+          children: [
+            {
+              element: <Navigate to="/dashboard/user/account" replace />,
+              index: true
+            },
+            { path: 'account', element: <ProfileManagement /> }
+          ]
+        }
       ]
     },
     {
       path: '/',
-      element: <HomePage />
+      element: <Navigate to="/dashboard/classroom" replace />
     }
     // { path: '*', element: <Navigate to="/404" replace /> }
   ]);
@@ -105,6 +128,14 @@ const ClassroomList = Loadable(
 
 const CreateClass = Loadable(
   lazy(() => import('../pages/dashboard/CreateClass'))
+);
+
+const ClassroomPage = Loadable(
+  lazy(() => import('../pages/dashboard/ClassroomPage'))
+);
+
+const ProfileManagement = Loadable(
+  lazy(() => import('../pages/dashboard/ProfileManagement'))
 );
 
 const MemberList = Loadable(

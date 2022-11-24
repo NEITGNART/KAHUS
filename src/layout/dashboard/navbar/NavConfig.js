@@ -33,19 +33,30 @@ const navConfig = [
     subheader: 'general',
     items: [
       {
-        title: 'classroom',
+        title: 'Classroom',
         path: PATH_DASHBOARD.general.classroom,
-        icon: ICONS.dashboard,
+        icon: ICONS.banking,
         children: [
+          { title: 'Classes', path: PATH_DASHBOARD.general.classroom },
           { title: 'Create classroom', path: PATH_DASHBOARD.general.create },
           { title: 'Member List', path: PATH_DASHBOARD.general.memberlist }
         ]
       }
     ]
-  }
+  },
 
   // // MANAGEMENT
   // // ----------------------------------------------------------------------
+  {
+    subheader: 'management',
+    items: [
+      {
+        title: 'My account',
+        path: PATH_DASHBOARD.user.account,
+        icon: ICONS.user
+      }
+    ]
+  }
   // {
   //   subheader: 'management',
   //   items: [
