@@ -15,7 +15,6 @@ import Iconify from '../../../../components/Iconify';
 import InputStyle from '../../../../components/InputStyle';
 import SocialsButton from '../../../../components/SocialsButton';
 import SearchNotFound from '../../../../components/SearchNotFound';
-
 // ----------------------------------------------------------------------
 
 ClassroomMember.propTypes = {

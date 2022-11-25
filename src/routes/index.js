@@ -1,25 +1,28 @@
-import { Suspense, lazy, useState } from 'react';
-import { Navigate, useRoutes, useLocation } from 'react-router-dom';
+import { Suspense, lazy, useEffect } from 'react';
+import {
+  Navigate,
+  useRoutes,
+  useLocation,
+  useSearchParams
+} from 'react-router-dom';
 // guard
 import PropTypes from 'prop-types';
 import { useSnackbar } from 'notistack';
+import { useQuery } from '@tanstack/react-query';
 import AuthGuard from '../guards/AuthGuard';
-import HomePage from '../pages/Home';
 // layouts
 
 // ----------------------------------------------------------------------
 
 import LoadingScreen from '../components/LoadingScreen';
-import { PATH_AFTER_LOGIN } from '../config';
 import DashboardLayout from '../layout/dashboard';
-import { ROOTS_DASHBOARD } from './paths';
 import useAuth from '../hooks/useAuth';
+import axios from '../utils/axios';
 // ----------------------------------------------------------------------
 
 const Loadable = (Component) =>
   function (props) {
     const { pathname } = useLocation();
-
     return (
       <Suspense
         fallback={
@@ -31,20 +34,66 @@ const Loadable = (Component) =>
     );
   };
 
-SuccessVerify.propTypes = {
+Verify.propTypes = {
+  children: PropTypes.node,
+  message: PropTypes.string,
+  status: PropTypes.string
+};
+
+function Verify({ children, message, status }) {
+  const { enqueueSnackbar } = useSnackbar();
+  useEffect(() => {
+    enqueueSnackbar(message, {
+      variant: status
+    });
+  }, []);
+  return <>{children}</>;
+}
+
+const addMember = async (token) => {
+  try {
+    const response = await axios.post('/api/group/join-link', {
+      token
+    });
+    return response.data;
+  } catch (err) {
+    return {
+      msg: 'Join group failed'
+    };
+  }
+};
+
+const useAddMember = (token) => {
+  return useQuery({
+    queryKey: ['addMember', token],
+    queryFn: () => addMember(token)
+  });
+};
+
+// eslint-disable-next-line react/prop-types
+InviteClassRoom.propTypes = {
   children: PropTypes.node
 };
 
-function SuccessVerify({ children }) {
-  const { isInitialized } = useAuth();
-  const { enqueueSnackbar } = useSnackbar();
-
-  if (isInitialized) {
-    enqueueSnackbar('Verify success', {
-      variant: 'success'
-    });
-  }
-  return <>{children}</>;
+function InviteClassRoom({ children }) {
+  // get classId from url
+  const [searchParams, setSearchParams] = useSearchParams();
+  const token = searchParams.get('token');
+  const { data, isLoading, error } = useAddMember(token);
+  if (isLoading) return <LoadingScreen />;
+  if (error)
+    return (
+      <Verify status="error" message="Join group failed">
+        {children}
+      </Verify>
+    );
+  return (
+    <>
+      <Verify status="success" message="Join group successfully">
+        {children}
+      </Verify>
+    </>
+  );
 }
 
 export default function Router() {
@@ -59,9 +108,9 @@ export default function Router() {
         {
           path: 'login/success',
           element: (
-            <SuccessVerify>
+            <Verify message="Verify account successfully" status="success">
               <Login />
-            </SuccessVerify>
+            </Verify>
           )
         },
         {
@@ -73,9 +122,9 @@ export default function Router() {
     {
       path: 'dashboard',
       element: (
-        // <AuthGuard>
-        <DashboardLayout />
-        // </AuthGuard>
+        <AuthGuard>
+          <DashboardLayout />
+        </AuthGuard>
       ),
       children: [
         {
@@ -90,6 +139,16 @@ export default function Router() {
               index: true
             },
             { path: 'classes', element: <ClassroomList /> },
+            {
+              path: 'classes/join',
+              element: (
+                <>
+                  <InviteClassRoom>
+                    <ClassroomList />
+                  </InviteClassRoom>
+                </>
+              )
+            },
             { path: 'create', element: <CreateClass /> },
             { path: 'class/:classId', element: <ClassroomPage /> },
             { path: 'member', element: <MemberList /> }

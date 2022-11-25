@@ -10,6 +10,7 @@ import App from './App';
 import { AuthProvider } from './contexts/JWTContext';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
