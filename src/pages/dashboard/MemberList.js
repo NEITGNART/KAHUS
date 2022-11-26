@@ -1,6 +1,6 @@
 import { paramCase } from 'change-case';
-import { useEffect, useState } from 'react';
-import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 // @mui
 import {
   Box,
@@ -23,15 +23,6 @@ import {
 // routes
 import { PATH_DASHBOARD } from '../../routes/paths';
 // redux
-import { useDispatch, useSelector } from '../../redux/store';
-import {
-  getEvents,
-  openModal,
-  closeModal,
-  updateEvent,
-  selectEvent,
-  selectRange
-} from '../../redux/slices/calendar';
 // hooks
 import useTabs from '../../hooks/useTabs';
 import useSettings from '../../hooks/useSettings';
@@ -59,27 +50,13 @@ import {
 
 // ----------------------------------------------------------------------
 
-const STATUS_OPTIONS = ['all', 'active', 'banned'];
+const STATUS_OPTIONS = ['all', 'active', 'waiting', 'banned'];
 
-const ROLE_OPTIONS = [
-  'all',
-  'ux designer',
-  'full stack designer',
-  'backend developer',
-  'project manager',
-  'leader',
-  'ui designer',
-  'ui/ux designer',
-  'front end developer',
-  'full stack developer'
-];
+const ROLE_OPTIONS = ['all', 'owner', 'co-owner', 'member'];
 
 const TABLE_HEAD = [
   { id: 'name', label: 'Name', align: 'left' },
-  { id: 'company', label: 'Company', align: 'left' },
   { id: 'role', label: 'Role', align: 'left' },
-  { id: 'isVerified', label: 'Verified', align: 'center' },
-  { id: 'status', label: 'Status', align: 'left' },
   { id: '' }
 ];
 
@@ -105,8 +82,6 @@ export default function MemberList() {
     onChangeRowsPerPage
   } = useTable();
 
-  const dispatch = useDispatch();
-
   const { themeStretch } = useSettings();
 
   const navigate = useNavigate();
@@ -117,11 +92,7 @@ export default function MemberList() {
 
   const [filterRole, setFilterRole] = useState('all');
 
-  useEffect(() => {
-    dispatch(getEvents());
-  }, [dispatch]);
-
-  const { isOpenModal, selectedRange } = useSelector((state) => state.calendar);
+  const [openModal, setOpenModal] = useState(false);
 
   const { currentTab: filterStatus, onChangeTab: onChangeFilterStatus } =
     useTabs('all');
@@ -152,11 +123,11 @@ export default function MemberList() {
   };
 
   const handleCloseModal = () => {
-    dispatch(closeModal());
+    setOpenModal(false);
   };
 
   const handleOpenModal = () => {
-    dispatch(openModal());
+    setOpenModal(true);
   };
 
   const dataFiltered = applySortFilter({
@@ -187,8 +158,6 @@ export default function MemberList() {
           action={
             <Button
               variant="contained"
-              // component={RouterLink}
-              // to={PATH_DASHBOARD.user.new}
               onClick={handleOpenModal}
               startIcon={<Iconify icon="eva:plus-fill" />}
             >
@@ -307,15 +276,10 @@ export default function MemberList() {
           </Box>
         </Card>
 
-        <DialogAnimate open={isOpenModal} onClose={handleCloseModal}>
+        <DialogAnimate open={openModal} onClose={handleCloseModal}>
           <DialogTitle>Invite</DialogTitle>
 
-          {/* <CalendarForm event={selectedEvent || {}} range={selectedRange} onCancel={handleCloseModal} /> */}
-          <InviteMemberForm
-            event={{}}
-            range={selectedRange}
-            onCancel={handleCloseModal}
-          />
+          <InviteMemberForm onCancel={handleCloseModal} />
         </DialogAnimate>
       </Container>
     </Page>
@@ -339,24 +303,18 @@ function applySortFilter({
     return a[1] - b[1];
   });
   let tempData = stabilizedThis.map((el) => el[0]);
-  // tableData = stabilizedThis.map((el) => el[0]);
 
   if (filterName) {
-    // tableData = tableData.filter(
-    //   (item) => item.name.toLowerCase().indexOf(filterName.toLowerCase()) !== -1
-    // );
     tempData = tempData.filter(
       (item) => item.name.toLowerCase().indexOf(filterName.toLowerCase()) !== -1
     );
   }
 
   if (filterStatus !== 'all') {
-    // tableData = tableData.filter((item) => item.status === filterStatus);
     tempData = tempData.filter((item) => item.status === filterStatus);
   }
 
   if (filterRole !== 'all') {
-    // tableData = tableData.filter((item) => item.role === filterRole);
     tempData = tempData.filter((item) => item.role === filterRole);
   }
   return tempData;

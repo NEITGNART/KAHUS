@@ -47,7 +47,6 @@ export default function ClassNewEditForm({ isEdit, currentUser }) {
     name: Yup.string().required('Name is required'),
     description: Yup.string().required('Description is required'),
     section: Yup.string().required('section is required'),
-    room: Yup.string().required('Room is required'),
     topic: Yup.string().required('Topic is required'),
     avatarUrl: Yup.mixed().test(
       'required',
@@ -61,7 +60,6 @@ export default function ClassNewEditForm({ isEdit, currentUser }) {
       name: currentUser?.name || '',
       description: currentUser?.description || '',
       section: currentUser?.section || '',
-      room: currentUser?.room || '',
       topic: currentUser?.topic || '',
       avatarUrl: currentUser?.avatarUrl || '',
       isVerified: currentUser?.isVerified || true,
@@ -98,6 +96,7 @@ export default function ClassNewEditForm({ isEdit, currentUser }) {
   const onSubmit = async () => {
     try {
       await new Promise((resolve, reject) => {
+        console.log(values);
         setTimeout(resolve, 500);
       });
       reset();
@@ -167,7 +166,7 @@ export default function ClassNewEditForm({ isEdit, currentUser }) {
               />
             </Box>
 
-            {isEdit && (
+            {/* {isEdit && (
               <FormControlLabel
                 labelPlacement="start"
                 control={
@@ -202,9 +201,9 @@ export default function ClassNewEditForm({ isEdit, currentUser }) {
                 }
                 sx={{ mx: 0, mb: 3, width: 1, justifyContent: 'space-between' }}
               />
-            )}
+            )} */}
 
-            <RHFSwitch
+            {/* <RHFSwitch
               name="isVerified"
               labelPlacement="start"
               label={
@@ -219,7 +218,7 @@ export default function ClassNewEditForm({ isEdit, currentUser }) {
                 </>
               }
               sx={{ mx: 0, width: 1, justifyContent: 'space-between' }}
-            />
+            /> */}
           </Card>
         </Grid>
 
@@ -239,7 +238,6 @@ export default function ClassNewEditForm({ isEdit, currentUser }) {
               <RHFTextField name="name" label="Class Name" />
               <RHFTextField name="description" label="Description" />
               <RHFTextField name="section" label="Section" />
-              <RHFTextField name="room" label="Room" />
               <RHFTextField name="topic" label="Topic" />
             </Box>
 
@@ -249,7 +247,8 @@ export default function ClassNewEditForm({ isEdit, currentUser }) {
                 variant="contained"
                 loading={isSubmitting}
               >
-                {!isEdit ? 'Create class' : 'Save Changes'}
+                {/* {!isEdit ? 'Create class' : 'Save Changes'} */}
+                Create class
               </LoadingButton>
             </Stack>
           </Card>

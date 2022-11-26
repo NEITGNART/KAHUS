@@ -59,13 +59,13 @@ export default function MemberTableRow({
         </Typography>
       </TableCell>
 
-      <TableCell align="left">{company}</TableCell>
+      {/* <TableCell align="left">{company}</TableCell> */}
 
       <TableCell align="left" sx={{ textTransform: 'capitalize' }}>
         {role}
       </TableCell>
 
-      <TableCell align="center">
+      {/* <TableCell align="center">
         <Iconify
           icon={isVerified ? 'eva:checkmark-circle-fill' : 'eva:clock-outline'}
           sx={{
@@ -75,7 +75,7 @@ export default function MemberTableRow({
             ...(!isVerified && { color: 'warning.main' })
           }}
         />
-      </TableCell>
+      </TableCell> */}
 
       <TableCell align="left">
         <Label
