@@ -53,8 +53,8 @@ export default function ClassNewEditForm({ isEdit, currentUser }) {
     section: Yup.string(),
     topic: Yup.string(),
     avatarUrl: Yup.mixed().test(
-      // 'required',
-      // 'Avatar is required',
+      'required',
+      'Avatar is required',
       (value) => value !== ''
     )
   });

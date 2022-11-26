@@ -38,8 +38,7 @@ const navConfig = [
         icon: ICONS.banking,
         children: [
           { title: 'Classes', path: PATH_DASHBOARD.general.classroom },
-          { title: 'Create classroom', path: PATH_DASHBOARD.general.create },
-          { title: 'Member List', path: PATH_DASHBOARD.general.memberlist }
+          { title: 'Create', path: PATH_DASHBOARD.general.create }
         ]
       }
     ]
