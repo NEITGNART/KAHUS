@@ -1,5 +1,5 @@
 // @mui
-import { Container, Box } from '@mui/material';
+import { Container, Box, Grid } from '@mui/material';
 // routes
 import { PATH_DASHBOARD } from '../../routes/paths';
 // hooks
@@ -11,6 +11,7 @@ import Page from '../../components/Page';
 import HeaderBreadcrumbs from '../../components/HeaderBreadcrumbs';
 // sections
 import { ClassroomCard } from '../../sections/@dashboard/classroom/cards';
+import ClassCard from '../../sections/@dashboard/classroom/cards/ClassCard';
 
 // ----------------------------------------------------------------------
 
@@ -21,22 +22,13 @@ export default function ClassroomList() {
     <Page title="Classes | KAHUS">
       <Container maxWidth={themeStretch ? false : 'lg'}>
         <HeaderBreadcrumbs heading="Classes" />
-
-        <Box
-          sx={{
-            display: 'grid',
-            gap: 3,
-            gridTemplateColumns: {
-              xs: 'repeat(1, 1fr)',
-              sm: 'repeat(2, 1fr)',
-              md: 'repeat(3, 1fr)'
-            }
-          }}
-        >
-          {_classroomCards.map((classroom) => (
-            <ClassroomCard key={classroom.id} classroom={classroom} />
+        <Grid container spacing={3}>
+          {_classroomCards.map((classroom, index) => (
+            <Grid key={classroom.id} item xs={12} sm={6} md={4}>
+              <ClassCard classInfo={classroom} indexs={index} />
+            </Grid>
           ))}
-        </Box>
+        </Grid>
       </Container>
     </Page>
   );

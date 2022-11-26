@@ -17,7 +17,7 @@
   "plugins": ["react"],
   "rules": {
     "import/extensions": "off",
-    "import/no-cycle": [2, {"maxDepth": 1 }],
+    "import/no-cycle": [2, { "maxDepth": 1 }],
     "react/react-in-jsx-scope": "off",
     "react/jsx-filename-extension": [
       1,
