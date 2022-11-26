@@ -34,7 +34,7 @@ export default function MemberTableRow({
 }) {
   const theme = useTheme();
 
-  const { name, avatarUrl, company, role, isVerified, status } = row;
+  const { firstName, avatar, role } = row;
 
   const [openMenu, setOpenMenuActions] = useState(null);
 
@@ -53,9 +53,15 @@ export default function MemberTableRow({
       </TableCell>
 
       <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
-        <Avatar alt={name} src={avatarUrl} sx={{ mr: 2 }} />
+        <Avatar
+          alt={firstName}
+          src={
+            avatar || 'https://gstatic.com/classroom/themes/img_breakfast.jpg'
+          }
+          sx={{ mr: 2 }}
+        />
         <Typography variant="subtitle2" noWrap>
-          {name}
+          {firstName}
         </Typography>
       </TableCell>
 
@@ -77,7 +83,7 @@ export default function MemberTableRow({
         />
       </TableCell> */}
 
-      <TableCell align="left">
+      {/* <TableCell align="left">
         <Label
           variant={theme.palette.mode === 'light' ? 'ghost' : 'filled'}
           color={(status === 'banned' && 'error') || 'success'}
@@ -85,7 +91,7 @@ export default function MemberTableRow({
         >
           {status}
         </Label>
-      </TableCell>
+      </TableCell> */}
 
       <TableCell align="right">
         <TableMoreMenu

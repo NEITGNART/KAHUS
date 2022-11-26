@@ -31,6 +31,10 @@ import {
   RHFSwitch,
   RHFUploadAvatar
 } from '../../../components/hook-form';
+import axios from '../../../utils/axios';
+
+// ----------------------------------------------------------------------
+
 // ----------------------------------------------------------------------
 
 ClassNewEditForm.propTypes = {
@@ -46,11 +50,11 @@ export default function ClassNewEditForm({ isEdit, currentUser }) {
   const NewUserSchema = Yup.object().shape({
     name: Yup.string().required('Name is required'),
     description: Yup.string().required('Description is required'),
-    section: Yup.string().required('section is required'),
-    topic: Yup.string().required('Topic is required'),
+    section: Yup.string(),
+    topic: Yup.string(),
     avatarUrl: Yup.mixed().test(
-      'required',
-      'Avatar is required',
+      // 'required',
+      // 'Avatar is required',
       (value) => value !== ''
     )
   });
@@ -95,10 +99,16 @@ export default function ClassNewEditForm({ isEdit, currentUser }) {
 
   const onSubmit = async () => {
     try {
-      await new Promise((resolve, reject) => {
-        console.log(values);
-        setTimeout(resolve, 500);
-      });
+      const createClassroom = async (id) => {
+        const response = await axios.post(`/api/group/create`, {
+          name: values.name,
+          description: values.description
+        });
+        return response.data;
+      };
+
+      createClassroom();
+
       reset();
       enqueueSnackbar(!isEdit ? 'Create success!' : 'Update success!');
       navigate(PATH_DASHBOARD.user.list);

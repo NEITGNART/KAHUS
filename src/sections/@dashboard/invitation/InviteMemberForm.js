@@ -18,6 +18,7 @@ import { LoadingButton } from '@mui/lab';
 // redux
 // components
 import { FormProvider } from '../../../components/hook-form';
+import axios from '../../../utils/axios';
 
 // ----------------------------------------------------------------------
 
@@ -61,10 +62,17 @@ export default function InviteMemberForm({ onCancel }) {
 
   const onSubmit = async () => {
     try {
-      await new Promise((resolve, reject) => {
-        console.log(values);
-        setTimeout(resolve, 500);
-      });
+      const { tags } = values;
+      console.log(tags);
+      const inviteMembers = async (id) => {
+        const response = await axios.post(`/api/group/add-member`, {
+          groupId: '63821b387342039ca3f10a63',
+          groupName: '19KTPM3',
+          emails: values.tags
+        });
+        return response.data;
+      };
+      inviteMembers();
       enqueueSnackbar('Invite success!');
       onCancel();
       reset();

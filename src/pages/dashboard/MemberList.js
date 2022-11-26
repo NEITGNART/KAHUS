@@ -1,5 +1,5 @@
 import { paramCase } from 'change-case';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 // @mui
 import {
@@ -47,6 +47,7 @@ import {
   MemberTableToolbar,
   MemberTableRow
 } from '../../sections/@dashboard/user/list';
+import axios from '../../utils/axios';
 
 // ----------------------------------------------------------------------
 
@@ -86,6 +87,16 @@ export default function MemberList() {
 
   const navigate = useNavigate();
 
+  useEffect(() => {
+    const getMembers = async (id) => {
+      const response = await axios.post(`/api/group/members`, {
+        groupId: '63821b387342039ca3f10a63'
+      });
+      setTableData(response.data);
+    };
+    getMembers();
+  }, []);
+
   const [tableData, setTableData] = useState(_userList);
 
   const [filterName, setFilterName] = useState('');
@@ -106,10 +117,15 @@ export default function MemberList() {
     setFilterRole(event.target.value);
   };
 
-  const handleDeleteRow = (id) => {
-    const deleteRow = tableData.filter((row) => row.id !== id);
+  const handleDeleteRow = (email) => {
+    const deleteRow = tableData.filter((row) => row.email !== email);
+
     setSelected([]);
     setTableData(deleteRow);
+    axios.post(`/api/group/kick-member`, {
+      email,
+      groupId: '63821b387342039ca3f10a63'
+    });
   };
 
   const handleDeleteRows = (selectedRow) => {
@@ -119,7 +135,7 @@ export default function MemberList() {
   };
 
   const handleEditRow = (id) => {
-    navigate(PATH_DASHBOARD.user.edit(paramCase(id)));
+    // navigate(PATH_DASHBOARD.user.edit(paramCase(id)));
   };
 
   const handleCloseModal = () => {
@@ -240,8 +256,8 @@ export default function MemberList() {
                         key={row.id}
                         row={row}
                         selected={selected.includes(row.id)}
-                        onSelectRow={() => onSelectRow(row.id)}
-                        onDeleteRow={() => handleDeleteRow(row.id)}
+                        onSelectRow={() => onSelectRow(row.email)}
+                        onDeleteRow={() => handleDeleteRow(row.email)}
                         onEditRow={() => handleEditRow(row.name)}
                       />
                     ))}
