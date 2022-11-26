@@ -17,17 +17,31 @@ const IconStyle = styled(Iconify)(({ theme }) => ({
 
 // ----------------------------------------------------------------------
 
-ClassroomAbout.propTypes = {
-  description: PropTypes.string
+ClassroomLink.propTypes = {
+  linkUrl: PropTypes.string
 };
 
-export default function ClassroomAbout({ description }) {
+export default function ClassroomLink({ linkUrl }) {
   return (
     <Card>
-      <CardHeader title="About class" />
+      <CardHeader title="Invitation link" />
 
       <Stack spacing={2} sx={{ p: 3 }}>
-        <Typography variant="body2">{description}</Typography>
+        {/* <Typography variant="body2">{description}</Typography> */}
+        <Link
+          variant="body2"
+          // component={RouterLink}
+          to="https://mui.com/material-ui/api/link/"
+          sx={{
+            lineHeight: 2,
+            display: 'flex',
+            alignItems: 'center',
+            color: 'text.primary',
+            '& > div': { display: 'inherit' }
+          }}
+        >
+          {linkUrl}
+        </Link>
       </Stack>
     </Card>
   );

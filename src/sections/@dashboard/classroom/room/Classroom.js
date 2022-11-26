@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { Grid, Stack } from '@mui/material';
 //
 import ClassroomAbout from './ClassroomAbout';
+import ClassroomLink from './ClassroomLink';
 import PostCard from './PostCard';
 import PostInput from './PostInput';
 import ProfileSocialInfo from './ProfileSocialInfo';
@@ -20,6 +21,9 @@ export default function Classroom({ classInfo, posts }) {
       <Grid item xs={12} md={4}>
         <Stack spacing={3}>
           <ClassroomAbout description={classInfo.description} />
+        </Stack>
+        <Stack spacing={3} mt={3}>
+          <ClassroomLink linkUrl={classInfo.linkUrl} />
         </Stack>
       </Grid>
 

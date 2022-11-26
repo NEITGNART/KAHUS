@@ -4,5 +4,6 @@ export { default as ClassroomMember } from './ClassroomMember';
 export { default as ClassroomWork } from './ClassroomWork';
 export { default as PostCard } from './PostCard';
 export { default as ClassroomAbout } from './ClassroomAbout';
+export { default as ClassroomLink } from './ClassroomLink';
 export { default as ProfileSocialInfo } from './ProfileSocialInfo';
 export { default as PostInput } from './PostInput';

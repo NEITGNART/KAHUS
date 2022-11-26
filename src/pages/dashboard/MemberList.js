@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import { paramCase } from 'change-case';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -21,6 +22,7 @@ import {
   DialogTitle
 } from '@mui/material';
 // routes
+import { useSnackbar } from 'notistack';
 import { PATH_DASHBOARD } from '../../routes/paths';
 // redux
 // hooks
@@ -51,7 +53,7 @@ import axios from '../../utils/axios';
 
 // ----------------------------------------------------------------------
 
-const STATUS_OPTIONS = ['all', 'active', 'waiting', 'banned'];
+const STATUS_OPTIONS = ['all'];
 
 const ROLE_OPTIONS = ['all', 'owner', 'co-owner', 'member'];
 
@@ -61,9 +63,13 @@ const TABLE_HEAD = [
   { id: '' }
 ];
 
+MemberList.propTypes = {
+  classId: PropTypes.string
+};
+
 // ----------------------------------------------------------------------
 
-export default function MemberList() {
+export default function MemberList({ classId }) {
   const {
     dense,
     page,
@@ -105,6 +111,8 @@ export default function MemberList() {
 
   const [openModal, setOpenModal] = useState(false);
 
+  const { enqueueSnackbar } = useSnackbar();
+
   const { currentTab: filterStatus, onChangeTab: onChangeFilterStatus } =
     useTabs('all');
 
@@ -119,13 +127,19 @@ export default function MemberList() {
 
   const handleDeleteRow = (email) => {
     const deleteRow = tableData.filter((row) => row.email !== email);
-
-    setSelected([]);
-    setTableData(deleteRow);
-    axios.post(`/api/group/kick-member`, {
-      email,
-      groupId: '63821b387342039ca3f10a63'
-    });
+    axios
+      .post(`/api/group/kick-member`, {
+        email,
+        groupId: classId
+      })
+      .then((data) => {
+        setSelected([]);
+        setTableData(deleteRow);
+        enqueueSnackbar('Delete member successfully', { variant: 'success' });
+      })
+      .catch((error) => {
+        enqueueSnackbar('You are not the owner!', { variant: 'error' });
+      });
   };
 
   const handleDeleteRows = (selectedRow) => {
