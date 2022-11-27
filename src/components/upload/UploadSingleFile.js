@@ -47,6 +47,9 @@ export default function UploadSingleFile({
     fileRejections
   } = useDropzone({
     multiple: false,
+    accept: {
+      'image/*': ['.jpeg', '.jpg', '.png']
+    },
     ...other
   });
 

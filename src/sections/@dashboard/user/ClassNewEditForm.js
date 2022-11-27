@@ -51,12 +51,7 @@ export default function ClassNewEditForm({ isEdit, currentUser }) {
     name: Yup.string().required('Name is required'),
     description: Yup.string().required('Description is required'),
     section: Yup.string(),
-    topic: Yup.string(),
-    avatarUrl: Yup.mixed().test(
-      'required',
-      'Avatar is required',
-      (value) => value !== ''
-    )
+    topic: Yup.string()
   });
 
   const defaultValues = useMemo(
@@ -97,13 +92,15 @@ export default function ClassNewEditForm({ isEdit, currentUser }) {
     }
   }, [isEdit, currentUser]);
 
-  const onSubmit = async () => {
+  const onSubmit = async (data) => {
     try {
       const createClassroom = async (id) => {
-        const response = await axios.post(`/api/group/create`, {
-          name: values.name,
-          description: values.description
-        });
+        const formData = new FormData();
+
+        formData.append('avatarUrl', data.avatarUrl);
+        formData.append('name', data.name);
+        formData.append('description', data.description);
+        const response = await axios.post(`/api/group/create`, formData);
         return response.data;
       };
 
@@ -155,7 +152,6 @@ export default function ClassNewEditForm({ isEdit, currentUser }) {
             <Box sx={{ mb: 5 }}>
               <RHFUploadAvatar
                 name="avatarUrl"
-                accept="image/*"
                 maxSize={3145728}
                 onDrop={handleDrop}
                 helperText={
