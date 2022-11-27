@@ -1,6 +1,7 @@
+import PropTypes from 'prop-types';
 import { paramCase } from 'change-case';
 import { useEffect, useState } from 'react';
-import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 // @mui
 import {
   Box,
@@ -21,17 +22,9 @@ import {
   DialogTitle
 } from '@mui/material';
 // routes
+import { useSnackbar } from 'notistack';
 import { PATH_DASHBOARD } from '../../routes/paths';
 // redux
-import { useDispatch, useSelector } from '../../redux/store';
-import {
-  getEvents,
-  openModal,
-  closeModal,
-  updateEvent,
-  selectEvent,
-  selectRange
-} from '../../redux/slices/calendar';
 // hooks
 import useTabs from '../../hooks/useTabs';
 import useSettings from '../../hooks/useSettings';
@@ -56,36 +49,28 @@ import {
   MemberTableToolbar,
   MemberTableRow
 } from '../../sections/@dashboard/user/list';
+import axios from '../../utils/axios';
 
 // ----------------------------------------------------------------------
 
-const STATUS_OPTIONS = ['all', 'active', 'banned'];
+const STATUS_OPTIONS = ['all'];
 
-const ROLE_OPTIONS = [
-  'all',
-  'ux designer',
-  'full stack designer',
-  'backend developer',
-  'project manager',
-  'leader',
-  'ui designer',
-  'ui/ux designer',
-  'front end developer',
-  'full stack developer'
-];
+const ROLE_OPTIONS = ['all', 'owner', 'co-owner', 'member'];
 
 const TABLE_HEAD = [
   { id: 'name', label: 'Name', align: 'left' },
-  { id: 'company', label: 'Company', align: 'left' },
   { id: 'role', label: 'Role', align: 'left' },
-  { id: 'isVerified', label: 'Verified', align: 'center' },
-  { id: 'status', label: 'Status', align: 'left' },
   { id: '' }
 ];
 
+MemberList.propTypes = {
+  classId: PropTypes.string,
+  className: PropTypes.string
+};
+
 // ----------------------------------------------------------------------
 
-export default function MemberList() {
+export default function MemberList({ classId, className }) {
   const {
     dense,
     page,
@@ -105,23 +90,29 @@ export default function MemberList() {
     onChangeRowsPerPage
   } = useTable();
 
-  const dispatch = useDispatch();
-
   const { themeStretch } = useSettings();
 
   const navigate = useNavigate();
 
-  const [tableData, setTableData] = useState(_userList);
+  useEffect(() => {
+    const getMembers = async () => {
+      const response = await axios.post(`/api/group/members`, {
+        groupId: classId
+      });
+      setTableData(response.data);
+    };
+    getMembers();
+  }, []);
+
+  const [tableData, setTableData] = useState([]);
 
   const [filterName, setFilterName] = useState('');
 
   const [filterRole, setFilterRole] = useState('all');
 
-  useEffect(() => {
-    dispatch(getEvents());
-  }, [dispatch]);
+  const [openModal, setOpenModal] = useState(false);
 
-  const { isOpenModal, selectedRange } = useSelector((state) => state.calendar);
+  const { enqueueSnackbar } = useSnackbar();
 
   const { currentTab: filterStatus, onChangeTab: onChangeFilterStatus } =
     useTabs('all');
@@ -135,10 +126,21 @@ export default function MemberList() {
     setFilterRole(event.target.value);
   };
 
-  const handleDeleteRow = (id) => {
-    const deleteRow = tableData.filter((row) => row.id !== id);
-    setSelected([]);
-    setTableData(deleteRow);
+  const handleDeleteRow = (email) => {
+    const deleteRow = tableData.filter((row) => row.email !== email);
+    axios
+      .post(`/api/group/kick-member`, {
+        email,
+        groupId: classId
+      })
+      .then((data) => {
+        setSelected([]);
+        setTableData(deleteRow);
+        enqueueSnackbar('Delete member successfully', { variant: 'success' });
+      })
+      .catch((error) => {
+        enqueueSnackbar('You are not the owner!', { variant: 'error' });
+      });
   };
 
   const handleDeleteRows = (selectedRow) => {
@@ -148,15 +150,15 @@ export default function MemberList() {
   };
 
   const handleEditRow = (id) => {
-    navigate(PATH_DASHBOARD.user.edit(paramCase(id)));
+    // navigate(PATH_DASHBOARD.user.edit(paramCase(id)));
   };
 
   const handleCloseModal = () => {
-    dispatch(closeModal());
+    setOpenModal(false);
   };
 
   const handleOpenModal = () => {
-    dispatch(openModal());
+    setOpenModal(true);
   };
 
   const dataFiltered = applySortFilter({
@@ -187,8 +189,6 @@ export default function MemberList() {
           action={
             <Button
               variant="contained"
-              // component={RouterLink}
-              // to={PATH_DASHBOARD.user.new}
               onClick={handleOpenModal}
               startIcon={<Iconify icon="eva:plus-fill" />}
             >
@@ -271,8 +271,8 @@ export default function MemberList() {
                         key={row.id}
                         row={row}
                         selected={selected.includes(row.id)}
-                        onSelectRow={() => onSelectRow(row.id)}
-                        onDeleteRow={() => handleDeleteRow(row.id)}
+                        onSelectRow={() => onSelectRow(row.email)}
+                        onDeleteRow={() => handleDeleteRow(row.email)}
                         onEditRow={() => handleEditRow(row.name)}
                       />
                     ))}
@@ -307,13 +307,12 @@ export default function MemberList() {
           </Box>
         </Card>
 
-        <DialogAnimate open={isOpenModal} onClose={handleCloseModal}>
+        <DialogAnimate open={openModal} onClose={handleCloseModal}>
           <DialogTitle>Invite</DialogTitle>
 
-          {/* <CalendarForm event={selectedEvent || {}} range={selectedRange} onCancel={handleCloseModal} /> */}
           <InviteMemberForm
-            event={{}}
-            range={selectedRange}
+            classId={classId}
+            className={className}
             onCancel={handleCloseModal}
           />
         </DialogAnimate>
@@ -339,24 +338,18 @@ function applySortFilter({
     return a[1] - b[1];
   });
   let tempData = stabilizedThis.map((el) => el[0]);
-  // tableData = stabilizedThis.map((el) => el[0]);
 
   if (filterName) {
-    // tableData = tableData.filter(
-    //   (item) => item.name.toLowerCase().indexOf(filterName.toLowerCase()) !== -1
-    // );
     tempData = tempData.filter(
       (item) => item.name.toLowerCase().indexOf(filterName.toLowerCase()) !== -1
     );
   }
 
   if (filterStatus !== 'all') {
-    // tableData = tableData.filter((item) => item.status === filterStatus);
     tempData = tempData.filter((item) => item.status === filterStatus);
   }
 
   if (filterRole !== 'all') {
-    // tableData = tableData.filter((item) => item.role === filterRole);
     tempData = tempData.filter((item) => item.role === filterRole);
   }
   return tempData;

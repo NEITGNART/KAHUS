@@ -33,6 +33,7 @@ import { _userAbout, _userFeeds, _userMembers } from '../../_mock';
 import axios from '../../utils/axios';
 import useIsMountedRef from '../../hooks/useIsMountedRef';
 import LoadingScreen from '../../components/LoadingScreen';
+import MemberList from './MemberList';
 
 // ----------------------------------------------------------------------
 
@@ -128,22 +129,17 @@ export default function ClassroomPage() {
       component: (
         <Classroom
           classInfo={{
-            description: classRoom.description
+            description: classRoom.description,
+            linkUrl: classRoom.link
           }}
           posts={_userFeeds}
         />
       )
     },
     {
-      value: 'member',
+      value: 'memberList',
       icon: <Iconify icon="eva:people-fill" width={20} height={20} />,
-      component: (
-        <ClassroomMember
-          members={members || []}
-          findMembers={findMembers}
-          onFindMembers={handleFindFriends}
-        />
-      )
+      component: <MemberList classId={classId} />
     }
     // {
     //   value: 'classwork',
