@@ -8,7 +8,10 @@ import {
   TableRow,
   TableCell,
   Typography,
-  MenuItem
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Select
 } from '@mui/material';
 // components
 import Label from '../../../../components/Label';
@@ -32,9 +35,11 @@ export default function MemberTableRow({
   onSelectRow,
   onDeleteRow
 }) {
-  const theme = useTheme();
+  // const theme = useTheme();
 
-  const { firstName, avatar, role } = row;
+  const { firstName, avatar } = row;
+
+  const [role, setRole] = useState(row.role);
 
   const [openMenu, setOpenMenuActions] = useState(null);
 
@@ -44,6 +49,10 @@ export default function MemberTableRow({
 
   const handleCloseMenu = () => {
     setOpenMenuActions(null);
+  };
+
+  const handleChange = (event) => {
+    setRole(event.target.value);
   };
 
   return (
@@ -65,33 +74,39 @@ export default function MemberTableRow({
         </Typography>
       </TableCell>
 
-      {/* <TableCell align="left">{company}</TableCell> */}
-
       <TableCell align="left" sx={{ textTransform: 'capitalize' }}>
-        {role}
+        {/* {role === 'owner' ? (
+          <FormControl sx={{ minWidth: 200 }}>
+            <Select
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              value={role}
+              onChange={handleChange}
+            >
+              <MenuItem value="owner">Owner</MenuItem>
+              <MenuItem value="co-owner">Co-owner</MenuItem>
+              <MenuItem value="member">Member</MenuItem>
+            </Select>
+          </FormControl>
+        ) : (
+          <Typography variant="subtitle2" noWrap>
+            {role}
+          </Typography>
+        )} */}
+
+        <FormControl sx={{ minWidth: 200 }}>
+          <Select
+            labelId="demo-simple-select-label"
+            id="demo-simple-select"
+            value={role}
+            onChange={handleChange}
+          >
+            <MenuItem value="owner">Owner</MenuItem>
+            <MenuItem value="co-owner">Co-owner</MenuItem>
+            <MenuItem value="member">Member</MenuItem>
+          </Select>
+        </FormControl>
       </TableCell>
-
-      {/* <TableCell align="center">
-        <Iconify
-          icon={isVerified ? 'eva:checkmark-circle-fill' : 'eva:clock-outline'}
-          sx={{
-            width: 20,
-            height: 20,
-            color: 'success.main',
-            ...(!isVerified && { color: 'warning.main' })
-          }}
-        />
-      </TableCell> */}
-
-      {/* <TableCell align="left">
-        <Label
-          variant={theme.palette.mode === 'light' ? 'ghost' : 'filled'}
-          color={(status === 'banned' && 'error') || 'success'}
-          sx={{ textTransform: 'capitalize' }}
-        >
-          {status}
-        </Label>
-      </TableCell> */}
 
       <TableCell align="right">
         <TableMoreMenu
