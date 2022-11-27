@@ -37,7 +37,8 @@ export const PATH_DASHBOARD = {
   general: {
     classroom: path(ROOTS_DASHBOARD, '/classroom/classes'),
     create: path(ROOTS_DASHBOARD, '/classroom/create'),
-    memberlist: path(ROOTS_DASHBOARD, '/classroom/member')
+    memberlist: path(ROOTS_DASHBOARD, '/classroom/member'),
+    detailClassroom: (id) => path(ROOTS_DASHBOARD, `/classroom/class/${id}`)
   },
   mail: {
     root: path(ROOTS_DASHBOARD, '/mail'),

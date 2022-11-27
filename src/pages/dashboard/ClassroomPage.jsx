@@ -112,7 +112,8 @@ export default function ClassroomPage() {
   } = useGetClassRoomById(classId);
 
   const { data: owner, isLoading: isLoadingOwner } = useGetUserById(
-    classRoom?.owner
+    // eslint-disable-next-line no-underscore-dangle
+    classRoom?.owner._id
   );
 
   const { data: members } = useGetAllMemberClass(classId);
