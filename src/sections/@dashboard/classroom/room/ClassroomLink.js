@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
+import { useSnackbar } from 'notistack';
 // @mui
 import { styled } from '@mui/material/styles';
 import {
@@ -31,6 +32,7 @@ ClassroomLink.propTypes = {
 };
 
 export default function ClassroomLink({ linkUrl }) {
+  const { enqueueSnackbar } = useSnackbar();
   return (
     <Card>
       <CardHeader title="Invitation link" />
@@ -55,7 +57,7 @@ export default function ClassroomLink({ linkUrl }) {
               aria-label="copy"
               size="large"
               onClick={() => {
-                alert('clicked');
+                enqueueSnackbar('copy link success', { variant: 'success' });
               }}
             >
               <Iconify icon="eva:copy-outline" />
