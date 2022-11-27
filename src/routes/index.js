@@ -50,26 +50,6 @@ function Verify({ children, message, status }) {
   return <>{children}</>;
 }
 
-const addMember = async (token) => {
-  try {
-    const response = await axios.post('/api/group/join-link', {
-      token
-    });
-    return response.data;
-  } catch (err) {
-    return {
-      msg: 'Join group failed'
-    };
-  }
-};
-
-const useAddMember = (token) => {
-  return useQuery({
-    queryKey: ['addMember', token],
-    queryFn: () => addMember(token)
-  });
-};
-
 // eslint-disable-next-line react/prop-types
 InviteClassRoom.propTypes = {
   children: PropTypes.node
@@ -79,21 +59,59 @@ function InviteClassRoom({ children }) {
   // get classId from url
   const [searchParams, setSearchParams] = useSearchParams();
   const token = searchParams.get('token');
-  const { data, isLoading, error } = useAddMember(token);
-  if (isLoading) return <LoadingScreen />;
-  if (error)
-    return (
-      <Verify status="error" message="Join group failed">
-        {children}
-      </Verify>
-    );
-  return (
-    <>
-      <Verify status="success" message="Join group successfully">
-        {children}
-      </Verify>
-    </>
-  );
+  const { enqueueSnackbar } = useSnackbar();
+
+  // const { isLoading, isError } = useQuery({
+  //   queryKey: ['addMember'],
+  //   queryFn: async () => {
+  //     const response = await axios
+  //       .post('/api/group/join-link', {
+  //         token
+  //       })
+  //       .catch((err) => {
+  //         throw err;
+  //       });
+  //     return response.data;
+  //   }
+  // });
+
+  useEffect(() => {
+    const sendInvite = async () => {
+      const response = await axios
+        .post('/api/group/join-link', {
+          token
+        })
+        .then((data) => {
+          enqueueSnackbar('Join group successfully', {
+            variant: 'success'
+          });
+        })
+        .catch((err) => {
+          enqueueSnackbar('You already in the group', {
+            variant: 'error'
+          });
+        });
+      return response.data;
+    };
+    sendInvite();
+  }, []);
+
+  return <>{children}</>;
+
+  // if (isLoading) return <LoadingScreen />;
+  // if (isError)
+  //   return (
+  //     <Verify status="error" message="You already in the group">
+  //       {children}
+  //     </Verify>
+  //   );
+  // return (
+  //   <>
+  //     <Verify status="success" message="Join group successfully">
+  //       {children}
+  //     </Verify>
+  //   </>
+  // );
 }
 
 export default function Router() {

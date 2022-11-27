@@ -34,10 +34,12 @@ const getInitialValues = () => {
 // ----------------------------------------------------------------------
 
 InviteMemberForm.propTypes = {
-  onCancel: PropTypes.func
+  onCancel: PropTypes.func,
+  classId: PropTypes.string,
+  className: PropTypes.string
 };
 
-export default function InviteMemberForm({ onCancel }) {
+export default function InviteMemberForm({ onCancel, classId, className }) {
   const { enqueueSnackbar } = useSnackbar();
 
   const InvitationSchema = Yup.object().shape({
@@ -64,16 +66,21 @@ export default function InviteMemberForm({ onCancel }) {
     try {
       const { tags } = values;
       console.log(tags);
-      const inviteMembers = async (id) => {
+      const inviteMembers = async () => {
         const response = await axios.post(`/api/group/add-member`, {
-          groupId: '63821b387342039ca3f10a63',
-          groupName: '19KTPM3',
+          groupId: classId,
+          groupName: className,
           emails: values.tags
         });
         return response.data;
       };
-      inviteMembers();
-      enqueueSnackbar('Invite success!');
+      inviteMembers()
+        .then(() => {
+          enqueueSnackbar('Invite success!', { variant: 'success' });
+        })
+        .catch((err) => {
+          console.log(err);
+        });
       onCancel();
       reset();
     } catch (error) {
@@ -104,7 +111,7 @@ export default function InviteMemberForm({ onCancel }) {
                   />
                 ))
               }
-              renderInput={(params) => <TextField label="Tags" {...params} />}
+              renderInput={(params) => <TextField label="Emails" {...params} />}
             />
           )}
         />

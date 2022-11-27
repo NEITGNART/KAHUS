@@ -20,15 +20,15 @@ const queryClient = new QueryClient({
 
 root.render(
   <React.StrictMode>
-    <AuthProvider>
-      <HelmetProvider>
-        <BrowserRouter>
-          <QueryClientProvider client={queryClient}>
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <HelmetProvider>
+          <BrowserRouter>
             <App />
-          </QueryClientProvider>
-        </BrowserRouter>
-      </HelmetProvider>
-    </AuthProvider>
+          </BrowserRouter>
+        </HelmetProvider>
+      </AuthProvider>
+    </QueryClientProvider>
   </React.StrictMode>
 );
 

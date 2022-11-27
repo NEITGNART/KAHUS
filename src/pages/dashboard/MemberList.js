@@ -64,12 +64,13 @@ const TABLE_HEAD = [
 ];
 
 MemberList.propTypes = {
-  classId: PropTypes.string
+  classId: PropTypes.string,
+  className: PropTypes.string
 };
 
 // ----------------------------------------------------------------------
 
-export default function MemberList({ classId }) {
+export default function MemberList({ classId, className }) {
   const {
     dense,
     page,
@@ -94,16 +95,16 @@ export default function MemberList({ classId }) {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const getMembers = async (id) => {
+    const getMembers = async () => {
       const response = await axios.post(`/api/group/members`, {
-        groupId: '63821b387342039ca3f10a63'
+        groupId: classId
       });
       setTableData(response.data);
     };
     getMembers();
   }, []);
 
-  const [tableData, setTableData] = useState(_userList);
+  const [tableData, setTableData] = useState([]);
 
   const [filterName, setFilterName] = useState('');
 
@@ -309,7 +310,11 @@ export default function MemberList({ classId }) {
         <DialogAnimate open={openModal} onClose={handleCloseModal}>
           <DialogTitle>Invite</DialogTitle>
 
-          <InviteMemberForm onCancel={handleCloseModal} />
+          <InviteMemberForm
+            classId={classId}
+            className={className}
+            onCancel={handleCloseModal}
+          />
         </DialogAnimate>
       </Container>
     </Page>

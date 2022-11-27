@@ -135,21 +135,21 @@ export default function ClassroomPage() {
         />
       )
     },
-    {
-      value: 'member',
-      icon: <Iconify icon="eva:people-fill" width={20} height={20} />,
-      component: (
-        <ClassroomMember
-          members={members || []}
-          findMembers={findMembers}
-          onFindMembers={handleFindFriends}
-        />
-      )
-    },
+    // {
+    //   value: 'member',
+    //   icon: <Iconify icon="eva:people-fill" width={20} height={20} />,
+    //   component: (
+    //     <ClassroomMember
+    //       members={members || []}
+    //       findMembers={findMembers}
+    //       onFindMembers={handleFindFriends}
+    //     />
+    //   )
+    // },
     {
       value: 'memberList',
       icon: <Iconify icon="eva:people-fill" width={20} height={20} />,
-      component: <MemberList classID={classId} />
+      component: <MemberList classId={classId} className={classRoom.name} />
     }
     // {
     //   value: 'classwork',
