@@ -1,3 +1,5 @@
+// scroll bar
+import 'simplebar/src/simplebar.css';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
