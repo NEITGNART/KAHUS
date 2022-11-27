@@ -113,7 +113,8 @@ export default function ClassroomPage() {
   } = useGetClassRoomById(classId);
 
   const { data: owner, isLoading: isLoadingOwner } = useGetUserById(
-    classRoom?.owner
+    // eslint-disable-next-line no-underscore-dangle
+    classRoom?.owner._id
   );
 
   const { data: members } = useGetAllMemberClass(classId);
@@ -135,21 +136,10 @@ export default function ClassroomPage() {
         />
       )
     },
-    // {
-    //   value: 'member',
-    //   icon: <Iconify icon="eva:people-fill" width={20} height={20} />,
-    //   component: (
-    //     <ClassroomMember
-    //       members={members || []}
-    //       findMembers={findMembers}
-    //       onFindMembers={handleFindFriends}
-    //     />
-    //   )
-    // },
     {
       value: 'memberList',
       icon: <Iconify icon="eva:people-fill" width={20} height={20} />,
-      component: <MemberList classId={classId} className={classRoom.name} />
+      component: <MemberList classId={classId} />
     }
     // {
     //   value: 'classwork',

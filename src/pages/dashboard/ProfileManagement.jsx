@@ -2,6 +2,7 @@ import { capitalCase } from 'change-case';
 // @mui
 import { Container, Tab, Box, Tabs } from '@mui/material';
 // routes
+import { useEffect, useState } from 'react';
 import { PATH_DASHBOARD } from '../../routes/paths';
 // hooks
 import useTabs from '../../hooks/useTabs';
@@ -15,6 +16,7 @@ import {
   AccountGeneral,
   AccountChangePassword
 } from '../../sections/@dashboard/user/account';
+import axios from '../../utils/axios';
 
 // ----------------------------------------------------------------------
 
@@ -23,11 +25,27 @@ export default function UserAccount() {
 
   const { currentTab, onChangeTab } = useTabs('general');
 
+  const [user, setUser] = useState({
+    firstName: '',
+    lastName: '',
+    dob: Date.now()
+  });
+
+  const fetchUserProfile = async () => {
+    const response = await axios.get(`/api/user/profile`);
+    setUser(response.data);
+    console.log(response);
+  };
+
+  useEffect(() => {
+    fetchUserProfile();
+  }, []);
+
   const ACCOUNT_TABS = [
     {
       value: 'general',
       icon: <Iconify icon="ic:round-account-box" width={20} height={20} />,
-      component: <AccountGeneral />
+      component: <AccountGeneral user={user} />
     },
     {
       value: 'change_password',

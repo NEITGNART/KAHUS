@@ -8,6 +8,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { Box, Grid, Card, Stack, Typography, TextField } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 // hooks
+import PropTypes from 'prop-types';
 import useAuth from '../../../../hooks/useAuth';
 // utils
 import { fData } from '../../../../utils/formatNumber';
@@ -21,28 +22,21 @@ import {
 import RHFDatePicker from '../../../../components/hook-form/RHFDatePicker';
 
 // ----------------------------------------------------------------------
+AccountGeneral.propTypes = {
+  user: PropTypes.object
+};
 
-export default function AccountGeneral() {
+export default function AccountGeneral({ user, ...other }) {
   const { enqueueSnackbar } = useSnackbar();
-
-  const { user } = useAuth();
-
   const UpdateUserSchema = Yup.object().shape({
     displayName: Yup.string().required('Name is required')
   });
 
   const defaultValues = {
-    displayName: user?.displayName || '',
+    firstName: user?.firstName || '',
+    lastName: user?.lastName || '',
     email: user?.email || '',
-    photoURL: user?.photoURL || '',
-    phoneNumber: user?.phoneNumber || '',
-    country: user?.country || '',
-    address: user?.address || '',
-    state: user?.state || '',
-    city: user?.city || '',
-    zipCode: user?.zipCode || '',
-    about: user?.about || '',
-    isPublic: user?.isPublic || false
+    dob: user?.dob || Date.now()
   };
 
   const methods = useForm({
@@ -55,6 +49,11 @@ export default function AccountGeneral() {
     handleSubmit,
     formState: { isSubmitting }
   } = methods;
+
+  setValue('firstName', user?.firstName || '');
+  setValue('lastName', user?.lastName || '');
+  setValue('email', user?.email || '');
+  setValue('dob', user?.dob || Date.now());
 
   const onSubmit = async () => {
     try {
@@ -118,7 +117,7 @@ export default function AccountGeneral() {
               <RHFTextField name="lastName" label="Last Name" />
 
               <RHFTextField name="email" label="Email Address" />
-              <RHFDatePicker name="dateOfBirth" label="Date of birth" />
+              <RHFDatePicker name="dob" label="Date of birth" />
 
               <LoadingButton
                 type="submit"

@@ -1,7 +1,16 @@
 import PropTypes from 'prop-types';
+import { CopyToClipboard } from 'react-copy-to-clipboard';
 // @mui
 import { styled } from '@mui/material/styles';
-import { Card, Typography, CardHeader, Stack, Link } from '@mui/material';
+import {
+  Card,
+  Typography,
+  CardHeader,
+  Stack,
+  Link,
+  Button,
+  IconButton
+} from '@mui/material';
 // components
 import Iconify from '../../../../components/Iconify';
 
@@ -41,6 +50,17 @@ export default function ClassroomLink({ linkUrl }) {
           }}
         >
           {linkUrl}
+          <CopyToClipboard text={linkUrl}>
+            <IconButton
+              aria-label="copy"
+              size="large"
+              onClick={() => {
+                alert('clicked');
+              }}
+            >
+              <Iconify icon="eva:copy-outline" />
+            </IconButton>
+          </CopyToClipboard>
         </Link>
       </Stack>
     </Card>

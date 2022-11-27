@@ -1,4 +1,4 @@
-import PropTypes from 'prop-types';
+import PropTypes, { string } from 'prop-types';
 import { Link as RouterLink } from 'react-router-dom';
 // @mui
 import { styled, alpha } from '@mui/material/styles';
@@ -19,6 +19,8 @@ import useResponsive from '../../../../hooks/useResponsive';
 import Image from '../../../../components/Image';
 import TextMaxLine from '../../../../components/TextMaxLine';
 import SvgIconStyle from '../../../../components/SvgIconStyle';
+import ClassItemAction from '../ClassItemAction';
+import { PATH_DASHBOARD } from '../../../../routes/paths';
 
 // ----------------------------------------------------------------------
 
@@ -31,6 +33,16 @@ const OverlayStyle = styled('div')(({ theme }) => ({
   backgroundColor: alpha(theme.palette.grey[900], 0.8)
 }));
 
+const RootStyle = styled('div')(({ theme }) => ({
+  position: 'relative',
+  '&:hover': {
+    zIndex: 999,
+    position: 'relative',
+    boxShadow: theme.customShadows.z24,
+    '& .showActions': { opacity: 1 }
+  }
+}));
+
 // ----------------------------------------------------------------------
 
 ClassCard.propTypes = {
@@ -41,16 +53,16 @@ ClassCard.propTypes = {
 export default function ClassCard({ classInfo, index }) {
   const isDesktop = useResponsive('up', 'md');
 
-  const { id, name, cover, hostAvatarUrl, hostId, hostName } = classInfo;
-
+  console.log(classInfo);
+  const { id, name, description, owner, avatar, link } = classInfo;
+  const linkTo = PATH_DASHBOARD.general.detailClassroom(id);
   const latestPost = index === 0 || index === 1 || index === 2;
-
   if (isDesktop && latestPost) {
     return (
       <Card>
         <Avatar
-          alt={hostName}
-          src={hostAvatarUrl}
+          alt={name}
+          src={avatar}
           sx={{
             zIndex: 9,
             top: 24,
@@ -60,44 +72,47 @@ export default function ClassCard({ classInfo, index }) {
             position: 'absolute'
           }}
         />
-        <ClassContent title={name} index={index} />
+        <ClassContent title={name} index={index} id={id} />
         <OverlayStyle />
-        <Image alt="cover" src={cover} sx={{ height: 360 }} />
+        <Image alt="cover" src={avatar} sx={{ height: 360 }} />
       </Card>
     );
   }
 
   return (
-    <Card>
-      <Box sx={{ position: 'relative' }}>
-        <SvgIconStyle
-          src="https://minimal-assets-api.vercel.app/assets/icons/shape-avatar.svg"
-          sx={{
-            width: 144,
-            height: 62,
-            zIndex: 10,
-            bottom: -26,
-            mx: 'auto',
-            position: 'absolute',
-            color: 'background.paper'
-          }}
-        />
-        <Avatar
-          alt={hostName}
-          src={hostAvatarUrl}
-          sx={{
-            left: 40,
-            zIndex: 11,
-            width: 64,
-            height: 64,
-            bottom: -30,
-            position: 'absolute'
-          }}
-        />
-        <Image alt="cover" src={cover} ratio="16/9" />
-      </Box>
+    <Card className="card-container">
+      <RootStyle>
+        <Box sx={{ position: 'relative' }}>
+          <SvgIconStyle
+            src="https://minimal-assets-api.vercel.app/assets/icons/shape-avatar.svg"
+            sx={{
+              width: 144,
+              height: 62,
+              zIndex: 10,
+              bottom: -26,
+              mx: 'auto',
+              position: 'absolute',
+              color: 'background.paper'
+            }}
+          />
+          <Avatar
+            alt={name}
+            src={avatar}
+            sx={{
+              left: 40,
+              zIndex: 11,
+              width: 64,
+              height: 64,
+              bottom: -30,
+              position: 'absolute'
+            }}
+          />
+          <Image alt="cover" src={avatar} ratio="16/9" />
+        </Box>
 
-      <ClassContent title={name} />
+        <ClassContent title={name} owner={owner} linkTo={linkTo} />
+        <ClassItemAction className="showActions" />
+      </RootStyle>
     </Card>
   );
 }
@@ -106,10 +121,12 @@ export default function ClassCard({ classInfo, index }) {
 
 ClassContent.propTypes = {
   index: PropTypes.number,
-  title: PropTypes.string
+  title: PropTypes.string,
+  owner: PropTypes.object,
+  linkTo: PropTypes.string
 };
 
-export function ClassContent({ title, index }) {
+export function ClassContent({ owner, title, linkTo, index }) {
   const isDesktop = useResponsive('up', 'md');
   const latestPostLarge = index === 0;
   const latestPostSmall = index === 1 || index === 2;
@@ -140,14 +157,10 @@ export function ClassContent({ title, index }) {
           })
         }}
       >
-        {title}
+        {`${owner.firstName} ${owner.lastName}`}
       </Typography>
-      <Link to="/" color="inherit" component={RouterLink}>
-        <TextMaxLine
-          variant={isDesktop && latestPostLarge ? 'h5' : 'h5'}
-          line={2}
-          persistent
-        >
+      <Link href={linkTo} color="inherit">
+        <TextMaxLine variant="h5" line={2} persistent>
           {title}
         </TextMaxLine>
       </Link>

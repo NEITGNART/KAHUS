@@ -47,6 +47,7 @@ ClassroomCover.propTypes = {
 export default function ClassroomCover({ classInfo }) {
   // const { user } = useAuth();
   const { owner, classRoom } = classInfo;
+
   return (
     <RootStyle>
       <InfoStyle>
@@ -67,10 +68,7 @@ export default function ClassroomCover({ classInfo }) {
       </InfoStyle>
       <Image
         alt="profile cover"
-        src={
-          classRoom.avatar ||
-          'https://gstatic.com/classroom/themes/img_breakfast.jpg'
-        }
+        src="https://gstatic.com/classroom/themes/img_breakfast.jpg"
         sx={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
       />
     </RootStyle>

@@ -7,6 +7,7 @@ import { HelmetProvider } from 'react-helmet-async';
 import { Provider as ReduxProvider } from 'react-redux';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import reportWebVitals from './reportWebVitals';
+import { store, persistor } from './redux/store';
 import App from './App';
 import { AuthProvider } from './contexts/JWTContext';
 
@@ -22,15 +23,17 @@ const queryClient = new QueryClient({
 
 root.render(
   <React.StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <HelmetProvider>
+    <AuthProvider>
+      <HelmetProvider>
+        <ReduxProvider store={store}>
           <BrowserRouter>
-            <App />
+            <QueryClientProvider client={queryClient}>
+              <App />
+            </QueryClientProvider>
           </BrowserRouter>
-        </HelmetProvider>
-      </AuthProvider>
-    </QueryClientProvider>
+        </ReduxProvider>
+      </HelmetProvider>
+    </AuthProvider>
   </React.StrictMode>
 );
 
