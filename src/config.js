@@ -46,8 +46,7 @@ export const HEADER = {
 export const NAVBAR = {
   BASE_WIDTH: 260,
   DASHBOARD_WIDTH: 280,
-  DASHBOARD_COLLAPSE_WIDTH: 88,
-  //
+  DASHBOARD_COLLAPSE_WIDTH: 88, //
   DASHBOARD_ITEM_ROOT_HEIGHT: 48,
   DASHBOARD_ITEM_SUB_HEIGHT: 40,
   DASHBOARD_ITEM_HORIZONTAL_HEIGHT: 32
@@ -70,4 +69,5 @@ export const defaultSettings = {
   themeStretch: false
 };
 
-export const HOST_API = process.env.API_ENDPOINT || 'http://localhost:5001';
+export const HOST_API =
+  process.env.REACT_APP_API_ENDPOINT || 'http://localhost:5001';
