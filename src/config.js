@@ -1,6 +1,7 @@
 // routes
 import { PATH_DASHBOARD } from './routes/paths';
 
+// import env for config
 // API
 // ----------------------------------------------------------------------
 
@@ -68,4 +69,5 @@ export const defaultSettings = {
   themeLayout: 'horizontal',
   themeStretch: false
 };
-export const HOST_API = 'http://localhost:5001';
+
+export const HOST_API = process.env.API_ENDPOINT || 'http://localhost:5001';
