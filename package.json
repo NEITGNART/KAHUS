@@ -26,6 +26,7 @@
     "dotenv": "^16.0.3",
     "emoji-mart": "^5.3.3",
     "emoji-picker-react": "^4.4.5",
+    "env-cmd": "^10.1.0",
     "framer-motion": "^7.6.7",
     "jwt-decode": "^3.1.2",
     "lodash": "^4.17.21",
@@ -56,7 +57,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "DISABLE_ESLINT_PLUGIN='true' react-scripts build",
+    "build": "react-scripts build DISABLE_ESLINT_PLUGIN='true' ",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "_lint": "eslint --config ./.eslintrc.json --ext js --ext jsx --ext tsx --ext ts",
@@ -84,6 +85,7 @@
     ]
   },
   "devDependencies": {
+    "dotenv-webpack": "^8.0.1",
     "eslint": "^8.27.0",
     "eslint-config-airbnb": "^19.0.4",
     "eslint-config-prettier": "^8.5.0",

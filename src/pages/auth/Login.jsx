@@ -24,6 +24,7 @@ import Page from '../../components/Page';
 import { PATH_AUTH } from '../../routes/paths';
 import Iconify from '../../components/Iconify';
 import useAuth from '../../hooks/useAuth';
+import { HOST_API } from '../../config';
 // routes
 // hooks
 // components
@@ -39,7 +40,7 @@ export default function Login() {
   const smUp = useResponsive('up', 'sm');
   const mdUp = useResponsive('up', 'md');
 
-  const URL_AUTH = 'http://localhost:5001/auth/login/google';
+  const URL_AUTH = `${HOST_API}/auth/login/google`;
 
   const onCode = async (code, params) => {
     await googleLogin(code, JSON.parse(params.get('user')));
