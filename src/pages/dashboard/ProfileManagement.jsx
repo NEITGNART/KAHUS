@@ -3,6 +3,7 @@ import { capitalCase } from 'change-case';
 import { Container, Tab, Box, Tabs } from '@mui/material';
 // routes
 import { useEffect, useState } from 'react';
+import { useSnackbar } from 'notistack';
 import { PATH_DASHBOARD } from '../../routes/paths';
 // hooks
 import useTabs from '../../hooks/useTabs';
@@ -22,13 +23,14 @@ import axios from '../../utils/axios';
 
 export default function UserAccount() {
   const { themeStretch } = useSettings();
+  const { enqueueSnackbar } = useSnackbar();
 
   const { currentTab, onChangeTab } = useTabs('general');
 
   const [user, setUser] = useState({
     firstName: '',
     lastName: '',
-    dob: Date.now()
+    dob: ''
   });
 
   const fetchUserProfile = async () => {
@@ -41,11 +43,23 @@ export default function UserAccount() {
     fetchUserProfile();
   }, []);
 
+  const onProfileSubmit = (data) => {
+    try {
+      axios.post('api/user/profile/update', data).then((res) => {
+        enqueueSnackbar('Updated successfully!!!');
+      });
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      enqueueSnackbar(error, { variant: 'error' });
+      console.error(error);
+    }
+  };
+
   const ACCOUNT_TABS = [
     {
       value: 'general',
       icon: <Iconify icon="ic:round-account-box" width={20} height={20} />,
-      component: <AccountGeneral user={user} />
+      component: <AccountGeneral user={user} onSubmit={onProfileSubmit} />
     },
     {
       value: 'change_password',
