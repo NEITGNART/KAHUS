@@ -1,4 +1,4 @@
-import PropTypes from 'prop-types';
+import PropTypes, { element } from 'prop-types';
 import { paramCase } from 'change-case';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -91,8 +91,7 @@ export default function MemberList({ classId, className }) {
   } = useTable();
 
   const { themeStretch } = useSettings();
-
-  const navigate = useNavigate();
+  const currentRoleAccount = 'owner';
 
   useEffect(() => {
     const getMembers = async () => {
@@ -149,8 +148,24 @@ export default function MemberList({ classId, className }) {
     setTableData(deleteRows);
   };
 
-  const handleEditRow = (id) => {
-    // navigate(PATH_DASHBOARD.user.edit(paramCase(id)));
+  const handleEditRole = (row, newRole, setRole) => {
+    console.log(row);
+    console.log(newRole);
+    setRole(newRole);
+    // axios
+    //   .post(`/api/group/update-role`, {
+    //     email: row.email,
+    //     groupId: classId,
+    //     role: newRole
+    //   })
+    //   .then((data) => {
+    //     setSelected([]);
+    //     row.role = newRole;
+    //     enqueueSnackbar('assign role successfully', { variant: 'success' });
+    //   })
+    //   .catch((error) => {
+    //     enqueueSnackbar('You are not the owner!', { variant: 'error' });
+    //   });
   };
 
   const handleCloseModal = () => {
@@ -273,7 +288,9 @@ export default function MemberList({ classId, className }) {
                         selected={selected.includes(row.id)}
                         onSelectRow={() => onSelectRow(row.email)}
                         onDeleteRow={() => handleDeleteRow(row.email)}
-                        onEditRow={() => handleEditRow(row.name)}
+                        onEditRow={(newRole, setRole) =>
+                          handleEditRole(row, newRole, setRole)
+                        }
                       />
                     ))}
 

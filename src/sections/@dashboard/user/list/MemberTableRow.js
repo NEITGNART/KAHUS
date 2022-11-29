@@ -11,14 +11,22 @@ import {
   MenuItem,
   FormControl,
   InputLabel,
-  Select
+  Select,
+  TextField
 } from '@mui/material';
 // components
 import Label from '../../../../components/Label';
 import Iconify from '../../../../components/Iconify';
 import { TableMoreMenu } from '../../../../components/table';
+import { RHFSelect } from '../../../../components/hook-form';
 
 // ----------------------------------------------------------------------
+
+const roles = [
+  { name: 'owner', value: '1' },
+  { name: 'co-owner', value: '2' },
+  { name: 'member', value: '3' }
+];
 
 MemberTableRow.propTypes = {
   row: PropTypes.object,
@@ -52,7 +60,7 @@ export default function MemberTableRow({
   };
 
   const handleChange = (event) => {
-    setRole(event.target.value);
+    onEditRow(event.target.value, setRole);
   };
 
   return (
@@ -75,37 +83,23 @@ export default function MemberTableRow({
       </TableCell>
 
       <TableCell align="left" sx={{ textTransform: 'capitalize' }}>
-        {/* {role === 'owner' ? (
-          <FormControl sx={{ minWidth: 200 }}>
-            <Select
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
-              value={role}
-              onChange={handleChange}
+        <TextField
+          select
+          size="small"
+          value={role}
+          onChange={handleChange}
+          sx={{ minWidth: 150 }}
+        >
+          {roles.map((r) => (
+            <MenuItem
+              key={r.value}
+              value={r.name}
+              sx={{ borderRadius: 1, minWidth: 150 }}
             >
-              <MenuItem value="owner">Owner</MenuItem>
-              <MenuItem value="co-owner">Co-owner</MenuItem>
-              <MenuItem value="member">Member</MenuItem>
-            </Select>
-          </FormControl>
-        ) : (
-          <Typography variant="subtitle2" noWrap>
-            {role}
-          </Typography>
-        )} */}
-
-        <FormControl sx={{ minWidth: 200 }}>
-          <Select
-            labelId="demo-simple-select-label"
-            id="demo-simple-select"
-            value={role}
-            onChange={handleChange}
-          >
-            <MenuItem value="owner">Owner</MenuItem>
-            <MenuItem value="co-owner">Co-owner</MenuItem>
-            <MenuItem value="member">Member</MenuItem>
-          </Select>
-        </FormControl>
+              {r.name}
+            </MenuItem>
+          ))}
+        </TextField>
       </TableCell>
 
       <TableCell align="right">
