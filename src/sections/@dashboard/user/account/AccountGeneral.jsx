@@ -37,7 +37,8 @@ export default function AccountGeneral({ user, onSubmit, ...other }) {
   const defaultValues = {
     firstName: user?.firstName || '',
     lastName: user?.lastName || '',
-    dob: user?.dob || ''
+    dob: user?.dob || '',
+    avatar: user?.avatar || ''
   };
 
   const methods = useForm({
@@ -88,10 +89,12 @@ export default function AccountGeneral({ user, onSubmit, ...other }) {
                     color: 'text.secondary'
                   }}
                 >
+                  Click to change image or drag and drop
+                  <br />
                   Allowed *.jpeg, *.jpg, *.png, *.gif
-                  <br /> max size of {fData(3145728)}
                 </Typography>
               }
+              avatarPlaceholder={user?.avatar || ''}
             />
           </Card>
         </Grid>

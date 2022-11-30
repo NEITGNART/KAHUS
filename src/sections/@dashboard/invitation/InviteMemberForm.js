@@ -30,7 +30,6 @@ import {
 import Iconify from '../../../components/Iconify';
 import { ColorSinglePicker } from '../../../components/color-utils';
 import { FormProvider, RHFTextField } from '../../../components/hook-form';
-
 // ----------------------------------------------------------------------
 
 const TAGS_OPTION = [];

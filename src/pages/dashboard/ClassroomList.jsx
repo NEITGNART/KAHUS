@@ -24,9 +24,14 @@ export default function ClassroomList() {
 
   const [classrooms, setClassrooms] = useState([]);
   const fetchMyClasses = async () => {
-    const response = await axios.get(`/api/group/group-invited`);
-    const data = response.data === undefined ? [] : response.data;
-    setClassrooms(data);
+    axios
+      .get(`/api/group/group-invited`)
+      .then((response) => {
+        setClassrooms(response.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
   useEffect(() => {
     fetchMyClasses();

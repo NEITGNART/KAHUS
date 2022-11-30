@@ -58,6 +58,7 @@ const PlaceholderStyle = styled('div')(({ theme }) => ({
 // ----------------------------------------------------------------------
 
 UploadAvatar.propTypes = {
+  avatarPlaceholder: PropTypes.string,
   error: PropTypes.bool,
   file: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
   helperText: PropTypes.node,
@@ -65,6 +66,7 @@ UploadAvatar.propTypes = {
 };
 
 export default function UploadAvatar({
+  avatarPlaceholder,
   error,
   file,
   helperText,
@@ -100,12 +102,14 @@ export default function UploadAvatar({
         >
           <input {...getInputProps()} />
 
-          {file && (
+          {(file && (
             <Image
               alt="avatar"
               src={isString(file) ? file : file.preview}
-              sx={{ zIndex: 8 }}
+              sx={{ zIndex: 10 }}
             />
+          )) || (
+            <Image alt="avatar" src={avatarPlaceholder} sx={{ zIndex: 10 }} />
           )}
 
           <PlaceholderStyle

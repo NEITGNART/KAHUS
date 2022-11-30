@@ -18,38 +18,44 @@ import {
   AccountChangePassword
 } from '../../sections/@dashboard/user/account';
 import axios from '../../utils/axios';
+import useAuth from '../../hooks/useAuth';
 
 // ----------------------------------------------------------------------
 
 export default function UserAccount() {
   const { themeStretch } = useSettings();
   const { enqueueSnackbar } = useSnackbar();
-
   const { currentTab, onChangeTab } = useTabs('general');
 
-  const [user, setUser] = useState({
-    firstName: '',
-    lastName: '',
-    dob: ''
-  });
+  // const [user, setUser] = useState({
+  //   firstName: '',
+  //   lastName: '',
+  //   dob: ''
+  // });
 
-  const fetchUserProfile = async () => {
-    const response = await axios.get(`/api/user/profile`);
-    setUser(response.data);
-    console.log(response);
-  };
+  const { user, refetchUser } = useAuth();
 
-  useEffect(() => {
-    fetchUserProfile();
-  }, []);
+  // useEffect(() => {
+  //   const fetchUserProfile = async () => {
+  //     const response = await axios.get(`/api/user/profile`);
+  //     setUser(response.data);
+  //     console.log(response);
+  //   };
+  //   fetchUserProfile();
+  // }, []);
 
   const onProfileSubmit = (data) => {
     try {
-      axios.post('api/user/profile/update', data).then((res) => {
-        enqueueSnackbar('Updated successfully!!!');
-      });
+      axios
+        .post('api/user/profile/update', data)
+        .then((res) => {
+          enqueueSnackbar('Updated successfully!!!');
+          refetchUser();
+        })
+        .catch((err) => {
+          enqueueSnackbar(err.response.data.message);
+        });
     } catch (error) {
-      // eslint-disable-next-line no-console
       enqueueSnackbar(error, { variant: 'error' });
       console.error(error);
     }
