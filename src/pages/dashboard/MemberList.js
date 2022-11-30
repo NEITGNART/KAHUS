@@ -50,6 +50,7 @@ import {
   MemberTableRow
 } from '../../sections/@dashboard/user/list';
 import axios from '../../utils/axios';
+import useAuth from '../../hooks/useAuth';
 
 // ----------------------------------------------------------------------
 
@@ -91,7 +92,15 @@ export default function MemberList({ classId, className }) {
   } = useTable();
 
   const { themeStretch } = useSettings();
-  const currentRoleAccount = 'owner';
+  const [currentRole, setCurrentRole] = useState();
+  const { user } = useAuth();
+  useEffect(() => {
+    // const response = axios.post(`/api/group/get-role`, {
+    //   email: user?.email,
+    //   groupId: classId
+    // });
+    // setCurrentRole(response.data.role);
+  }, []);
 
   useEffect(() => {
     const getMembers = async () => {
@@ -148,24 +157,21 @@ export default function MemberList({ classId, className }) {
     setTableData(deleteRows);
   };
 
-  const handleEditRole = (row, newRole, setRole) => {
-    console.log(row);
+  const handleEditRole = (email, newRole, setRole) => {
     console.log(newRole);
-    setRole(newRole);
-    // axios
-    //   .post(`/api/group/update-role`, {
-    //     email: row.email,
-    //     groupId: classId,
-    //     role: newRole
-    //   })
-    //   .then((data) => {
-    //     setSelected([]);
-    //     row.role = newRole;
-    //     enqueueSnackbar('assign role successfully', { variant: 'success' });
-    //   })
-    //   .catch((error) => {
-    //     enqueueSnackbar('You are not the owner!', { variant: 'error' });
-    //   });
+    axios
+      .post(`/api/group/update-role`, {
+        email,
+        groupId: classId,
+        role: newRole
+      })
+      .then((data) => {
+        setRole(newRole);
+        enqueueSnackbar('assign role successfully', { variant: 'success' });
+      })
+      .catch((error) => {
+        enqueueSnackbar('You are not the owner!', { variant: 'error' });
+      });
   };
 
   const handleCloseModal = () => {
@@ -180,16 +186,14 @@ export default function MemberList({ classId, className }) {
     tableData,
     comparator: getComparator(order, orderBy),
     filterName,
-    filterRole,
-    filterStatus
+    filterRole
   });
 
   const denseHeight = dense ? 52 : 72;
 
   const isNotFound =
     (!dataFiltered.length && !!filterName) ||
-    (!dataFiltered.length && !!filterRole) ||
-    (!dataFiltered.length && !!filterStatus);
+    (!dataFiltered.length && !!filterRole);
 
   return (
     <Page title="User: List">
@@ -285,11 +289,12 @@ export default function MemberList({ classId, className }) {
                       <MemberTableRow
                         key={row.id}
                         row={row}
+                        currentAccountRole={currentRole}
                         selected={selected.includes(row.id)}
                         onSelectRow={() => onSelectRow(row.email)}
                         onDeleteRow={() => handleDeleteRow(row.email)}
                         onEditRow={(newRole, setRole) =>
-                          handleEditRole(row, newRole, setRole)
+                          handleEditRole(row.email, newRole, setRole)
                         }
                       />
                     ))}
@@ -340,13 +345,7 @@ export default function MemberList({ classId, className }) {
 
 // ----------------------------------------------------------------------
 
-function applySortFilter({
-  tableData,
-  comparator,
-  filterName,
-  filterStatus,
-  filterRole
-}) {
+function applySortFilter({ tableData, comparator, filterName, filterRole }) {
   const stabilizedThis = tableData.map((el, index) => [el, index]);
 
   stabilizedThis.sort((a, b) => {
@@ -357,13 +356,11 @@ function applySortFilter({
   let tempData = stabilizedThis.map((el) => el[0]);
 
   if (filterName) {
-    tempData = tempData.filter(
-      (item) => item.name.toLowerCase().indexOf(filterName.toLowerCase()) !== -1
-    );
-  }
-
-  if (filterStatus !== 'all') {
-    tempData = tempData.filter((item) => item.status === filterStatus);
+    tempData = tempData.filter((item) => {
+      return (
+        item.firstName.toLowerCase().indexOf(filterName.toLowerCase()) !== -1
+      );
+    });
   }
 
   if (filterRole !== 'all') {
