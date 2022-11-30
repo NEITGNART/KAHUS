@@ -81,6 +81,9 @@ export default function UploadAvatar({
     fileRejections
   } = useDropzone({
     multiple: false,
+    accept: {
+      'image/*': ['.jpeg', '.jpg', '.png']
+    },
     ...other
   });
 

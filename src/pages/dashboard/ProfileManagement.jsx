@@ -45,15 +45,24 @@ export default function UserAccount() {
   // }, []);
 
   const onProfileSubmit = (data) => {
+    // const response = await axios.post(`/api/group/create`, formData);
+
     try {
+      const formData = new FormData();
+      formData.append('firstName', data.firstName);
+      formData.append('photoURL', data.photoURL);
+      formData.append('lastName', data.lastName);
+      formData.append('dob', data.dob);
+      formData.append('currentPhotoURL', user.avatar);
       axios
-        .post('api/user/profile/update', data)
-        .then((res) => {
+        .post('api/user/profile/update', formData)
+        .then(() => {
           enqueueSnackbar('Updated successfully!!!');
           refetchUser();
         })
         .catch((err) => {
-          enqueueSnackbar(err.response.data.message);
+          console.log(err);
+          enqueueSnackbar('Failed to update!!!', { variant: 'error' });
         });
     } catch (error) {
       enqueueSnackbar(error, { variant: 'error' });

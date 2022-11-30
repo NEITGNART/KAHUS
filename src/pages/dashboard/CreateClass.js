@@ -38,7 +38,6 @@ export default function CreateClass() {
             { name: !isEdit ? 'New user' : capitalCase(name) }
           ]}
         />
-
         <ClassNewEditForm isEdit={isEdit} currentUser={currentUser} />
       </Container>
     </Page>
