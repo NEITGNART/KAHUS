@@ -281,18 +281,21 @@ export default function MemberList({ classId, className }) {
                 <TableBody>
                   {dataFiltered
                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                    .map((row) => (
-                      <MemberTableRow
-                        key={row.id}
-                        row={row}
-                        selected={selected.includes(row.id)}
-                        onSelectRow={() => onSelectRow(row.email)}
-                        onDeleteRow={() => handleDeleteRow(row.email)}
-                        onEditRow={(newRole, setRole) =>
-                          handleEditRole(row, newRole, setRole)
-                        }
-                      />
-                    ))}
+                    .map((row) => {
+                      console.log(row);
+                      return (
+                        <MemberTableRow
+                          key={row.id}
+                          row={row}
+                          selected={selected.includes(row.id)}
+                          onSelectRow={() => onSelectRow(row.email)}
+                          onDeleteRow={() => handleDeleteRow(row.email)}
+                          onEditRow={(newRole, setRole) =>
+                            handleEditRole(row, newRole, setRole)
+                          }
+                        />
+                      );
+                    })}
 
                   <TableEmptyRows
                     height={denseHeight}

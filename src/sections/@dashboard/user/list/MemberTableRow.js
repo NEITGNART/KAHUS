@@ -45,7 +45,7 @@ export default function MemberTableRow({
 }) {
   // const theme = useTheme();
 
-  const { firstName, avatar } = row;
+  const { firstName, lastName, avatar } = row;
 
   const [role, setRole] = useState(row.role);
 
@@ -70,15 +70,9 @@ export default function MemberTableRow({
       </TableCell>
 
       <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
-        <Avatar
-          alt={firstName}
-          src={
-            avatar || 'https://gstatic.com/classroom/themes/img_breakfast.jpg'
-          }
-          sx={{ mr: 2 }}
-        />
+        <Avatar alt={firstName} src={avatar || ''} sx={{ mr: 2 }} />
         <Typography variant="subtitle2" noWrap>
-          {firstName}
+          {`${firstName} ${lastName}`}
         </Typography>
       </TableCell>
 

@@ -148,11 +148,12 @@ export default function ClassroomPage() {
     // }
   ];
 
+
   return (
     <Page title="Classroom">
       <Container maxWidth={themeStretch ? false : 'lg'}>
         <HeaderBreadcrumbs
-          heading="className"
+          heading={classRoom?.name || 'Class Room'}
           links={[
             { name: 'Dashboard', href: PATH_DASHBOARD.root },
             { name: 'User', href: PATH_DASHBOARD.user.root },
