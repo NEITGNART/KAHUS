@@ -52,8 +52,6 @@ ClassCard.propTypes = {
 
 export default function ClassCard({ classInfo, index }) {
   const isDesktop = useResponsive('up', 'md');
-
-  console.log(classInfo);
   const { id, name, description, owner, avatar, link } = classInfo;
   const linkTo = PATH_DASHBOARD.general.detailClassroom(id);
   const latestPost = index === 0 || index === 1 || index === 2;

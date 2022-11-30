@@ -37,15 +37,19 @@ MemberTableRow.propTypes = {
 };
 
 export default function MemberTableRow({
-  row,
-  selected,
-  onEditRow,
-  onSelectRow,
-  onDeleteRow
-}) {
+                                         row,
+                                         selected,
+                                         onEditRow,
+                                         onSelectRow,
+                                         onDeleteRow
+                                       }) {
   // const theme = useTheme();
 
   const { firstName, lastName, avatar } = row;
+
+  console.log('-------------------------------');
+  console.log(avatar);
+  console.log('-------------------------------');
 
   const [role, setRole] = useState(row.role);
 
@@ -70,7 +74,12 @@ export default function MemberTableRow({
       </TableCell>
 
       <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
-        <Avatar alt={firstName} src={avatar || ''} sx={{ mr: 2 }} />
+        <Avatar
+          referrerPolicy="no-referrer"
+          alt={firstName}
+          src={avatar || ''}
+          sx={{ mr: 2 }}
+        />
         <Typography variant="subtitle2" noWrap>
           {`${firstName} ${lastName}`}
         </Typography>
