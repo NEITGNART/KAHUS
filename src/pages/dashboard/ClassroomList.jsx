@@ -16,6 +16,9 @@ import { ClassroomCard } from '../../sections/@dashboard/classroom/cards';
 import ClassCard from '../../sections/@dashboard/classroom/cards/ClassCard';
 import axios from '../../utils/axios';
 import useAuth from '../../hooks/useAuth';
+import LoadingScreen from '../../components/LoadingScreen';
+import EmptyContent from '../../components/EmptyContent';
+import TableNoData from '../../components/table/TableNoData';
 
 // ----------------------------------------------------------------------
 export default function ClassroomList() {
@@ -37,20 +40,26 @@ export default function ClassroomList() {
     fetchMyClasses();
   }, []);
 
+  // const { data: classrooms, isLoading } = useQuery({
+  //   queryKey: ['classrooms'],
+  //   queryFn: async () => {
+  //     const response = await axios.get(`/api/group/group-invited`);
+  //     return response.data;
+  //   }
+  // });
+  //
+  // if (isLoading) return <LoadingScreen />;
+
   return (
     <Page title="Classes | KAHUS">
       <Container maxWidth={themeStretch ? false : 'lg'}>
         <HeaderBreadcrumbs heading="Classes" />
         <Grid container spacing={3}>
-          {classrooms?.length ? (
-            classrooms.map((classroom, index) => (
-              <Grid key={classroom.id} item xs={12} sm={6} md={4}>
-                <ClassCard classInfo={classroom} indexs={index} />
-              </Grid>
-            ))
-          ) : (
-            <p> empty </p>
-          )}
+          {classrooms?.map((classroom, index) => (
+            <Grid key={classroom.id} item xs={12} sm={6} md={4}>
+              <ClassCard classInfo={classroom} indexs={index} />
+            </Grid>
+          ))}
         </Grid>
       </Container>
     </Page>

@@ -97,7 +97,7 @@ export default function ClassCard({ classInfo, index }) {
           />
           <Avatar
             alt={name}
-            src={avatar}
+            src={owner?.avatar || ''}
             sx={{
               left: 40,
               zIndex: 11,
