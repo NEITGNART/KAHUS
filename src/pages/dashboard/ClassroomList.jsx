@@ -34,7 +34,7 @@ export default function ClassroomList() {
   const { user } = useAuth();
 
   const [classrooms, setClassrooms] = useState([]);
-  const [filters, setFilters] = useState('myClass');
+  const [filters, setFilters] = useState('attended');
   const fetchMyClasses = async () => {
     axios
       .get(`/api/group/group-invited`)
