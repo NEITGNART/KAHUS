@@ -68,6 +68,10 @@ export default function AccountGeneral({ user, onSubmit, ...other }) {
     [setValue]
   );
 
+  setValue('firstName', user.firstName);
+  setValue('lastName', user.lastName);
+  setValue('dob', user.dob);
+
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
       <Grid container spacing={3} alignItems="stretch">

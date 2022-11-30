@@ -56,7 +56,7 @@ const TabsWrapperStyle = styled('div')(({ theme }) => ({
 // ----------------------------------------------------------------------
 
 const fetchClassroom = async (id) => {
-  const response = await axios.get(`/api/group/${id}`);
+  const response = await axios.get(`/api/group/detail/${id}`);
   return response.data;
 };
 
@@ -147,7 +147,6 @@ export default function ClassroomPage() {
     //   component: <ClassroomWork gallery={_userGallery} />
     // }
   ];
-
 
   return (
     <Page title="Classroom">

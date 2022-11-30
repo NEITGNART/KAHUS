@@ -1,8 +1,8 @@
 // @mui
-import { Container, Box, Grid } from '@mui/material';
+import { Container, Box, Grid, Stack } from '@mui/material';
 // routes
 import { useQuery } from '@tanstack/react-query';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { PATH_DASHBOARD } from '../../routes/paths';
 // hooks
 import useSettings from '../../hooks/useSettings';
@@ -19,6 +19,14 @@ import useAuth from '../../hooks/useAuth';
 import LoadingScreen from '../../components/LoadingScreen';
 import EmptyContent from '../../components/EmptyContent';
 import TableNoData from '../../components/table/TableNoData';
+import ClassroomSearch from '../../sections/@dashboard/classroom/ClassroomSearch';
+import ClassFilter from '../../sections/@dashboard/classroom/ClassFilter';
+
+const SORT_OPTIONS = [
+  // { value: 'all', label: 'All' },
+  { value: 'attended', label: 'Attended Classes' },
+  { value: 'myClass', label: 'My Class' }
+];
 
 // ----------------------------------------------------------------------
 export default function ClassroomList() {
@@ -26,6 +34,7 @@ export default function ClassroomList() {
   const { user } = useAuth();
 
   const [classrooms, setClassrooms] = useState([]);
+  const [filters, setFilters] = useState('myClass');
   const fetchMyClasses = async () => {
     axios
       .get(`/api/group/group-invited`)
@@ -40,26 +49,47 @@ export default function ClassroomList() {
     fetchMyClasses();
   }, []);
 
-  // const { data: classrooms, isLoading } = useQuery({
-  //   queryKey: ['classrooms'],
-  //   queryFn: async () => {
-  //     const response = await axios.get(`/api/group/group-invited`);
-  //     return response.data;
-  //   }
-  // });
-  //
-  // if (isLoading) return <LoadingScreen />;
+  const handleChangeFilter = (value) => {
+    if (value) {
+      setFilters(value);
+    }
+  };
+
+  useMemo(() => {
+    axios
+      .get('api/group/search', { params: { filter: filters } })
+      .then((res) => {
+        setClassrooms(res.data);
+      });
+  }, [filters]);
 
   return (
     <Page title="Classes | KAHUS">
       <Container maxWidth={themeStretch ? false : 'lg'}>
         <HeaderBreadcrumbs heading="Classes" />
+        <Stack
+          mb={5}
+          direction="row"
+          alignItems="center"
+          justifyContent="flex-start"
+          spacing={2}
+        >
+          <ClassFilter
+            query={filters}
+            options={SORT_OPTIONS}
+            onSort={handleChangeFilter}
+          />
+        </Stack>
         <Grid container spacing={3}>
-          {classrooms?.map((classroom, index) => (
-            <Grid key={classroom.id} item xs={12} sm={6} md={4}>
-              <ClassCard classInfo={classroom} indexs={index} />
-            </Grid>
-          ))}
+          {classrooms?.length ? (
+            classrooms.map((classroom, index) => (
+              <Grid key={classroom.id} item xs={12} sm={6} md={4}>
+                <ClassCard classInfo={classroom} indexs={index} />
+              </Grid>
+            ))
+          ) : (
+            <p> empty </p>
+          )}
         </Grid>
       </Container>
     </Page>
