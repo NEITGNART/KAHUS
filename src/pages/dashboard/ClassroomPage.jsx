@@ -132,7 +132,8 @@ export default function ClassroomPage() {
             description: classRoom.description,
             linkUrl: classRoom.link
           }}
-          posts={_userFeeds}
+          // posts={_userFeeds}
+          posts={[]}
         />
       )
     },
