@@ -40,7 +40,6 @@ export default function MemberTableRow({
   onDeleteRow
 }) {
   // const theme = useTheme();
-  currentAccountRole = 'owner';
 
   const { firstName, lastName, avatar } = row;
 
@@ -86,9 +85,8 @@ export default function MemberTableRow({
           </Typography>
         ) : (
           <>
-            {role === 'owner' &&
-            (currentAccountRole === 'co-owner' ||
-              currentAccountRole === 'owner') ? (
+            {role === 'owner' ||
+            (role === 'co-owner' && currentAccountRole === 'co-owner') ? (
               <Typography variant="subtitle2" noWrap>
                 {role}
               </Typography>
