@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 // utils
 import axios from '../utils/axios';
 import { isValidToken, setSession } from '../utils/jwt';
+import useLocalStorage from '../hooks/useLocalStorage';
 
 // ----------------------------------------------------------------------
 
@@ -63,20 +64,18 @@ function AuthProvider({ children }) {
     const initialize = async () => {
       try {
         const accessToken = window.localStorage.getItem('accessToken');
-
         if (accessToken && isValidToken(accessToken)) {
           setSession(accessToken);
-          const response = await axios.get('/api/user/profile');
-          const { user } = response.data;
 
           dispatch({
             type: 'INITIALIZE',
             payload: {
               isAuthenticated: true,
-              user
+              user: JSON.parse(window.localStorage.getItem('user'))
             }
           });
         } else {
+          console.log('____________________________');
           dispatch({
             type: 'INITIALIZE',
             payload: {
@@ -96,25 +95,19 @@ function AuthProvider({ children }) {
         });
       }
     };
-
     initialize();
   }, []);
 
-  const emailLogin = async (email, password) => {
-    const response = await axios.post('/api/account/login', {
-      email,
-      password
-    });
-    const { accessToken, user } = response.data;
-
-    console.log(`Here is the access token ${accessToken}`);
-    console.log(user);
-
+  const emailLogin = async (accessToken) => {
     setSession(accessToken);
+    const response = await axios.get('/api/user/profile');
+    // store user to local storage
+    const user = response.data;
+    window.localStorage.setItem('user', JSON.stringify(user));
     dispatch({
       type: 'LOGIN',
       payload: {
-        user
+        user: JSON.parse(window.localStorage.getItem('user'))
       }
     });
   };
@@ -132,9 +125,14 @@ function AuthProvider({ children }) {
     }
   };
 
-  const googleLogin = async (accessToken, user) => {
+  const googleLogin = async (accessToken) => {
     setSession(accessToken);
-    console.log(accessToken);
+
+    const response = await axios.get('/api/user/profile');
+    // store user to local storage
+    const user = response.data;
+    window.localStorage.setItem('user', JSON.stringify(user));
+
     dispatch({
       type: 'LOGIN',
       payload: {
@@ -145,7 +143,21 @@ function AuthProvider({ children }) {
 
   const logout = async () => {
     setSession(null);
+    window.localStorage.removeItem('user');
     dispatch({ type: 'LOGOUT' });
+  };
+
+  const refetchUser = async () => {
+    const response = await axios.get('/api/user/profile');
+    // store user to local storage
+    const user = response.data;
+    window.localStorage.setItem('user', JSON.stringify(user));
+    dispatch({
+      type: 'LOGIN',
+      payload: {
+        user
+      }
+    });
   };
 
   const auth = useMemo(
@@ -153,6 +165,7 @@ function AuthProvider({ children }) {
       ...state,
       method: 'jwt',
       login: emailLogin,
+      refetchUser,
       logout,
       register,
       googleLogin

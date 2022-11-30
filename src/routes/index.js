@@ -97,7 +97,6 @@ function InviteClassRoom({ children }) {
   }, []);
 
   return <>{children}</>;
-
 }
 
 export default function Router() {

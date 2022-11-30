@@ -165,6 +165,7 @@ export default function ClassNewEditForm({ isEdit, currentUser }) {
                       color: 'text.secondary'
                     }}
                   >
+                    <br />
                     Allowed *.jpeg, *.jpg, *.png, *.gif
                     <br /> max size of {fData(3145728)}
                   </Typography>

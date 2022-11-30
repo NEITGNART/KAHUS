@@ -18,6 +18,7 @@ import {
   RHFCheckbox
 } from '../../../components/hook-form';
 import useAuth from '../../../hooks/useAuth';
+import axios from '../../../utils/axios';
 
 // ----------------------------------------------------------------------
 
@@ -56,11 +57,14 @@ export default function LoginForm() {
   const onSubmit = async (data) => {
     const { email, password, remember } = data;
     try {
-      await login(email, password, remember);
+      const response = await axios.post('/api/account/login', {
+        email,
+        password
+      });
+      const { accessToken } = response.data;
+      await login(accessToken);
       // adding status later
-
       navigate('/dashboard', { replace: true });
-
       if (!remember) reset();
     } catch (error) {
       setError('afterSubmit', { ...error, message: error.message });

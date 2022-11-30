@@ -21,12 +21,12 @@ const MENU_OPTIONS = [
     label: 'Home',
     linkTo: '/'
   },
+  // {
+  //   label: 'Profile',
+  //   linkTo: PATH_DASHBOARD.user.profile
+  // },
   {
-    label: 'Profile',
-    linkTo: PATH_DASHBOARD.user.profile
-  },
-  {
-    label: 'Settings',
+    label: 'Account management',
     linkTo: PATH_DASHBOARD.user.account
   }
 ];
@@ -84,7 +84,7 @@ export default function AccountPopover() {
           })
         }}
       >
-        <MyAvatar src={user?.avatar || 'https://i.pravatar.cc/300'} />
+        <MyAvatar src={user?.avatar || ''} />
       </IconButtonAnimate>
 
       <MenuPopover
@@ -103,7 +103,7 @@ export default function AccountPopover() {
       >
         <Box sx={{ my: 1.5, px: 2.5 }}>
           <Typography variant="subtitle2" noWrap>
-            {user?.displayName}
+            {`${user?.firstName} ${user?.lastName}`}
           </Typography>
           <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>
             {user?.email}

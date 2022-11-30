@@ -1,6 +1,6 @@
 import * as Yup from 'yup';
 import { useSnackbar } from 'notistack';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 // form
 import { useForm, useFormContext, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -20,23 +20,25 @@ import {
   RHFUploadAvatar
 } from '../../../../components/hook-form';
 import RHFDatePicker from '../../../../components/hook-form/RHFDatePicker';
+import axios from '../../../../utils/axios';
 
 // ----------------------------------------------------------------------
 AccountGeneral.propTypes = {
-  user: PropTypes.object
+  user: PropTypes.object,
+  onSubmit: PropTypes.func
 };
 
-export default function AccountGeneral({ user, ...other }) {
-  const { enqueueSnackbar } = useSnackbar();
+export default function AccountGeneral({ user, onSubmit, ...other }) {
   const UpdateUserSchema = Yup.object().shape({
-    displayName: Yup.string().required('Name is required')
+    firstName: Yup.string().required('First name is required'),
+    lastName: Yup.string().required('Last name is required')
   });
 
   const defaultValues = {
     firstName: user?.firstName || '',
     lastName: user?.lastName || '',
-    email: user?.email || '',
-    dob: user?.dob || Date.now()
+    dob: user?.dob || '',
+    avatar: user?.avatar || ''
   };
 
   const methods = useForm({
@@ -49,21 +51,6 @@ export default function AccountGeneral({ user, ...other }) {
     handleSubmit,
     formState: { isSubmitting }
   } = methods;
-
-  setValue('firstName', user?.firstName || '');
-  setValue('lastName', user?.lastName || '');
-  setValue('email', user?.email || '');
-  setValue('dob', user?.dob || Date.now());
-
-  const onSubmit = async () => {
-    try {
-      // await new Promise((resolve) => setTimeout(resolve, 500));
-      enqueueSnackbar('Update success!');
-    } catch (error) {
-      // eslint-disable-next-line no-console
-      console.error(error);
-    }
-  };
 
   const handleDrop = useCallback(
     (acceptedFiles) => {
@@ -88,7 +75,6 @@ export default function AccountGeneral({ user, ...other }) {
           <Card sx={{ py: 10, px: 3, textAlign: 'center', height: '100%' }}>
             <RHFUploadAvatar
               name="photoURL"
-              accept="image/*"
               maxSize={3145728}
               onDrop={handleDrop}
               helperText={
@@ -102,10 +88,12 @@ export default function AccountGeneral({ user, ...other }) {
                     color: 'text.secondary'
                   }}
                 >
+                  Click to change image or drag and drop
+                  <br />
                   Allowed *.jpeg, *.jpg, *.png, *.gif
-                  <br /> max size of {fData(3145728)}
                 </Typography>
               }
+              avatarPlaceholder={user?.avatar || ''}
             />
           </Card>
         </Grid>
@@ -115,8 +103,6 @@ export default function AccountGeneral({ user, ...other }) {
             <Stack spacing={3} alignItems="flex-end">
               <RHFTextField name="firstName" label="First Name" />
               <RHFTextField name="lastName" label="Last Name" />
-
-              <RHFTextField name="email" label="Email Address" />
               <RHFDatePicker name="dob" label="Date of birth" />
 
               <LoadingButton

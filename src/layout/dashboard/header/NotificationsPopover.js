@@ -170,7 +170,12 @@ function NotificationItem({ notification }) {
       }}
     >
       <ListItemAvatar>
-        <Avatar sx={{ bgcolor: 'background.neutral' }}>{avatar}</Avatar>
+        <Avatar
+          referrerPolicy="no-referrer"
+          sx={{ bgcolor: 'background.neutral' }}
+        >
+          {avatar}
+        </Avatar>
       </ListItemAvatar>
       <ListItemText
         primary={title}

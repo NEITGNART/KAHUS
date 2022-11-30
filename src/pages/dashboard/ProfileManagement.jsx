@@ -3,6 +3,7 @@ import { capitalCase } from 'change-case';
 import { Container, Tab, Box, Tabs } from '@mui/material';
 // routes
 import { useEffect, useState } from 'react';
+import { useSnackbar } from 'notistack';
 import { PATH_DASHBOARD } from '../../routes/paths';
 // hooks
 import useTabs from '../../hooks/useTabs';
@@ -17,35 +18,63 @@ import {
   AccountChangePassword
 } from '../../sections/@dashboard/user/account';
 import axios from '../../utils/axios';
+import useAuth from '../../hooks/useAuth';
 
 // ----------------------------------------------------------------------
 
 export default function UserAccount() {
   const { themeStretch } = useSettings();
-
+  const { enqueueSnackbar } = useSnackbar();
   const { currentTab, onChangeTab } = useTabs('general');
 
-  const [user, setUser] = useState({
-    firstName: '',
-    lastName: '',
-    dob: Date.now()
-  });
+  // const [user, setUser] = useState({
+  //   firstName: '',
+  //   lastName: '',
+  //   dob: ''
+  // });
 
-  const fetchUserProfile = async () => {
-    const response = await axios.get(`/api/user/profile`);
-    setUser(response.data);
-    console.log(response);
+  const { user, refetchUser } = useAuth();
+
+  // useEffect(() => {
+  //   const fetchUserProfile = async () => {
+  //     const response = await axios.get(`/api/user/profile`);
+  //     setUser(response.data);
+  //     console.log(response);
+  //   };
+  //   fetchUserProfile();
+  // }, []);
+
+  const onProfileSubmit = (data) => {
+    // const response = await axios.post(`/api/group/create`, formData);
+
+    try {
+      const formData = new FormData();
+      formData.append('firstName', data.firstName);
+      formData.append('photoURL', data.photoURL);
+      formData.append('lastName', data.lastName);
+      formData.append('dob', data.dob);
+      formData.append('currentPhotoURL', user.avatar);
+      axios
+        .post('api/user/profile/update', formData)
+        .then(() => {
+          enqueueSnackbar('Updated successfully!!!');
+          refetchUser();
+        })
+        .catch((err) => {
+          console.log(err);
+          enqueueSnackbar('Failed to update!!!', { variant: 'error' });
+        });
+    } catch (error) {
+      enqueueSnackbar(error, { variant: 'error' });
+      console.error(error);
+    }
   };
-
-  useEffect(() => {
-    fetchUserProfile();
-  }, []);
 
   const ACCOUNT_TABS = [
     {
       value: 'general',
       icon: <Iconify icon="ic:round-account-box" width={20} height={20} />,
-      component: <AccountGeneral user={user} />
+      component: <AccountGeneral user={user} onSubmit={onProfileSubmit} />
     },
     {
       value: 'change_password',

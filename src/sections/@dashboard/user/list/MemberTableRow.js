@@ -42,7 +42,11 @@ export default function MemberTableRow({
   // const theme = useTheme();
   currentAccountRole = 'owner';
 
-  const { firstName, avatar } = row;
+  const { firstName, lastName, avatar } = row;
+
+  console.log('-------------------------------');
+  console.log(avatar);
+  console.log('-------------------------------');
 
   const [role, setRole] = useState(row.role);
 
@@ -68,14 +72,13 @@ export default function MemberTableRow({
 
       <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
         <Avatar
+          referrerPolicy="no-referrer"
           alt={firstName}
-          src={
-            avatar || 'https://gstatic.com/classroom/themes/img_breakfast.jpg'
-          }
+          src={avatar || ''}
           sx={{ mr: 2 }}
         />
         <Typography variant="subtitle2" noWrap>
-          {firstName}
+          {`${firstName} ${lastName}`}
         </Typography>
       </TableCell>
 

@@ -1,7 +1,5 @@
 import PropTypes from 'prop-types';
 import * as Yup from 'yup';
-import merge from 'lodash/merge';
-import { isBefore } from 'date-fns';
 import { useSnackbar } from 'notistack';
 // form
 import { useForm, Controller } from 'react-hook-form';
@@ -11,70 +9,47 @@ import {
   Box,
   Stack,
   Button,
-  Tooltip,
   TextField,
-  IconButton,
   DialogActions,
   Autocomplete,
   Chip
 } from '@mui/material';
-import { LoadingButton, MobileDateTimePicker } from '@mui/lab';
+import { LoadingButton } from '@mui/lab';
 // redux
-import { useDispatch } from '../../../redux/store';
-import {
-  createEvent,
-  updateEvent,
-  deleteEvent
-} from '../../../redux/slices/calendar';
 // components
-import Iconify from '../../../components/Iconify';
-import { ColorSinglePicker } from '../../../components/color-utils';
-import { FormProvider, RHFTextField } from '../../../components/hook-form';
+import { FormProvider } from '../../../components/hook-form';
+import axios from '../../../utils/axios';
 
 // ----------------------------------------------------------------------
 
 const TAGS_OPTION = [];
 
-const getInitialValues = (event, range) => {
+const getInitialValues = () => {
   const localEvent = {
-    title: '',
-    description: '',
-    textColor: '#1890FF',
-    allDay: false,
-    start: range ? new Date(range.start) : new Date(),
-    end: range ? new Date(range.end) : new Date()
+    tags: []
   };
-
-  if (event || range) {
-    return merge({}, localEvent, event);
-  }
-
   return localEvent;
 };
 
 // ----------------------------------------------------------------------
 
 InviteMemberForm.propTypes = {
-  event: PropTypes.object,
-  range: PropTypes.object,
-  onCancel: PropTypes.func
+  onCancel: PropTypes.func,
+  classId: PropTypes.string,
+  className: PropTypes.string
 };
 
-export default function InviteMemberForm({ event, range, onCancel }) {
+export default function InviteMemberForm({ onCancel, classId, className }) {
   const { enqueueSnackbar } = useSnackbar();
 
-  const dispatch = useDispatch();
-
-  const isCreating = Object.keys(event).length === 0;
-
-  const EventSchema = Yup.object().shape({
-    title: Yup.string().max(255).required('Title is required'),
-    description: Yup.string().max(5000)
+  const InvitationSchema = Yup.object().shape({
+    // title: Yup.string().max(255).required('Title is required'),
+    tags: Yup.array().min(1, 'tag is required')
   });
 
   const methods = useForm({
-    resolver: yupResolver(EventSchema),
-    defaultValues: getInitialValues(event, range)
+    resolver: yupResolver(InvitationSchema),
+    defaultValues: getInitialValues()
   });
 
   const {
@@ -85,36 +60,29 @@ export default function InviteMemberForm({ event, range, onCancel }) {
     formState: { isSubmitting }
   } = methods;
 
-  const onSubmit = async (data) => {
+  const values = watch();
+
+  const onSubmit = async () => {
     try {
-      const newEvent = {
-        title: data.title,
-        description: data.description,
-        textColor: data.textColor,
-        allDay: data.allDay,
-        start: data.start,
-        end: data.end
+      const { tags } = values;
+      console.log(tags);
+      const inviteMembers = async () => {
+        const response = await axios.post(`/api/group/add-member`, {
+          groupId: classId,
+          groupName: className,
+          emails: values.tags
+        });
+        return response.data;
       };
-      if (event.id) {
-        dispatch(updateEvent(event.id, newEvent));
-        enqueueSnackbar('Update success!');
-      } else {
-        enqueueSnackbar('Create success!');
-        dispatch(createEvent(newEvent));
-      }
+      inviteMembers()
+        .then(() => {
+          enqueueSnackbar('Invite success!', { variant: 'success' });
+        })
+        .catch((err) => {
+          console.log(err);
+        });
       onCancel();
       reset();
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const handleDelete = async () => {
-    if (!event.id) return;
-    try {
-      onCancel();
-      dispatch(deleteEvent(event.id));
-      enqueueSnackbar('Delete success!');
     } catch (error) {
       console.error(error);
     }
@@ -143,20 +111,13 @@ export default function InviteMemberForm({ event, range, onCancel }) {
                   />
                 ))
               }
-              renderInput={(params) => <TextField label="Tags" {...params} />}
+              renderInput={(params) => <TextField label="Emails" {...params} />}
             />
           )}
         />
       </Stack>
 
       <DialogActions>
-        {!isCreating && (
-          <Tooltip title="Delete Event">
-            <IconButton onClick={handleDelete}>
-              <Iconify icon="eva:trash-2-outline" width={20} height={20} />
-            </IconButton>
-          </Tooltip>
-        )}
         <Box sx={{ flexGrow: 1 }} />
 
         <Button variant="outlined" color="inherit" onClick={onCancel}>
