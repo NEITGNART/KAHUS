@@ -69,6 +69,13 @@ MemberList.propTypes = {
   className: PropTypes.string
 };
 
+const rolesMap = new Map([
+  ['owner', 1],
+  ['co-owner', 2],
+  ['member', 3],
+  ['kick out', 4]
+]);
+
 // ----------------------------------------------------------------------
 
 export default function MemberList({ classId, className }) {
@@ -100,7 +107,6 @@ export default function MemberList({ classId, className }) {
         email: user?.email,
         groupId: classId
       });
-      console.log(response);
       setCurrentRole(response.data.role);
     };
     getRole();
@@ -111,7 +117,10 @@ export default function MemberList({ classId, className }) {
       const response = await axios.post(`/api/group/members`, {
         groupId: classId
       });
-      setTableData(response.data);
+      const dataTable = response.data.sort((a, b) => {
+        return rolesMap.get(a.role) - rolesMap.get(b.role);
+      });
+      setTableData(dataTable);
     };
     getMembers();
   }, []);
@@ -352,7 +361,6 @@ export default function MemberList({ classId, className }) {
 
 function applySortFilter({ tableData, comparator, filterName, filterRole }) {
   const stabilizedThis = tableData.map((el, index) => [el, index]);
-  console.log(stabilizedThis);
   stabilizedThis.sort((a, b) => {
     const order = comparator(a[0], b[0]);
     if (order !== 0) return order;
