@@ -44,10 +44,6 @@ export default function MemberTableRow({
 
   const { firstName, lastName, avatar } = row;
 
-  console.log('-------------------------------');
-  console.log(avatar);
-  console.log('-------------------------------');
-
   const [role, setRole] = useState(row.role);
 
   const [openMenu, setOpenMenuActions] = useState(null);

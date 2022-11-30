@@ -56,7 +56,7 @@ import useAuth from '../../hooks/useAuth';
 
 const STATUS_OPTIONS = ['all'];
 
-const ROLE_OPTIONS = ['all', 'owner', 'co-owner', 'member'];
+const ROLE_OPTIONS = ['all', 'owner', 'co-owner', 'member', 'kick-out'];
 
 const TABLE_HEAD = [
   { id: 'name', label: 'Name', align: 'left' },
@@ -92,14 +92,18 @@ export default function MemberList({ classId, className }) {
   } = useTable();
 
   const { themeStretch } = useSettings();
-  const [currentRole, setCurrentRole] = useState();
+  const [currentRole, setCurrentRole] = useState('');
   const { user } = useAuth();
   useEffect(() => {
-    // const response = axios.post(`/api/group/get-role`, {
-    //   email: user?.email,
-    //   groupId: classId
-    // });
-    // setCurrentRole(response.data.role);
+    const getRole = async () => {
+      const response = await axios.post(`/api/group/get-role`, {
+        email: user?.email,
+        groupId: classId
+      });
+      console.log(response);
+      setCurrentRole(response.data.role);
+    };
+    getRole();
   }, []);
 
   useEffect(() => {
@@ -158,7 +162,6 @@ export default function MemberList({ classId, className }) {
   };
 
   const handleEditRole = (email, newRole, setRole) => {
-    console.log(newRole);
     axios
       .post(`/api/group/update-role`, {
         email,
@@ -286,7 +289,6 @@ export default function MemberList({ classId, className }) {
                   {dataFiltered
                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                     .map((row) => {
-                      console.log(row);
                       return (
                         <MemberTableRow
                           key={row.id}
