@@ -37,9 +37,6 @@ export default function AccountPopover() {
   const navigate = useNavigate();
 
   const { user, logout } = useAuth();
-  console.log('---------------------------------------');
-  console.log(user);
-  console.log('---------------------------------------');
 
   const isMountedRef = useIsMountedRef();
 

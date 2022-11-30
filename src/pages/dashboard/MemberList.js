@@ -50,12 +50,13 @@ import {
   MemberTableRow
 } from '../../sections/@dashboard/user/list';
 import axios from '../../utils/axios';
+import useAuth from '../../hooks/useAuth';
 
 // ----------------------------------------------------------------------
 
 const STATUS_OPTIONS = ['all'];
 
-const ROLE_OPTIONS = ['all', 'owner', 'co-owner', 'member'];
+const ROLE_OPTIONS = ['all', 'owner', 'co-owner', 'member', 'kick-out'];
 
 const TABLE_HEAD = [
   { id: 'name', label: 'Name', align: 'left' },
@@ -91,7 +92,19 @@ export default function MemberList({ classId, className }) {
   } = useTable();
 
   const { themeStretch } = useSettings();
-  const currentRoleAccount = 'owner';
+  const [currentRole, setCurrentRole] = useState('');
+  const { user } = useAuth();
+  useEffect(() => {
+    const getRole = async () => {
+      const response = await axios.post(`/api/group/get-role`, {
+        email: user?.email,
+        groupId: classId
+      });
+      console.log(response);
+      setCurrentRole(response.data.role);
+    };
+    getRole();
+  }, []);
 
   useEffect(() => {
     const getMembers = async () => {
@@ -148,24 +161,20 @@ export default function MemberList({ classId, className }) {
     setTableData(deleteRows);
   };
 
-  const handleEditRole = (row, newRole, setRole) => {
-    console.log(row);
-    console.log(newRole);
-    setRole(newRole);
-    // axios
-    //   .post(`/api/group/update-role`, {
-    //     email: row.email,
-    //     groupId: classId,
-    //     role: newRole
-    //   })
-    //   .then((data) => {
-    //     setSelected([]);
-    //     row.role = newRole;
-    //     enqueueSnackbar('assign role successfully', { variant: 'success' });
-    //   })
-    //   .catch((error) => {
-    //     enqueueSnackbar('You are not the owner!', { variant: 'error' });
-    //   });
+  const handleEditRole = (email, newRole, setRole) => {
+    axios
+      .post(`/api/group/update-role`, {
+        email,
+        groupId: classId,
+        role: newRole
+      })
+      .then((data) => {
+        setRole(newRole);
+        enqueueSnackbar('assign role successfully', { variant: 'success' });
+      })
+      .catch((error) => {
+        enqueueSnackbar('You are not the owner!', { variant: 'error' });
+      });
   };
 
   const handleCloseModal = () => {
@@ -180,16 +189,14 @@ export default function MemberList({ classId, className }) {
     tableData,
     comparator: getComparator(order, orderBy),
     filterName,
-    filterRole,
-    filterStatus
+    filterRole
   });
 
   const denseHeight = dense ? 52 : 72;
 
   const isNotFound =
     (!dataFiltered.length && !!filterName) ||
-    (!dataFiltered.length && !!filterRole) ||
-    (!dataFiltered.length && !!filterStatus);
+    (!dataFiltered.length && !!filterRole);
 
   return (
     <Page title="User: List">
@@ -282,16 +289,16 @@ export default function MemberList({ classId, className }) {
                   {dataFiltered
                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                     .map((row) => {
-                      console.log(row);
                       return (
                         <MemberTableRow
                           key={row.id}
                           row={row}
+                          currentAccountRole={currentRole}
                           selected={selected.includes(row.id)}
                           onSelectRow={() => onSelectRow(row.email)}
                           onDeleteRow={() => handleDeleteRow(row.email)}
                           onEditRow={(newRole, setRole) =>
-                            handleEditRole(row, newRole, setRole)
+                            handleEditRole(row.email, newRole, setRole)
                           }
                         />
                       );
@@ -343,15 +350,9 @@ export default function MemberList({ classId, className }) {
 
 // ----------------------------------------------------------------------
 
-function applySortFilter({
-  tableData,
-  comparator,
-  filterName,
-  filterStatus,
-  filterRole
-}) {
+function applySortFilter({ tableData, comparator, filterName, filterRole }) {
   const stabilizedThis = tableData.map((el, index) => [el, index]);
-
+  console.log(stabilizedThis);
   stabilizedThis.sort((a, b) => {
     const order = comparator(a[0], b[0]);
     if (order !== 0) return order;
@@ -360,13 +361,11 @@ function applySortFilter({
   let tempData = stabilizedThis.map((el) => el[0]);
 
   if (filterName) {
-    tempData = tempData.filter(
-      (item) => item.name.toLowerCase().indexOf(filterName.toLowerCase()) !== -1
-    );
-  }
-
-  if (filterStatus !== 'all') {
-    tempData = tempData.filter((item) => item.status === filterStatus);
+    tempData = tempData.filter((item) => {
+      return (
+        item.firstName.toLowerCase().indexOf(filterName.toLowerCase()) !== -1
+      );
+    });
   }
 
   if (filterRole !== 'all') {

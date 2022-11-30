@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types';
 import { useState } from 'react';
 // @mui
-import { useTheme } from '@mui/material/styles';
 import {
   Avatar,
   Checkbox,
@@ -9,27 +8,23 @@ import {
   TableCell,
   Typography,
   MenuItem,
-  FormControl,
-  InputLabel,
-  Select,
   TextField
 } from '@mui/material';
 // components
-import Label from '../../../../components/Label';
 import Iconify from '../../../../components/Iconify';
 import { TableMoreMenu } from '../../../../components/table';
-import { RHFSelect } from '../../../../components/hook-form';
 
 // ----------------------------------------------------------------------
 
 const roles = [
-  { name: 'owner', value: '1' },
-  { name: 'co-owner', value: '2' },
-  { name: 'member', value: '3' }
+  { name: 'co-owner', value: '1' },
+  { name: 'member', value: '2' },
+  { name: 'kick out', value: '3' }
 ];
 
 MemberTableRow.propTypes = {
   row: PropTypes.object,
+  currentAccountRole: PropTypes.string,
   selected: PropTypes.bool,
   onEditRow: PropTypes.func,
   onSelectRow: PropTypes.func,
@@ -38,6 +33,7 @@ MemberTableRow.propTypes = {
 
 export default function MemberTableRow({
   row,
+  currentAccountRole,
   selected,
   onEditRow,
   onSelectRow,
@@ -70,30 +66,62 @@ export default function MemberTableRow({
       </TableCell>
 
       <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
-        <Avatar alt={firstName} src={avatar || ''} sx={{ mr: 2 }} />
+        <Avatar
+          referrerPolicy="no-referrer"
+          alt={firstName}
+          src={avatar || ''}
+          sx={{ mr: 2 }}
+        />
         <Typography variant="subtitle2" noWrap>
           {`${firstName} ${lastName}`}
         </Typography>
       </TableCell>
 
       <TableCell align="left" sx={{ textTransform: 'capitalize' }}>
-        <TextField
-          select
-          size="small"
-          value={role}
-          onChange={handleChange}
-          sx={{ minWidth: 150 }}
-        >
-          {roles.map((r) => (
-            <MenuItem
-              key={r.value}
-              value={r.name}
-              sx={{ borderRadius: 1, minWidth: 150 }}
-            >
-              {r.name}
-            </MenuItem>
-          ))}
-        </TextField>
+        {currentAccountRole === 'member' ||
+        currentAccountRole === 'kick out' ? (
+          <Typography variant="subtitle2" noWrap>
+            {role}
+          </Typography>
+        ) : (
+          <>
+            {role === 'owner' ||
+            (role === 'co-owner' && currentAccountRole === 'co-owner') ? (
+              <Typography variant="subtitle2" noWrap>
+                {role}
+              </Typography>
+            ) : (
+              <TextField
+                select
+                size="small"
+                value={role}
+                onChange={handleChange}
+                sx={{ minWidth: 150 }}
+              >
+                {roles
+                  .filter(
+                    (r) =>
+                      (currentAccountRole === 'co-owner' &&
+                        r.name !== 'co-owner') ||
+                      currentAccountRole === 'owner'
+                  )
+                  .map((r) => (
+                    <MenuItem
+                      key={r.value}
+                      value={r.name}
+                      sx={{
+                        borderRadius: 1,
+                        minWidth: 150,
+                        textTransform: 'capitalize'
+                      }}
+                    >
+                      {r.name}
+                    </MenuItem>
+                  ))}
+              </TextField>
+            )}
+          </>
+        )}
       </TableCell>
 
       <TableCell align="right">
