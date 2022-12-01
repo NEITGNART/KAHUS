@@ -1,5 +1,5 @@
 // @mui
-import { Container, Box, Grid, Stack } from '@mui/material';
+import { Container, Box, Grid, Stack, Typography } from '@mui/material';
 // routes
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useMemo, useState } from 'react';
@@ -21,6 +21,8 @@ import EmptyContent from '../../components/EmptyContent';
 import TableNoData from '../../components/table/TableNoData';
 import ClassroomSearch from '../../sections/@dashboard/classroom/ClassroomSearch';
 import ClassFilter from '../../sections/@dashboard/classroom/ClassFilter';
+import emptyImage from '../../assets/illustration_empty_content.svg';
+import Image from '../../components/Image';
 
 const SORT_OPTIONS = [
   // { value: 'all', label: 'All' },
@@ -80,17 +82,18 @@ export default function ClassroomList() {
             onSort={handleChangeFilter}
           />
         </Stack>
-        <Grid container spacing={3}>
-          {classrooms?.length ? (
-            classrooms.map((classroom, index) => (
+
+        {classrooms.length !== 0 ? (
+          <Grid container spacing={3}>
+            {classrooms?.map((classroom, index) => (
               <Grid key={classroom.id} item xs={12} sm={6} md={4}>
                 <ClassCard classInfo={classroom} indexs={index} />
               </Grid>
-            ))
-          ) : (
-            <p> empty </p>
-          )}
-        </Grid>
+            ))}
+          </Grid>
+        ) : (
+          <EmptyContent title="No classes found" />
+        )}
       </Container>
     </Page>
   );
