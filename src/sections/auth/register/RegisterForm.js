@@ -45,10 +45,12 @@ export default function RegisterForm() {
 
   const {
     reset,
+    watch,
     setError,
     handleSubmit,
     formState: { errors, isSubmitting, isSubmitSuccessful }
   } = methods;
+
 
   const onSubmit = async (data) => {
     try {
@@ -67,7 +69,7 @@ export default function RegisterForm() {
         )}
 
         {isSubmitSuccessful && (
-          <Alert severity="success">Register successfully</Alert>
+          <Alert severity="warning">Thank you for your sign in. {`We're`} sent an email for verify your email address.</Alert>
         )}
 
         <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
