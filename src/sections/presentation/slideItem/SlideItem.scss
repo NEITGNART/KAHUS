@@ -1,0 +1,18 @@
+.slide-item-card-thumb {
+  width: 180px;
+  height: 100px;
+  padding: 5px;
+}
+
+.slide-item {
+  padding: 5px;
+}
+
+.slide-item:hover {
+  background: lightgrey;
+  cursor: pointer;
+}
+
+.selected {
+  background-color: lightblue;
+}
