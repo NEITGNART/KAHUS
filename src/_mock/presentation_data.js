@@ -1,5 +1,6 @@
 const presentationData = {
   id: 1,
+  code: 123456,
   title: 'Midterm quiz',
   createdBy: 123,
   createdAt: new Date(),

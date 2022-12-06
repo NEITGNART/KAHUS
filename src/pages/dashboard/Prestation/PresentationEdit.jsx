@@ -1,15 +1,39 @@
-import { Fragment, useEffect, useState } from 'react';
-import { Box, Button, Divider, Grid, Stack } from '@mui/material';
+import { useEffect, useState } from 'react';
+import {
+  Box,
+  Button,
+  Card,
+  Divider,
+  Drawer,
+  Grid,
+  List,
+  Stack,
+  Typography
+} from '@mui/material';
 import { Add, Close } from '@mui/icons-material';
+import { styled } from '@mui/material/styles';
 import DashboardHeader from '../../../layout/dashboard/header';
 import './Prestation.scss';
-import { HEADER } from '../../../config';
-import NavbarHorizontal from '../../../layout/dashboard/navbar/NavbarHorizontal';
-import Scrollbar from '../../../components/Scrollbar';
+import { HEADER, NAVBAR } from '../../../config';
 import SlideItem from '../../../sections/presentation/slideItem/SlideItem';
 import SlideReport from '../../../sections/presentation/slideReport/SlideReport';
 import SlideForm from '../../../sections/presentation/SlideForm/SlideForm';
 import presentationData from '../../../_mock/presentation_data';
+import Scrollbar from '../../../components/Scrollbar';
+
+const BarSubmitContainer = styled('div')({
+  flexGrow: 1,
+  display: 'flex',
+  overflow: 'hidden',
+  flexDirection: 'column'
+});
+
+const BarSubmit = styled('div')(({ theme }) => ({
+  flexShrink: 0,
+  display: 'flex',
+  alignItems: 'center',
+  padding: 1
+}));
 
 export default function PresentationEdit() {
   const [open, setOpen] = useState(false);
@@ -32,8 +56,7 @@ export default function PresentationEdit() {
   };
 
   const onChangeOption = (slideId, option) => {
-    const newSlides = [...slides];
-    const newState = newSlides.map((slide) => {
+    const newState = slides.map((slide) => {
       if (slideId === slide.id) {
         slide.options = slide.options.map((opt) => {
           if (opt.id === option.id) {
@@ -85,33 +108,55 @@ export default function PresentationEdit() {
     }
   };
 
+  function addNewOptionToSlide(newOption) {
+    const { id: slideId } = slides[currentSelect];
+    const newState = slides.map((slide) => {
+      if (slideId === slide.id) {
+        const { length } = slide.options || { length: 0 };
+        newOption.id = length > 0 ? slide.options[length - 1].id + 1 : 0;
+        slide.options = [...slide.options, newOption];
+      }
+      return slide;
+    });
+    setSlides(newState);
+  }
+
+  const deleteOptionFromSlide = (deleteOptionId) => {
+    const { id: slideId } = slides[currentSelect];
+    const newState = slides.map((slide) => {
+      if (slideId === slide.id) {
+        slide.options = slide.options.filter(
+          (option) => option.id !== deleteOptionId
+        );
+        console.log(deleteOptionId);
+      }
+      return slide;
+    });
+    setSlides(newState);
+  };
+
   return (
     <>
       <DashboardHeader
         onOpenSidebar={() => setOpen(true)}
         verticalLayout={true}
       />
-      <Stack
-        direction="row"
-        spacing={2}
-        justifyContent="flex-end"
+      <Box
         sx={{
           pt: {
-            xs: `${HEADER.MOBILE_HEIGHT}px`,
-            lg: `${HEADER.DASHBOARD_DESKTOP_HEIGHT}px`
-          },
-          pb: {
-            xs: `20px`,
-            lg: `20px`
+            xs: `${HEADER.MOBILE_HEIGHT - 25}px`,
+            lg: `${HEADER.DASHBOARD_DESKTOP_HEIGHT - 25}px`
           }
         }}
-      >
-        <Button> Save </Button>
-        <Button> Present </Button>
-      </Stack>
-      <Grid container alignContent="stretch" spacing={2}>
-        <Grid className="" item xs={2}>
-          <Stack>
+      />
+      <Card sx={{ height: { md: '92vh' }, display: { md: 'flex' } }}>
+        <Drawer
+          variant="permanent"
+          PaperProps={{
+            sx: { width: NAVBAR.BASE_WIDTH, position: 'relative' }
+          }}
+        >
+          <Box sx={{ p: 1 }}>
             <Stack justifyContent="center" direction="row">
               <Button onClick={removeSelectedSlide}>
                 <Close /> Delete
@@ -120,7 +165,10 @@ export default function PresentationEdit() {
                 <Add /> Add new
               </Button>
             </Stack>
-            <Stack spacing={1}>
+          </Box>
+          <Divider />
+          <Scrollbar>
+            <List disablePadding>
               {slides.map((slide, index) => (
                 <SlideItem
                   isSelected={currentSelect === index}
@@ -131,23 +179,45 @@ export default function PresentationEdit() {
                   onClick={onSlideItemClick}
                 />
               ))}
-            </Stack>
-          </Stack>
-        </Grid>
-        <Divider orientation="vertical" variant="middle" flexItem />
-        <Grid item xs>
-          <SlideReport />
-        </Grid>
-        <Grid item xs={3}>
-          {slides[currentSelect] && (
-            <SlideForm
-              slide={slides[currentSelect]}
-              onChangeQuestion={onChangeQuestion}
-              onChangeOption={onChangeOption}
-            />
-          )}
-        </Grid>
-      </Grid>
+            </List>
+          </Scrollbar>
+        </Drawer>
+
+        <BarSubmitContainer>
+          <Box sx={{ p: 1, display: 'flex' }}>
+            <Typography> Presentation`s Name</Typography>
+            <Box sx={{ flexGrow: 1 }} />
+            <Box sx={{ display: 'flex', alignItems: 'center', flexShrink: 0 }}>
+              <Button> Save </Button>
+              <Button> Present </Button>
+            </Box>
+          </Box>
+          <Divider />
+          <Grid container alignContent="stretch" spacing={2}>
+            <Divider orientation="vertical" variant="middle" flexItem />
+            <Grid item xs>
+              <SlideReport />
+            </Grid>
+            <Grid item xs={3}>
+              {slides[currentSelect] && (
+                <SlideForm
+                  slide={slides[currentSelect]}
+                  onChangeQuestion={onChangeQuestion}
+                  onChangeOption={(optionChange) =>
+                    onChangeOption(slides[currentSelect].id, optionChange)
+                  }
+                  onAddOptionButtonClick={(newOption) =>
+                    addNewOptionToSlide(newOption)
+                  }
+                  onDeleteOptionClick={(deleteOptionId) =>
+                    deleteOptionFromSlide(deleteOptionId)
+                  }
+                />
+              )}
+            </Grid>
+          </Grid>
+        </BarSubmitContainer>
+      </Card>
     </>
   );
 }
