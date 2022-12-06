@@ -12,14 +12,16 @@ import {
 } from '@mui/material';
 import { Add, Close } from '@mui/icons-material';
 import { styled } from '@mui/material/styles';
+import { useParams } from 'react-router-dom';
+import { useSnackbar } from 'notistack';
 import DashboardHeader from '../../../layout/dashboard/header';
 import './Prestation.scss';
 import { HEADER, NAVBAR } from '../../../config';
 import SlideItem from '../../../sections/presentation/slideItem/SlideItem';
 import SlideReport from '../../../sections/presentation/slideReport/SlideReport';
 import SlideForm from '../../../sections/presentation/SlideForm/SlideForm';
-import presentationData from '../../../_mock/presentation_data';
 import Scrollbar from '../../../components/Scrollbar';
+import axios from '../../../utils/axios';
 
 const BarSubmitContainer = styled('div')({
   flexGrow: 1,
@@ -36,27 +38,47 @@ const BarSubmit = styled('div')(({ theme }) => ({
 }));
 
 export default function PresentationEdit() {
+  const { presentationId } = useParams();
   const [open, setOpen] = useState(false);
-  const [slides, setSlides] = useState(presentationData.slides);
+  const [presentation, setPresentation] = useState(null);
   const [currentSelect, setCurrentSelect] = useState(0);
+  const { enqueueSnackbar } = useSnackbar();
 
   useEffect(() => {
-    console.log(currentSelect);
-  }, [currentSelect]);
+    axios
+      .get(`api/presentation/${presentationId}`)
+      .then((res) => {
+        setPresentation(res.data);
+      })
+      .catch((error) => {
+        enqueueSnackbar(error, { variant: 'error' });
+      });
+  }, []);
+
+  const onSave = () => {
+    axios
+      .post('api/presentation/update', presentation)
+      .then((res) => {
+        enqueueSnackbar('Saved!');
+      })
+      .catch((error) => {
+        enqueueSnackbar(error, { variant: 'error' });
+      });
+  };
 
   const onChangeQuestion = (slideId, question) => {
-    const newState = slides.map((slide) => {
+    const newState = presentation.slides.map((slide) => {
       if (slideId === slide.id) {
         return { ...slide, question };
       }
       return slide;
     });
 
-    setSlides(newState);
+    setPresentation({ ...presentation, slides: newState });
   };
 
   const onChangeOption = (slideId, option) => {
-    const newState = slides.map((slide) => {
+    const newState = presentation.slides.map((slide) => {
       if (slideId === slide.id) {
         slide.options = slide.options.map((opt) => {
           if (opt.id === option.id) {
@@ -67,8 +89,7 @@ export default function PresentationEdit() {
       }
       return slide;
     });
-    setSlides(newState);
-    console.log(newState);
+    setPresentation({ ...presentation, slides: newState });
   };
 
   const onSlideItemClick = (index) => {
@@ -76,8 +97,8 @@ export default function PresentationEdit() {
   };
 
   const addNewSlide = () => {
-    const { length } = slides || { length: 0 };
-    const id = length > 0 ? slides[length - 1].id + 1 : 0;
+    const { length } = presentation.slides || { length: 0 };
+    const id = length > 0 ? presentation.slides[length - 1].id + 1 : 0;
     const slide = {
       id,
       question: '',
@@ -88,20 +109,25 @@ export default function PresentationEdit() {
       ]
     };
 
-    setSlides([...slides, slide]);
+    setPresentation({
+      ...presentation,
+      slides: [...presentation.slides, slide]
+    });
     setCurrentSelect(length);
   };
 
   const removeSelectedSlide = () => {
-    setSlides(
-      slides.filter(
+    setPresentation({
+      ...presentation,
+      slides: presentation.slides.filter(
         (slide) =>
-          slides[currentSelect] && slide.id !== slides[currentSelect].id
+          presentation.slides[currentSelect] &&
+          slide.id !== presentation.slides[currentSelect].id
       )
-    );
+    });
     if (currentSelect - 1 >= 0) {
       setCurrentSelect(currentSelect - 1);
-    } else if (slides.length > 0) {
+    } else if (presentation.slides.length > 0) {
       setCurrentSelect(0);
     } else {
       setCurrentSelect(null);
@@ -109,8 +135,8 @@ export default function PresentationEdit() {
   };
 
   function addNewOptionToSlide(newOption) {
-    const { id: slideId } = slides[currentSelect];
-    const newState = slides.map((slide) => {
+    const { id: slideId } = presentation.slides[currentSelect];
+    const newState = presentation.slides.map((slide) => {
       if (slideId === slide.id) {
         const { length } = slide.options || { length: 0 };
         newOption.id = length > 0 ? slide.options[length - 1].id + 1 : 0;
@@ -118,12 +144,12 @@ export default function PresentationEdit() {
       }
       return slide;
     });
-    setSlides(newState);
+    setPresentation({ ...presentation, slides: newState });
   }
 
   const deleteOptionFromSlide = (deleteOptionId) => {
-    const { id: slideId } = slides[currentSelect];
-    const newState = slides.map((slide) => {
+    const { id: slideId } = presentation.slides[currentSelect];
+    const newState = presentation.slides.map((slide) => {
       if (slideId === slide.id) {
         slide.options = slide.options.filter(
           (option) => option.id !== deleteOptionId
@@ -132,7 +158,7 @@ export default function PresentationEdit() {
       }
       return slide;
     });
-    setSlides(newState);
+    setPresentation({ ...presentation, slides: newState });
   };
 
   return (
@@ -149,75 +175,82 @@ export default function PresentationEdit() {
           }
         }}
       />
-      <Card sx={{ height: { md: '92vh' }, display: { md: 'flex' } }}>
-        <Drawer
-          variant="permanent"
-          PaperProps={{
-            sx: { width: NAVBAR.BASE_WIDTH, position: 'relative' }
-          }}
-        >
-          <Box sx={{ p: 1 }}>
-            <Stack justifyContent="center" direction="row">
-              <Button onClick={removeSelectedSlide}>
-                <Close /> Delete
-              </Button>
-              <Button onClick={addNewSlide}>
-                <Add /> Add new
-              </Button>
-            </Stack>
-          </Box>
-          <Divider />
-          <Scrollbar>
-            <List disablePadding>
-              {slides.map((slide, index) => (
-                <SlideItem
-                  isSelected={currentSelect === index}
-                  /* eslint-disable-next-line react/no-array-index-key */
-                  key={index}
-                  index={index}
-                  slide={slide}
-                  onClick={onSlideItemClick}
-                />
-              ))}
-            </List>
-          </Scrollbar>
-        </Drawer>
-
-        <BarSubmitContainer>
-          <Box sx={{ p: 1, display: 'flex' }}>
-            <Typography> Presentation`s Name</Typography>
-            <Box sx={{ flexGrow: 1 }} />
-            <Box sx={{ display: 'flex', alignItems: 'center', flexShrink: 0 }}>
-              <Button> Save </Button>
-              <Button> Present </Button>
+      {presentation && (
+        <Card sx={{ height: { md: '92vh' }, display: { md: 'flex' } }}>
+          <Drawer
+            variant="permanent"
+            PaperProps={{
+              sx: { width: NAVBAR.BASE_WIDTH, position: 'relative' }
+            }}
+          >
+            <Box sx={{ p: 1 }}>
+              <Stack justifyContent="center" direction="row">
+                <Button onClick={removeSelectedSlide}>
+                  <Close /> Delete
+                </Button>
+                <Button onClick={addNewSlide}>
+                  <Add /> Add new
+                </Button>
+              </Stack>
             </Box>
-          </Box>
-          <Divider />
-          <Grid container alignContent="stretch" spacing={2}>
-            <Divider orientation="vertical" variant="middle" flexItem />
-            <Grid item xs>
-              <SlideReport />
+            <Divider />
+            <Scrollbar>
+              <List disablePadding>
+                {presentation.slides.map((slide, index) => (
+                  <SlideItem
+                    isSelected={currentSelect === index}
+                    /* eslint-disable-next-line react/no-array-index-key */
+                    key={index}
+                    index={index}
+                    slide={slide}
+                    onClick={onSlideItemClick}
+                  />
+                ))}
+              </List>
+            </Scrollbar>
+          </Drawer>
+
+          <BarSubmitContainer>
+            <Box sx={{ p: 1, display: 'flex' }}>
+              <Typography> {presentation.title}</Typography>
+              <Box sx={{ flexGrow: 1 }} />
+              <Box
+                sx={{ display: 'flex', alignItems: 'center', flexShrink: 0 }}
+              >
+                <Button onClick={onSave}> Save </Button>
+                <Button> Present </Button>
+              </Box>
+            </Box>
+            <Divider />
+            <Grid container alignContent="stretch" spacing={2}>
+              <Divider orientation="vertical" variant="middle" flexItem />
+              <Grid item xs>
+                <SlideReport />
+              </Grid>
+              <Grid item xs={3}>
+                {presentation.slides[currentSelect] && (
+                  <SlideForm
+                    slide={presentation.slides[currentSelect]}
+                    onChangeQuestion={onChangeQuestion}
+                    onChangeOption={(optionChange) =>
+                      onChangeOption(
+                        presentation.slides[currentSelect].id,
+                        optionChange
+                      )
+                    }
+                    onAddOptionButtonClick={(newOption) =>
+                      addNewOptionToSlide(newOption)
+                    }
+                    onDeleteOptionClick={(deleteOptionId) =>
+                      deleteOptionFromSlide(deleteOptionId)
+                    }
+                  />
+                )}
+              </Grid>
             </Grid>
-            <Grid item xs={3}>
-              {slides[currentSelect] && (
-                <SlideForm
-                  slide={slides[currentSelect]}
-                  onChangeQuestion={onChangeQuestion}
-                  onChangeOption={(optionChange) =>
-                    onChangeOption(slides[currentSelect].id, optionChange)
-                  }
-                  onAddOptionButtonClick={(newOption) =>
-                    addNewOptionToSlide(newOption)
-                  }
-                  onDeleteOptionClick={(deleteOptionId) =>
-                    deleteOptionFromSlide(deleteOptionId)
-                  }
-                />
-              )}
-            </Grid>
-          </Grid>
-        </BarSubmitContainer>
-      </Card>
+          </BarSubmitContainer>
+        </Card>
+      )}
     </>
   );
 }
