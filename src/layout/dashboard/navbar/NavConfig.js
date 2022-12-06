@@ -53,6 +53,11 @@ const navConfig = [
         title: 'My account',
         path: PATH_DASHBOARD.user.account,
         icon: ICONS.user
+      },
+      {
+        title: 'My presentations',
+        path: PATH_DASHBOARD.presentations.presentations,
+        icon: ICONS.kanban
       }
     ]
   }

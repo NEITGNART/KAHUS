@@ -166,6 +166,21 @@ export default function Router() {
             },
             { path: 'account', element: <ProfileManagement /> }
           ]
+        },
+        {
+          path: 'presentation',
+          children: [
+            {
+              element: (
+                <Navigate
+                  to="/dashboard/presentation/my-presentations"
+                  replace
+                />
+              ),
+              index: true
+            },
+            { path: 'my-presentations', element: <PresentationManagement /> }
+          ]
         }
       ]
     },
@@ -202,4 +217,8 @@ const ProfileManagement = Loadable(
 
 const MemberList = Loadable(
   lazy(() => import('../pages/dashboard/MemberList'))
+);
+
+const PresentationManagement = Loadable(
+  lazy(() => import('../pages/dashboard/PresentationList'))
 );

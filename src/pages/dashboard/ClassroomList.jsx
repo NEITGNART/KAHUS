@@ -42,6 +42,7 @@ export default function ClassroomList() {
       .get(`/api/group/group-invited`)
       .then((response) => {
         setClassrooms(response.data);
+        console.log(response.data);
       })
       .catch((err) => {
         console.log(err);
