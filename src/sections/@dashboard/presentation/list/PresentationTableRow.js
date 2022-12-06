@@ -14,7 +14,7 @@ import {
 
 import ReactTimeAgo from 'react-time-ago';
 import TextMaxLine from '../../../../components/TextMaxLine';
-import { PATH_DASHBOARD } from '../../../../routes/paths';
+import { PATH_PRESENTATION } from '../../../../routes/paths';
 
 // components
 import Label from '../../../../components/Label';
@@ -51,7 +51,7 @@ export default function PresentationTableRow({
     setOpenMenuActions(null);
   };
 
-  const linkTo = PATH_DASHBOARD.presentation.editPresentation(id);
+  const linkTo = PATH_PRESENTATION.presentation.editPresentation(id);
 
   return (
     <TableRow hover selected={selected}>

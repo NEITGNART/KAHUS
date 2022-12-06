@@ -168,25 +168,13 @@ export default function Router() {
           ]
         },
         {
-          path: 'presentation',
-          children: [
-            {
-              element: (
-                <Navigate
-                  to="/dashboard/presentation/my-presentations"
-                  replace
-                />
-              ),
-              index: true
-            },
-            { path: 'my-presentations', element: <PresentationManagement /> },
-            { path: ':presentationId/edit', element: <Presentation /> }
-          ]
+          path: 'presentations',
+          element: <PresentationManagement />
         }
       ]
     },
     {
-      path: 'presentation',
+      path: 'presentations',
       children: [
         {
           element: <Navigate to="/dashboard/presentations" replace />,
