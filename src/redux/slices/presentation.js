@@ -133,8 +133,8 @@ export function updatePresentation(presentationId, updatePresentationLocal) {
     dispatch(slice.actions.startLoading());
     try {
       const response = await axios.post('/api/presentation/update', {
-        presentationId,
-        newTitle: updatePresentationLocal
+        id: presentationId,
+        title: updatePresentationLocal
       });
       dispatch(
         slice.actions.updatePresentationSuccess(response.data.presentation)
