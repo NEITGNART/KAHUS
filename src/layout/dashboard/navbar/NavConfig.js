@@ -1,5 +1,5 @@
 // routes
-import { PATH_DASHBOARD } from '../../../routes/paths';
+import { PATH_DASHBOARD, PATH_PRESENTATION } from '../../../routes/paths';
 // components
 import Label from '../../../components/Label';
 import SvgIconStyle from '../../../components/SvgIconStyle';
@@ -53,6 +53,11 @@ const navConfig = [
         title: 'My account',
         path: PATH_DASHBOARD.user.account,
         icon: ICONS.user
+      },
+      {
+        title: 'My presentations',
+        path: PATH_DASHBOARD.presentation.presentations,
+        icon: ICONS.kanban
       }
     ]
   }

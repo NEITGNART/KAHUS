@@ -6,6 +6,7 @@ function path(root, sublink) {
 
 const ROOTS_AUTH = '/auth';
 export const ROOTS_DASHBOARD = '/dashboard';
+const ROOTS_PRESENTATION = '/presentations';
 
 // ----------------------------------------------------------------------
 
@@ -43,58 +44,19 @@ export const PATH_DASHBOARD = {
     root: path(ROOTS_DASHBOARD, '/mail'),
     all: path(ROOTS_DASHBOARD, '/mail/all')
   },
-  chat: {
-    root: path(ROOTS_DASHBOARD, '/chat'),
-    new: path(ROOTS_DASHBOARD, '/chat/new'),
-    view: (name) => path(ROOTS_DASHBOARD, `/chat/${name}`)
-  },
-  calendar: path(ROOTS_DASHBOARD, '/calendar'),
-  kanban: path(ROOTS_DASHBOARD, '/kanban'),
   user: {
     root: path(ROOTS_DASHBOARD, '/user'),
     account: path(ROOTS_DASHBOARD, '/user/account')
   },
-  eCommerce: {
-    root: path(ROOTS_DASHBOARD, '/e-commerce'),
-    shop: path(ROOTS_DASHBOARD, '/e-commerce/shop'),
-    list: path(ROOTS_DASHBOARD, '/e-commerce/list'),
-    checkout: path(ROOTS_DASHBOARD, '/e-commerce/checkout'),
-    new: path(ROOTS_DASHBOARD, '/e-commerce/product/new'),
-    view: (name) => path(ROOTS_DASHBOARD, `/e-commerce/product/${name}`),
-    edit: (name) => path(ROOTS_DASHBOARD, `/e-commerce/product/${name}/edit`),
-    demoEdit: path(
-      ROOTS_DASHBOARD,
-      '/e-commerce/product/nike-blazer-low-77-vintage/edit'
-    ),
-    demoView: path(
-      ROOTS_DASHBOARD,
-      '/e-commerce/product/nike-air-force-1-ndestrukt'
-    )
-  },
-  invoice: {
-    root: path(ROOTS_DASHBOARD, '/invoice'),
-    list: path(ROOTS_DASHBOARD, '/invoice/list'),
-    new: path(ROOTS_DASHBOARD, '/invoice/new'),
-    view: (id) => path(ROOTS_DASHBOARD, `/invoice/${id}`),
-    edit: (id) => path(ROOTS_DASHBOARD, `/invoice/${id}/edit`),
-    demoEdit: path(
-      ROOTS_DASHBOARD,
-      '/invoice/e99f09a7-dd88-49d5-b1c8-1daf80c2d7b1/edit'
-    ),
-    demoView: path(
-      ROOTS_DASHBOARD,
-      '/invoice/e99f09a7-dd88-49d5-b1c8-1daf80c2d7b5'
-    )
-  },
-  blog: {
-    root: path(ROOTS_DASHBOARD, '/blog'),
-    posts: path(ROOTS_DASHBOARD, '/blog/posts'),
-    new: path(ROOTS_DASHBOARD, '/blog/new'),
-    view: (title) => path(ROOTS_DASHBOARD, `/blog/post/${title}`),
-    demoView: path(
-      ROOTS_DASHBOARD,
-      '/blog/post/apply-these-7-secret-techniques-to-improve-event'
-    )
+  presentation: {
+    presentations: path(ROOTS_DASHBOARD, '/presentations')
+  }
+};
+
+export const PATH_PRESENTATION = {
+  root: ROOTS_PRESENTATION,
+  presentation: {
+    editPresentation: (id) => path(ROOTS_PRESENTATION, `/${id}/edit`)
   }
 };
 
