@@ -10,11 +10,14 @@ import {
   Typography,
   MenuItem
 } from '@mui/material';
+import TimeAgo from 'javascript-time-ago';
+import en from 'javascript-time-ago/locale/en.json';
+import ru from 'javascript-time-ago/locale/ru.json';
+import ReactTimeAgo from 'react-time-ago';
 // components
 import Label from '../../../../components/Label';
 import Iconify from '../../../../components/Iconify';
 import { TableMoreMenu } from '../../../../components/table';
-
 // ----------------------------------------------------------------------
 
 PresentationTableRow.propTypes = {
@@ -46,6 +49,9 @@ export default function PresentationTableRow({
     setOpenMenuActions(null);
   };
 
+  TimeAgo.addDefaultLocale(en);
+  TimeAgo.addLocale(ru);
+
   return (
     <TableRow hover selected={selected}>
       <TableCell padding="checkbox">
@@ -59,11 +65,11 @@ export default function PresentationTableRow({
       <TableCell align="left">{createdBy}</TableCell>
 
       <TableCell align="left" sx={{ textTransform: 'capitalize' }}>
-        {modifiedAt}
+        <ReactTimeAgo date={modifiedAt} locale="en-US" />
       </TableCell>
 
       <TableCell align="left" sx={{ textTransform: 'capitalize' }}>
-        {createdAt}
+        <ReactTimeAgo date={createdAt} locale="en-US" />
       </TableCell>
 
       <TableCell align="right">
