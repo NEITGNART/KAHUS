@@ -8,12 +8,14 @@ import {
   TableRow,
   TableCell,
   Typography,
-  MenuItem
+  MenuItem,
+  Link
 } from '@mui/material';
-import TimeAgo from 'javascript-time-ago';
-import en from 'javascript-time-ago/locale/en.json';
-import ru from 'javascript-time-ago/locale/ru.json';
+
 import ReactTimeAgo from 'react-time-ago';
+import TextMaxLine from '../../../../components/TextMaxLine';
+import { PATH_DASHBOARD } from '../../../../routes/paths';
+
 // components
 import Label from '../../../../components/Label';
 import Iconify from '../../../../components/Iconify';
@@ -37,7 +39,7 @@ export default function PresentationTableRow({
 }) {
   const theme = useTheme();
 
-  const { title, createdAt, modifiedAt, createdBy } = row;
+  const { id, title, createdAt, modifiedAt, createdBy } = row;
 
   const [openMenu, setOpenMenuActions] = useState(null);
 
@@ -49,8 +51,7 @@ export default function PresentationTableRow({
     setOpenMenuActions(null);
   };
 
-  TimeAgo.addDefaultLocale(en);
-  TimeAgo.addLocale(ru);
+  const linkTo = PATH_DASHBOARD.presentation.editPresentation(id);
 
   return (
     <TableRow hover selected={selected}>
@@ -59,7 +60,12 @@ export default function PresentationTableRow({
       </TableCell>
 
       <TableCell align="left" sx={{ textTransform: 'capitalize' }}>
-        {title}
+        {/* {title} */}
+        <Link href={linkTo} color="inherit">
+          <TextMaxLine line={1} persistent>
+            {title}
+          </TextMaxLine>
+        </Link>
       </TableCell>
 
       <TableCell align="left">{createdBy}</TableCell>

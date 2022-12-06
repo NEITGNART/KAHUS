@@ -6,6 +6,7 @@ function path(root, sublink) {
 
 const ROOTS_AUTH = '/auth';
 export const ROOTS_DASHBOARD = '/dashboard';
+const ROOTS_PRESENTATION = '/presentation';
 
 // ----------------------------------------------------------------------
 
@@ -47,8 +48,9 @@ export const PATH_DASHBOARD = {
     root: path(ROOTS_DASHBOARD, '/user'),
     account: path(ROOTS_DASHBOARD, '/user/account')
   },
-  presentations: {
-    presentations: path(ROOTS_DASHBOARD, '/presentation/my-presentations')
+  presentation: {
+    presentations: path(ROOTS_DASHBOARD, '/presentation/my-presentations'),
+    editPresentation: (id) => path(ROOTS_DASHBOARD, `/presentation/${id}/edit`)
   }
 };
 

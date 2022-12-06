@@ -179,7 +179,8 @@ export default function Router() {
               ),
               index: true
             },
-            { path: 'my-presentations', element: <PresentationManagement /> }
+            { path: 'my-presentations', element: <PresentationManagement /> },
+            { path: ':presentationId/edit', element: <Presentation /> }
           ]
         }
       ]
