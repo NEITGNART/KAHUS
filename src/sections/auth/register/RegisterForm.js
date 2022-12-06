@@ -51,7 +51,6 @@ export default function RegisterForm() {
     formState: { errors, isSubmitting, isSubmitSuccessful }
   } = methods;
 
-
   const onSubmit = async (data) => {
     try {
       await register(data.email, data.password, data.firstName, data.lastName);
@@ -69,7 +68,10 @@ export default function RegisterForm() {
         )}
 
         {isSubmitSuccessful && (
-          <Alert severity="warning">Thank you for your sign in. {`We're`} sent an email for verify your email address.</Alert>
+          <Alert severity="warning">
+            Thank you for your sign in. {`We're`} sent an email for verify your
+            email address.
+          </Alert>
         )}
 
         <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>

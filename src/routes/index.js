@@ -185,6 +185,16 @@ export default function Router() {
       ]
     },
     {
+      path: 'presentation',
+      children: [
+        {
+          element: <Navigate to="/dashboard/presentations" replace />,
+          index: true
+        },
+        { path: ':presentationId/edit', element: <Presentation /> }
+      ]
+    },
+    {
       path: '/',
       element: <Navigate to="/dashboard/classroom" replace />
     }
@@ -221,4 +231,8 @@ const MemberList = Loadable(
 
 const PresentationManagement = Loadable(
   lazy(() => import('../pages/dashboard/PresentationList'))
+);
+
+const Presentation = Loadable(
+  lazy(() => import('../pages/dashboard/Prestation/PresentationEdit'))
 );
