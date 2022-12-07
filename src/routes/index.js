@@ -1,27 +1,27 @@
-import { Suspense, lazy, useEffect } from 'react';
+import React, { Suspense, lazy, useEffect, useState } from 'react';
 import {
   Navigate,
   useRoutes,
   useLocation,
   useSearchParams
 } from 'react-router-dom';
+
 // guard
 import PropTypes from 'prop-types';
 import { useSnackbar } from 'notistack';
-import { useQuery } from '@tanstack/react-query';
+
 import AuthGuard from '../guards/AuthGuard';
 // layouts
-
 // ----------------------------------------------------------------------
-
 import LoadingScreen from '../components/LoadingScreen';
 import DashboardLayout from '../layout/dashboard';
-import useAuth from '../hooks/useAuth';
 import axios from '../utils/axios';
+import PresentSlide from '../components/Presentation';
+import PresentationHost from '../components/PresentationHost';
 // ----------------------------------------------------------------------
 
 const Loadable = (Component) =>
-  function (props) {
+  function(props) {
     const { pathname } = useLocation();
     return (
       <Suspense
@@ -111,7 +111,7 @@ export default function Router() {
         {
           path: 'login/success',
           element: (
-            <Verify message="Verify account successfully" status="success">
+            <Verify message='Verify account successfully' status='success'>
               <Login />
             </Verify>
           )
@@ -131,14 +131,14 @@ export default function Router() {
       ),
       children: [
         {
-          element: <Navigate to="/dashboard/classroom" replace />,
+          element: <Navigate to='/dashboard/classroom' replace />,
           index: true
         },
         {
           path: 'classroom',
           children: [
             {
-              element: <Navigate to="/dashboard/classroom/classes" replace />,
+              element: <Navigate to='/dashboard/classroom/classes' replace />,
               index: true
             },
             { path: 'classes', element: <ClassroomList /> },
@@ -161,7 +161,7 @@ export default function Router() {
           path: 'user',
           children: [
             {
-              element: <Navigate to="/dashboard/user/account" replace />,
+              element: <Navigate to='/dashboard/user/account' replace />,
               index: true
             },
             { path: 'account', element: <ProfileManagement /> }
@@ -177,15 +177,23 @@ export default function Router() {
       path: 'presentations',
       children: [
         {
-          element: <Navigate to="/dashboard/presentations" replace />,
+          element: <Navigate to='/dashboard/presentations' replace />,
           index: true
         },
         { path: ':presentationId/edit', element: <Presentation /> }
       ]
     },
     {
+      path: '/present/:code',
+      element: <PresentationHost />
+    },
+    {
+      path: '/present-audience/:code',
+      element: <PresentSlide />
+    },
+    {
       path: '/',
-      element: <Navigate to="/dashboard/classroom" replace />
+      element: <Navigate to='/dashboard/classroom' replace />
     }
     // { path: '*', element: <Navigate to="/404" replace /> }
   ]);

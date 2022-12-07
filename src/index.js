@@ -26,19 +26,17 @@ const queryClient = new QueryClient({
 });
 
 root.render(
-  <React.StrictMode>
-    <AuthProvider>
-      <HelmetProvider>
-        <ReduxProvider store={store}>
-          <BrowserRouter>
-            <QueryClientProvider client={queryClient}>
-              <App />
-            </QueryClientProvider>
-          </BrowserRouter>
-        </ReduxProvider>
-      </HelmetProvider>
-    </AuthProvider>
-  </React.StrictMode>
+  <AuthProvider>
+    <HelmetProvider>
+      <ReduxProvider store={store}>
+        <BrowserRouter>
+          <QueryClientProvider client={queryClient}>
+            <App />
+          </QueryClientProvider>
+        </BrowserRouter>
+      </ReduxProvider>
+    </HelmetProvider>
+  </AuthProvider>
 );
 
 // If you want to start measuring performance in your app, pass a function
