@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Box,
   Button,
   Card,
+  Container,
   Divider,
   Drawer,
   Grid,
@@ -12,7 +13,7 @@ import {
 } from '@mui/material';
 import { Add, Close } from '@mui/icons-material';
 import { styled } from '@mui/material/styles';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useSnackbar } from 'notistack';
 import DashboardHeader from '../../../layout/dashboard/header';
 import './Prestation.scss';
@@ -37,13 +38,14 @@ const BarSubmit = styled('div')(({ theme }) => ({
   padding: 1
 }));
 
+/* A function that is exported by default. */
 export default function PresentationEdit() {
   const { presentationId } = useParams();
   const [open, setOpen] = useState(false);
   const [presentation, setPresentation] = useState(null);
   const [currentSelect, setCurrentSelect] = useState(0);
+  const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
-
   useEffect(() => {
     axios
       .get(`api/presentation/${presentationId}`)
@@ -64,6 +66,11 @@ export default function PresentationEdit() {
       .catch((error) => {
         enqueueSnackbar(error, { variant: 'error' });
       });
+  };
+
+  const onPresent = () => {
+    // open new tab
+    window.open(`/present/${presentation.code}`, '_blank');
   };
 
   const onChangeQuestion = (slideId, question) => {
@@ -103,9 +110,14 @@ export default function PresentationEdit() {
       id,
       question: '',
       options: [
-        { id: 1, content: 'Option 1', isCorrect: false },
-        { id: 2, content: 'Option 2', isCorrect: false },
-        { id: 3, content: 'Option 3', isCorrect: false }
+        { id: 1, content: 'Option 1', isCorrect: false, numberAnswer: 0 },
+        {
+          id: 2,
+          content: 'Option 2',
+          isCorrect: false,
+          numberAnswer: 0
+        },
+        { id: 3, content: 'Option 3', isCorrect: false, numberAnswer: 0 }
       ]
     };
 
@@ -140,6 +152,7 @@ export default function PresentationEdit() {
       if (slideId === slide.id) {
         const { length } = slide.options || { length: 0 };
         newOption.id = length > 0 ? slide.options[length - 1].id + 1 : 0;
+        newOption.numberAnswer = 0;
         slide.options = [...slide.options, newOption];
       }
       return slide;
@@ -178,13 +191,13 @@ export default function PresentationEdit() {
       {presentation && (
         <Card sx={{ height: { md: '92vh' }, display: { md: 'flex' } }}>
           <Drawer
-            variant="permanent"
+            variant='permanent'
             PaperProps={{
               sx: { width: NAVBAR.BASE_WIDTH, position: 'relative' }
             }}
           >
             <Box sx={{ p: 1 }}>
-              <Stack justifyContent="center" direction="row">
+              <Stack justifyContent='center' direction='row'>
                 <Button onClick={removeSelectedSlide}>
                   <Close /> Delete
                 </Button>
@@ -218,14 +231,22 @@ export default function PresentationEdit() {
                 sx={{ display: 'flex', alignItems: 'center', flexShrink: 0 }}
               >
                 <Button onClick={onSave}> Save </Button>
-                <Button> Present </Button>
+                <Button onClick={onPresent}> Present </Button>
               </Box>
             </Box>
             <Divider />
-            <Grid container alignContent="stretch" spacing={2}>
-              <Divider orientation="vertical" variant="middle" flexItem />
+            <Grid container alignContent='stretch' spacing={2}>
+              <Divider orientation='vertical' variant='middle' flexItem />
               <Grid item xs>
-                <SlideReport />
+                {presentation.slides[currentSelect] ? (
+                  <SlideReport slide={presentation.slides[currentSelect]} link={presentation.link}/>
+                ) : (
+                  <Container
+                    sx={{ padding: '20px', pb: '50px', height: '100%' }}
+                  >
+                    <Box sx={{ bgcolor: '#cfe8fc', height: '100%' }} />
+                  </Container>
+                )}
               </Grid>
               <Grid item xs={3}>
                 {presentation.slides[currentSelect] && (
