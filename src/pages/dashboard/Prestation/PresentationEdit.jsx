@@ -20,7 +20,7 @@ import {
   useSearchParams
 } from 'react-router-dom';
 import { useSnackbar } from 'notistack';
-import { io } from 'socket.io-client';
+import io from 'socket.io-client';
 import DashboardHeader from '../../../layout/dashboard/header';
 import './Prestation.scss';
 import { HEADER, HOST_API, HOST_SK, NAVBAR } from '../../../config';

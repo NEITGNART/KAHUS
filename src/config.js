@@ -60,5 +60,4 @@ export const defaultSettings = {
 };
 
 export const HOST_API = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:5001';
-
-export const HOST_SK = process.env.REACT_APP_SK_ENDPOINT || 'http://localhost:5001';
+export const HOST_SK = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:5001';

@@ -28,7 +28,7 @@ import {
 
 // eslint-disable-next-line import/no-unresolved
 import { Bar } from 'react-chartjs-2';
-import { io } from 'socket.io-client';
+import io from 'socket.io-client';
 import { useSearchParams } from 'react-router-dom';
 import { useParams } from 'react-router';
 import { Container, IconButton, Typography } from '@mui/material';
