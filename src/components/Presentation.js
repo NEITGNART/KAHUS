@@ -55,7 +55,7 @@ import { useSearchParams } from 'react-router-dom';
 import { useParams } from 'react-router';
 import { FormProvider } from './hook-form';
 import RHFMyRadioGroup from './hook-form/RHFMyRadioGroup';
-import { HOST_API } from '../config';
+import { HOST_SK } from '../config';
 
 ChartJS.register(
   CategoryScale,
@@ -89,7 +89,7 @@ const options = {
   }
 };
 
-const socket = io(HOST_API);
+const socket = io(HOST_SK);
 
 function Presentation() {
   const [labels, setLabels] = useState([]);

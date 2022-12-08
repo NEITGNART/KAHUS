@@ -24,7 +24,7 @@ import Page from '../../components/Page';
 import { PATH_AUTH } from '../../routes/paths';
 import Iconify from '../../components/Iconify';
 import useAuth from '../../hooks/useAuth';
-import { HOST_API } from '../../config';
+import { HOST_API, HOST_SK } from '../../config';
 // routes
 // hooks
 // components
@@ -35,6 +35,8 @@ import { HOST_API } from '../../config';
 // ----------------------------------------------------------------------
 
 export default function Login() {
+
+  console.log(HOST_SK);
   const { googleLogin } = useAuth();
   const navigate = useNavigate();
   const smUp = useResponsive('up', 'sm');

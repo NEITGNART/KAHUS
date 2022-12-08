@@ -36,7 +36,7 @@ import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { useSnackbar } from 'notistack';
 import { FormProvider } from './hook-form';
 import RHFMyRadioGroup from './hook-form/RHFMyRadioGroup';
-import { HOST_API } from '../config';
+import { HOST_API, HOST_SK } from '../config';
 import Iconify from './Iconify';
 
 ChartJS.register(
@@ -71,7 +71,7 @@ const options = {
   }
 };
 
-const socket = io(HOST_API);
+const socket = io(HOST_SK);
 
 function PresentationHost() {
   const [labels, setLabels] = useState([]);

@@ -23,7 +23,7 @@ import { useSnackbar } from 'notistack';
 import { io } from 'socket.io-client';
 import DashboardHeader from '../../../layout/dashboard/header';
 import './Prestation.scss';
-import { HEADER, HOST_API, NAVBAR } from '../../../config';
+import { HEADER, HOST_API, HOST_SK, NAVBAR } from '../../../config';
 import SlideItem from '../../../sections/presentation/slideItem/SlideItem';
 import SlideReport from '../../../sections/presentation/slideReport/SlideReport';
 import SlideForm from '../../../sections/presentation/SlideForm/SlideForm';
@@ -44,7 +44,7 @@ const BarSubmit = styled('div')(({ theme }) => ({
   padding: 1
 }));
 
-const socket = io(HOST_API);
+const socket = io(HOST_SK);
 
 /* A function that is exported by default. */
 export default function PresentationEdit() {
