@@ -12,7 +12,8 @@ import {
   Slide,
   Deck,
   Box,
-  Progress, Text
+  Progress,
+  Text
 } from 'spectacle';
 
 import {
@@ -90,14 +91,17 @@ function PresentationHost() {
       socket.emit('join', { room: roomCode, slideIndex: Number(slideIndex) });
 
       socket.on('chart', (data) => {
-        setQuestion(data.question);
-        setLabels(data.answer);
-        setNumberAnswer(data.numberAnswer);
-        setLink(data.link);
+        if (data) {
+          setQuestion(data.question);
+          setLabels(data.answer);
+          setNumberAnswer(data.numberAnswer);
+        }
       });
 
       socket.on('vote', (data) => {
-        setNumberAnswer(data.numberAnswer);
+        if (data) {
+          setNumberAnswer(data.numberAnswer);
+        }
       });
     });
 

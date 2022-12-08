@@ -110,13 +110,17 @@ function Presentation() {
       socket.emit('join', { room: roomCode, slideIndex: Number(slideIndex) });
 
       socket.on('chart', (data) => {
-        setQuestion(data.question);
-        setLabels(data.answer);
-        setNumberAnswer(data.numberAnswer);
+        if (data) {
+          setQuestion(data.question);
+          setLabels(data.answer);
+          setNumberAnswer(data.numberAnswer);
+        }
       });
 
       socket.on('vote', (data) => {
-        setNumberAnswer(data.numberAnswer);
+        if (data) {
+          setNumberAnswer(data.numberAnswer);
+        }
       });
     });
 

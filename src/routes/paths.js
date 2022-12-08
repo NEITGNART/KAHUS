@@ -56,7 +56,8 @@ export const PATH_DASHBOARD = {
 export const PATH_PRESENTATION = {
   root: ROOTS_PRESENTATION,
   presentation: {
-    editPresentation: (id) => path(ROOTS_PRESENTATION, `/${id}/edit`)
+    editPresentation: (id, code) =>
+      path(ROOTS_PRESENTATION, `/${id}/edit?code=${code}`)
   }
 };
 

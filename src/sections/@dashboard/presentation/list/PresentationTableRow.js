@@ -51,7 +51,7 @@ export default function PresentationTableRow({
     setOpenMenuActions(null);
   };
 
-  const linkTo = PATH_PRESENTATION.presentation.editPresentation(id);
+  const linkTo = PATH_PRESENTATION.presentation.editPresentation(id, row.code);
 
   return (
     <TableRow hover selected={selected}>

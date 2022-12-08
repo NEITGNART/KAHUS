@@ -13,11 +13,17 @@ import {
 } from '@mui/material';
 import { Add, Close } from '@mui/icons-material';
 import { styled } from '@mui/material/styles';
-import { useNavigate, useParams } from 'react-router-dom';
+import {
+  redirect,
+  useNavigate,
+  useParams,
+  useSearchParams
+} from 'react-router-dom';
 import { useSnackbar } from 'notistack';
+import { io } from 'socket.io-client';
 import DashboardHeader from '../../../layout/dashboard/header';
 import './Prestation.scss';
-import { HEADER, NAVBAR } from '../../../config';
+import { HEADER, HOST_API, NAVBAR } from '../../../config';
 import SlideItem from '../../../sections/presentation/slideItem/SlideItem';
 import SlideReport from '../../../sections/presentation/slideReport/SlideReport';
 import SlideForm from '../../../sections/presentation/SlideForm/SlideForm';
@@ -38,12 +44,17 @@ const BarSubmit = styled('div')(({ theme }) => ({
   padding: 1
 }));
 
+const socket = io(HOST_API);
+
 /* A function that is exported by default. */
 export default function PresentationEdit() {
   const { presentationId } = useParams();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const code = searchParams.get('code');
   const [open, setOpen] = useState(false);
   const [presentation, setPresentation] = useState(null);
   const [currentSelect, setCurrentSelect] = useState(0);
+  const [currentSlide, setCurrentSlide] = useState([]);
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
   useEffect(() => {
@@ -53,9 +64,46 @@ export default function PresentationEdit() {
         setPresentation(res.data);
       })
       .catch((error) => {
-        enqueueSnackbar(error, { variant: 'error' });
+        enqueueSnackbar(error.message, { variant: 'error' });
+        navigate('/dashboard/presentations', { replace: true });
       });
   }, []);
+
+  useEffect(() => {
+    socket.on('connect', () => {
+      socket.emit('join', {
+        room: code,
+        slideIndex: 0
+      });
+    });
+
+    return () => {
+      socket.off('connect');
+      socket.off('disconnect');
+    };
+  }, []);
+
+  useEffect(() => {
+    socket.on('vote', (data) => {
+      if (data) {
+        setPresentation((prev) => {
+          const newPresentation = { ...prev };
+          data.numberAnswer.forEach((number, index) => {
+            if (newPresentation.slides[currentSelect]?.options[index]) {
+              newPresentation.slides[currentSelect].options[
+                index
+              ].numberAnswer = number;
+            }
+          });
+          return newPresentation;
+        });
+      }
+    });
+
+    return () => {
+      socket.off('vote');
+    };
+  }, [presentation]);
 
   const onSave = () => {
     axios
@@ -68,8 +116,8 @@ export default function PresentationEdit() {
       });
   };
 
-  const onPresent = () => {
-    // open new tab
+  const onPresent = async () => {
+    onSave();
     window.open(`/present/${presentation.code}`, '_blank');
   };
 
@@ -81,7 +129,11 @@ export default function PresentationEdit() {
       return slide;
     });
 
-    setPresentation({ ...presentation, slides: newState });
+    setPresentation((prev) => {
+      const newPresentation = { ...prev };
+      newPresentation.slides = newState;
+      return newPresentation;
+    });
   };
 
   const onChangeOption = (slideId, option) => {
@@ -96,7 +148,11 @@ export default function PresentationEdit() {
       }
       return slide;
     });
-    setPresentation({ ...presentation, slides: newState });
+    setPresentation((prev) => {
+      const newPresentation = { ...prev };
+      newPresentation.slides = newState;
+      return newPresentation;
+    });
   };
 
   const onSlideItemClick = (index) => {
@@ -121,9 +177,10 @@ export default function PresentationEdit() {
       ]
     };
 
-    setPresentation({
-      ...presentation,
-      slides: [...presentation.slides, slide]
+    setPresentation((prev) => {
+      const newPresentation = { ...prev };
+      newPresentation.slides = [...newPresentation.slides, slide];
+      return newPresentation;
     });
     setCurrentSelect(length);
   };
@@ -157,7 +214,11 @@ export default function PresentationEdit() {
       }
       return slide;
     });
-    setPresentation({ ...presentation, slides: newState });
+    setPresentation((prev) => {
+      const newPresentation = { ...prev };
+      newPresentation.slides = newState;
+      return newPresentation;
+    });
   }
 
   const deleteOptionFromSlide = (deleteOptionId) => {
@@ -171,7 +232,11 @@ export default function PresentationEdit() {
       }
       return slide;
     });
-    setPresentation({ ...presentation, slides: newState });
+    setPresentation((prev) => {
+      const newPresentation = { ...prev };
+      newPresentation.slides = newState;
+      return newPresentation;
+    });
   };
 
   return (
@@ -191,13 +256,13 @@ export default function PresentationEdit() {
       {presentation && (
         <Card sx={{ height: { md: '92vh' }, display: { md: 'flex' } }}>
           <Drawer
-            variant='permanent'
+            variant="permanent"
             PaperProps={{
               sx: { width: NAVBAR.BASE_WIDTH, position: 'relative' }
             }}
           >
             <Box sx={{ p: 1 }}>
-              <Stack justifyContent='center' direction='row'>
+              <Stack justifyContent="center" direction="row">
                 <Button onClick={removeSelectedSlide}>
                   <Close /> Delete
                 </Button>
@@ -235,11 +300,15 @@ export default function PresentationEdit() {
               </Box>
             </Box>
             <Divider />
-            <Grid container alignContent='stretch' spacing={2}>
-              <Divider orientation='vertical' variant='middle' flexItem />
+            <Grid container alignContent="stretch" spacing={2}>
+              <Divider orientation="vertical" variant="middle" flexItem />
               <Grid item xs>
-                {presentation.slides[currentSelect] ? (
-                  <SlideReport slide={presentation.slides[currentSelect]} link={presentation.link}/>
+                {currentSlide ? (
+                  <SlideReport
+                    roomCode={presentation.code}
+                    slide={presentation.slides[currentSelect]}
+                    link={presentation.link}
+                  />
                 ) : (
                   <Container
                     sx={{ padding: '20px', pb: '50px', height: '100%' }}
