@@ -68,7 +68,7 @@ export default function PresentationTableRow({
         </Link>
       </TableCell>
 
-      <TableCell align="left">{createdBy}</TableCell>
+      <TableCell align="left">me</TableCell>
 
       <TableCell align="left" sx={{ textTransform: 'capitalize' }}>
         <ReactTimeAgo date={modifiedAt} locale="en-US" />

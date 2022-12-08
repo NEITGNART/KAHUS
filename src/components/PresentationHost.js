@@ -95,6 +95,7 @@ function PresentationHost() {
           setQuestion(data.question);
           setLabels(data.answer);
           setNumberAnswer(data.numberAnswer);
+          setLink(data.link);
         }
       });
 
