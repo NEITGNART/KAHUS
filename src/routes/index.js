@@ -16,12 +16,12 @@ import AuthGuard from '../guards/AuthGuard';
 import LoadingScreen from '../components/LoadingScreen';
 import DashboardLayout from '../layout/dashboard';
 import axios from '../utils/axios';
-import PresentSlide from '../components/Presentation';
+import PresentationAudience from '../components/Presentation';
 import PresentationHost from '../components/PresentationHost';
 // ----------------------------------------------------------------------
 
 const Loadable = (Component) =>
-  function(props) {
+  function (props) {
     const { pathname } = useLocation();
     return (
       <Suspense
@@ -111,7 +111,7 @@ export default function Router() {
         {
           path: 'login/success',
           element: (
-            <Verify message='Verify account successfully' status='success'>
+            <Verify message="Verify account successfully" status="success">
               <Login />
             </Verify>
           )
@@ -131,14 +131,14 @@ export default function Router() {
       ),
       children: [
         {
-          element: <Navigate to='/dashboard/classroom' replace />,
+          element: <Navigate to="/dashboard/classroom" replace />,
           index: true
         },
         {
           path: 'classroom',
           children: [
             {
-              element: <Navigate to='/dashboard/classroom/classes' replace />,
+              element: <Navigate to="/dashboard/classroom/classes" replace />,
               index: true
             },
             { path: 'classes', element: <ClassroomList /> },
@@ -161,7 +161,7 @@ export default function Router() {
           path: 'user',
           children: [
             {
-              element: <Navigate to='/dashboard/user/account' replace />,
+              element: <Navigate to="/dashboard/user/account" replace />,
               index: true
             },
             { path: 'account', element: <ProfileManagement /> }
@@ -177,7 +177,7 @@ export default function Router() {
       path: 'presentations',
       children: [
         {
-          element: <Navigate to='/dashboard/presentations' replace />,
+          element: <Navigate to="/dashboard/presentations" replace />,
           index: true
         },
         { path: ':presentationId/edit', element: <Presentation /> }
@@ -189,11 +189,11 @@ export default function Router() {
     },
     {
       path: '/present-audience/:code',
-      element: <PresentSlide />
+      element: <PresentationAudience />
     },
     {
       path: '/',
-      element: <Navigate to='/dashboard/classroom' replace />
+      element: <Navigate to="/dashboard/classroom" replace />
     }
     // { path: '*', element: <Navigate to="/404" replace /> }
   ]);

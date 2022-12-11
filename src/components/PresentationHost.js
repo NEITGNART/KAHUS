@@ -38,6 +38,7 @@ import { FormProvider } from './hook-form';
 import RHFMyRadioGroup from './hook-form/RHFMyRadioGroup';
 import { HOST_API, HOST_SK } from '../config';
 import Iconify from './Iconify';
+import axios from '../utils/axios';
 
 ChartJS.register(
   CategoryScale,
@@ -79,18 +80,21 @@ function PresentationHost() {
   const [question, setQuestion] = useState('');
   const [link, setLink] = useState('');
   const [searchParams, setSearchParams] = useSearchParams();
+  // const [currentSlide, setCurrentSlide] = useState(searchParams.get('slideIndex'));
   const { enqueueSnackbar } = useSnackbar();
   const { code } = useParams();
 
   // get query params from url
-  const slideIndex = searchParams.get('slideIndex');
+  const totalSlide = searchParams.get('max') || 0;
+  let slideIndex = Number(searchParams.get('slideIndex'));
   const roomCode = code || '123456';
 
   useEffect(() => {
     socket.on('connect', () => {
-      socket.emit('join', { room: roomCode, slideIndex: Number(slideIndex) });
+      socket.emit('join', { room: roomCode, slideIndex });
 
       socket.on('chart', (data) => {
+        console.log(data);
         if (data) {
           setQuestion(data.question);
           setLabels(data.answer);
@@ -104,11 +108,47 @@ function PresentationHost() {
           setNumberAnswer(data.numberAnswer);
         }
       });
+
+      socket.on('slide-change', (data) => {
+        if (data) {
+          slideIndex = data.slideIndex;
+          setQuestion(data.question);
+          setLabels(data.answer);
+          setNumberAnswer(data.numberAnswer);
+        }
+      });
     });
 
     return () => {
       socket.off('connect');
       socket.off('disconnect');
+      socket.off('chart');
+      socket.off('vote');
+      socket.off('slide-change');
+    };
+  }, []);
+
+  const changeSlide = (num) => {
+    socket.emit('slide-change', num);
+  };
+
+  useEffect(() => {
+    document.onkeydown = (e) => {
+      switch (e.keyCode) {
+        case 37:
+          if (slideIndex > 0) slideIndex -= 1;
+          console.log(slideIndex);
+          changeSlide(slideIndex);
+          break;
+        case 39:
+          // Need to restrict number of slide by number of slide in deck
+          if (slideIndex < totalSlide - 1) slideIndex += 1;
+          changeSlide(slideIndex);
+          console.log(slideIndex);
+          break;
+        default:
+          break;
+      }
     };
   }, []);
 

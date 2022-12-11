@@ -25,19 +25,7 @@ import {
   Progress,
   useSteps
 } from 'spectacle';
-import {
-  Button,
-  Card,
-  FormControl,
-  FormControlLabel,
-  FormHelperText,
-  FormLabel,
-  Radio,
-  RadioGroup,
-  Stack,
-  Stepper,
-  Typography
-} from '@mui/material';
+
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -102,15 +90,29 @@ function Presentation() {
   const { code } = useParams();
 
   // get query params from url
-  const slideIndex = searchParams.get('slideIndex');
+  const [slideIndex, setSlideIndex] = useState(
+    Number(searchParams.get('slideIndex'))
+  );
   const roomCode = code || '123456';
+
+  console.log('slideIndex', slideIndex);
 
   useEffect(() => {
     socket.on('connect', () => {
-      socket.emit('join', { room: roomCode, slideIndex: Number(slideIndex) });
+      socket.emit('join', { room: roomCode, slideIndex });
 
       socket.on('chart', (data) => {
         if (data) {
+          setQuestion(data.question);
+          setLabels(data.answer);
+          setNumberAnswer(data.numberAnswer);
+        }
+      });
+
+      socket.on('slide-change', (data) => {
+        if (data) {
+          console.log('Slide-change event', slideIndex);
+          setSlideIndex(data.slideIndex);
           setQuestion(data.question);
           setLabels(data.answer);
           setNumberAnswer(data.numberAnswer);
@@ -150,7 +152,8 @@ function Presentation() {
   const onSubmit = async (data) => {
     socket.emit('answer', {
       slideIndex,
-      answer
+      answer,
+      id: socket.id
     });
     if (answer === '') {
       setError(true);

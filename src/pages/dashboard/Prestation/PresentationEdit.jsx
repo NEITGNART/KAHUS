@@ -54,9 +54,9 @@ export default function PresentationEdit() {
   const [open, setOpen] = useState(false);
   const [presentation, setPresentation] = useState(null);
   const [currentSelect, setCurrentSelect] = useState(0);
-  const [currentSlide, setCurrentSlide] = useState([]);
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
+
   useEffect(() => {
     axios
       .get(`api/presentation/${presentationId}`)
@@ -118,7 +118,10 @@ export default function PresentationEdit() {
 
   const onPresent = async () => {
     onSave();
-    window.open(`/present/${presentation.code}`, '_blank');
+    window.open(
+      `/present/${presentation.code}?max=${presentation.slides.length || 0}`,
+      '_blank'
+    );
   };
 
   const onChangeQuestion = (slideId, question) => {
@@ -303,7 +306,7 @@ export default function PresentationEdit() {
             <Grid container alignContent="stretch" spacing={2}>
               <Divider orientation="vertical" variant="middle" flexItem />
               <Grid item xs>
-                {currentSlide ? (
+                {presentation?.slides[currentSelect] ? (
                   <SlideReport
                     roomCode={presentation.code}
                     slide={presentation.slides[currentSelect]}
