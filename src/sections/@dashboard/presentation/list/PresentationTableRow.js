@@ -71,11 +71,11 @@ export default function PresentationTableRow({
       <TableCell align="left">me</TableCell>
 
       <TableCell align="left" sx={{ textTransform: 'capitalize' }}>
-        <ReactTimeAgo date={modifiedAt} locale="en-US" />
+        <ReactTimeAgo date={Date.parse(modifiedAt)} locale="en-US" />
       </TableCell>
 
       <TableCell align="left" sx={{ textTransform: 'capitalize' }}>
-        <ReactTimeAgo date={createdAt} locale="en-US" />
+        <ReactTimeAgo date={Date.parse(createdAt)} locale="en-US" />
       </TableCell>
 
       <TableCell align="right">
