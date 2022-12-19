@@ -119,6 +119,7 @@ export function createPresentation(newPresentation) {
         '/api/presentation/create',
         newPresentation
       );
+      console.log(response.data);
       dispatch(slice.actions.createPresentationSuccess(response.data));
     } catch (error) {
       dispatch(slice.actions.hasError(error));
