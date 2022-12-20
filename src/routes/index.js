@@ -119,7 +119,9 @@ export default function Router() {
         {
           path: 'register',
           element: <Register />
-        }
+        },
+        { path: 'reset-password', element: <ResetPassword /> },
+        { path: 'verify', element: <VerifyCode /> }
       ]
     },
     {
@@ -233,3 +235,8 @@ const PresentationManagement = Loadable(
 const Presentation = Loadable(
   lazy(() => import('../pages/dashboard/Prestation/PresentationEdit'))
 );
+
+const ResetPassword = Loadable(
+  lazy(() => import('../pages/auth/ResetPassword'))
+);
+const VerifyCode = Loadable(lazy(() => import('../pages/auth/VerifyCode')));
