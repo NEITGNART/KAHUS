@@ -1,29 +1,13 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import {
   FlexBox,
   Heading,
-  SpectacleLogo,
-  UnorderedList,
-  CodeSpan,
-  OrderedList,
-  ListItem,
-  FullScreen,
-  AnimatedProgress,
-  Appear,
   Slide,
   Deck,
-  Text,
-  Grid,
   Box,
-  Image,
-  CodePane,
-  MarkdownSlide,
-  MarkdownSlideSet,
-  Notes,
-  SlideLayout,
   Progress,
-  useSteps
+  FullScreen
 } from 'spectacle';
 
 import {
@@ -78,9 +62,8 @@ const options = {
 };
 
 const socket = io(HOST_SK);
-const cacheAnswerId = new Map();
 
-function Presentation() {
+function PresentationGroup() {
   const [labels, setLabels] = useState([]);
   const [numberAnswer, setNumberAnswer] = useState(labels.map(() => 0));
   const [question, setQuestion] = useState('');
@@ -94,7 +77,6 @@ function Presentation() {
   const [slideIndex, setSlideIndex] = useState(
     Number(searchParams.get('slideIndex'))
   );
-
   const roomCode = code || '123456';
 
   console.log('slideIndex', slideIndex);
@@ -102,8 +84,8 @@ function Presentation() {
   useEffect(() => {
     socket.on('connect', () => {
       socket.emit('join', { room: roomCode, slideIndex });
-
       socket.on('chart', (data) => {
+        console.log('data', data);
         if (data) {
           setQuestion(data.question);
           setLabels(data.answer);
@@ -128,14 +110,8 @@ function Presentation() {
       });
     });
 
-    socket.on('disconnect', () => {
-      // remove cacheAnswerId
-      cacheAnswerId.clear();
-    });
-
     return () => {
       socket.off('connect');
-      socket.off('disconnect');
       socket.off('chart');
       socket.off('slide-change');
       socket.off('vote');
@@ -160,18 +136,11 @@ function Presentation() {
   };
 
   const onSubmit = async (data) => {
-    if (cacheAnswerId.has(`${socket.id}-${slideIndex}`)) {
-      setHelperText('You already voted');
-      setError(true);
-      return;
-    }
-    cacheAnswerId.set(`${socket.id}-${slideIndex}`, true);
     socket.emit('answer', {
       slideIndex,
       answer,
       id: socket.id
     });
-
     if (answer === '') {
       setError(true);
       setHelperText('Please select an option.');
@@ -239,4 +208,4 @@ const template = () => (
   </FlexBox>
 );
 
-export default Presentation;
+export default PresentationGroup;

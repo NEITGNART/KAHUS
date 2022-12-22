@@ -18,6 +18,8 @@ import DashboardLayout from '../layout/dashboard';
 import axios from '../utils/axios';
 import PresentationAudience from '../components/Presentation';
 import PresentationHost from '../components/PresentationHost';
+import PresentationGroup from '../components/PresentationGroup';
+import RoleBasedGuard from '../guards/RoleBasedGuard';
 // ----------------------------------------------------------------------
 
 const Loadable = (Component) =>
@@ -192,6 +194,14 @@ export default function Router() {
     {
       path: '/present-audience/:code',
       element: <PresentationAudience />
+    },
+    {
+      path: '/present-audience-group/:code',
+      element: (
+        <RoleBasedGuard accessibleRoles={['student', 'admin']}>
+          <PresentationGroup />
+        </RoleBasedGuard>
+      )
     },
     {
       path: '/',
