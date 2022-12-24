@@ -61,7 +61,7 @@ const options = {
   }
 };
 
-const socket = io(HOST_SK);
+let socket;
 
 function PresentationGroup() {
   const [labels, setLabels] = useState([]);
@@ -77,37 +77,41 @@ function PresentationGroup() {
   const [slideIndex, setSlideIndex] = useState(
     Number(searchParams.get('slideIndex'))
   );
+
   const roomCode = code || '123456';
 
   console.log('slideIndex', slideIndex);
 
   useEffect(() => {
+    socket = io(HOST_SK);
+
     socket.on('connect', () => {
       socket.emit('join', { room: roomCode, slideIndex });
-      socket.on('chart', (data) => {
-        console.log('data', data);
-        if (data) {
-          setQuestion(data.question);
-          setLabels(data.answer);
-          setNumberAnswer(data.numberAnswer);
-        }
-      });
+    });
 
-      socket.on('slide-change', (data) => {
-        if (data) {
-          console.log('Slide-change event', slideIndex);
-          setSlideIndex(data.slideIndex);
-          setQuestion(data.question);
-          setLabels(data.answer);
-          setNumberAnswer(data.numberAnswer);
-        }
-      });
+    socket.on('chart', (data) => {
+      console.log('chart', data);
+      if (data) {
+        console.log(data.answer);
+        setQuestion(data.question);
+        setLabels(data.answer);
+        setNumberAnswer(data.numberAnswer);
+      }
+    });
 
-      socket.on('vote', (data) => {
-        if (data) {
-          setNumberAnswer(data.numberAnswer);
-        }
-      });
+    socket.on('slide-change', (data) => {
+      if (data) {
+        setSlideIndex(data.slideIndex);
+        setQuestion(data.question);
+        setLabels(data.answer);
+        setNumberAnswer(data.numberAnswer);
+      }
+    });
+
+    socket.on('vote', (data) => {
+      if (data) {
+        setNumberAnswer(data.numberAnswer);
+      }
     });
 
     return () => {
@@ -115,6 +119,7 @@ function PresentationGroup() {
       socket.off('chart');
       socket.off('slide-change');
       socket.off('vote');
+      socket.off('disconnect');
     };
   }, []);
 

@@ -118,6 +118,8 @@ function Presentation() {
           setQuestion(data.question);
           setLabels(data.answer);
           setNumberAnswer(data.numberAnswer);
+          setError(false);
+          setHelperText('Choose wisely');
         }
       });
 

@@ -198,7 +198,7 @@ export default function Router() {
     {
       path: '/present-audience-group/:code',
       element: (
-        <RoleBasedGuard accessibleRoles={['student', 'admin']}>
+        <RoleBasedGuard accessibleRoles={['admin']}>
           <PresentationGroup />
         </RoleBasedGuard>
       )
