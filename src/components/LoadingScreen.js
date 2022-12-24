@@ -32,7 +32,6 @@ export default function LoadingScreen({ isDashboard, ...other }) {
   return (
     <>
       <ProgressBar />
-
       {!isDashboard && (
         <RootStyle {...other}>
           <m.div

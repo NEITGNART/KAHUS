@@ -5,10 +5,9 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 // @mui
 import { Link, Stack, Alert, IconButton, InputAdornment } from '@mui/material';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { LoadingButton } from '@mui/lab';
 // routes
-// hooks
-import { useNavigate } from 'react-router-dom';
 import useIsMountedRef from '../../../hooks/useIsMountedRef';
 // components
 import Iconify from '../../../components/Iconify';
@@ -19,6 +18,7 @@ import {
 } from '../../../components/hook-form';
 import useAuth from '../../../hooks/useAuth';
 import axios from '../../../utils/axios';
+import { PATH_AUTH } from '../../../routes/paths';
 
 // ----------------------------------------------------------------------
 
@@ -108,6 +108,13 @@ export default function LoginForm() {
         sx={{ my: 2 }}
       >
         <RHFCheckbox name="remember" label="Remember me" />
+        <Link
+          component={RouterLink}
+          variant="subtitle2"
+          to={PATH_AUTH.resetPassword}
+        >
+          Forgot password?
+        </Link>
       </Stack>
 
       <LoadingButton

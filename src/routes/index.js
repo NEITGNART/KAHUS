@@ -18,6 +18,8 @@ import DashboardLayout from '../layout/dashboard';
 import axios from '../utils/axios';
 import PresentationAudience from '../components/Presentation';
 import PresentationHost from '../components/PresentationHost';
+import PresentationGroup from '../components/PresentationGroup';
+import RoleBasedGuard from '../guards/RoleBasedGuard';
 // ----------------------------------------------------------------------
 
 const Loadable = (Component) =>
@@ -119,7 +121,9 @@ export default function Router() {
         {
           path: 'register',
           element: <Register />
-        }
+        },
+        { path: 'reset-password', element: <ResetPassword /> },
+        { path: 'verify', element: <VerifyCode /> }
       ]
     },
     {
@@ -192,6 +196,14 @@ export default function Router() {
       element: <PresentationAudience />
     },
     {
+      path: '/present-audience-group/:code',
+      element: (
+        <RoleBasedGuard accessibleRoles={['admin']}>
+          <PresentationGroup />
+        </RoleBasedGuard>
+      )
+    },
+    {
       path: '/',
       element: <Navigate to="/dashboard/classroom" replace />
     }
@@ -233,3 +245,8 @@ const PresentationManagement = Loadable(
 const Presentation = Loadable(
   lazy(() => import('../pages/dashboard/Prestation/PresentationEdit'))
 );
+
+const ResetPassword = Loadable(
+  lazy(() => import('../pages/auth/ResetPassword'))
+);
+const VerifyCode = Loadable(lazy(() => import('../pages/auth/VerifyCode')));

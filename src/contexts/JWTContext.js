@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 // utils
 import axios from '../utils/axios';
 import { isValidToken, setSession } from '../utils/jwt';
-import useLocalStorage from '../hooks/useLocalStorage';
 
 // ----------------------------------------------------------------------
 
@@ -66,7 +65,6 @@ function AuthProvider({ children }) {
         const accessToken = window.localStorage.getItem('accessToken');
         if (accessToken && isValidToken(accessToken)) {
           setSession(accessToken);
-
           dispatch({
             type: 'INITIALIZE',
             payload: {

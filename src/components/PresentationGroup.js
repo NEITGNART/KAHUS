@@ -1,29 +1,13 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import {
   FlexBox,
   Heading,
-  SpectacleLogo,
-  UnorderedList,
-  CodeSpan,
-  OrderedList,
-  ListItem,
-  FullScreen,
-  AnimatedProgress,
-  Appear,
   Slide,
   Deck,
-  Text,
-  Grid,
   Box,
-  Image,
-  CodePane,
-  MarkdownSlide,
-  MarkdownSlideSet,
-  Notes,
-  SlideLayout,
   Progress,
-  useSteps
+  FullScreen
 } from 'spectacle';
 
 import {
@@ -77,10 +61,9 @@ const options = {
   }
 };
 
-const socket = io(HOST_SK);
-const cacheAnswerId = new Map();
+let socket;
 
-function Presentation() {
+function PresentationGroup() {
   const [labels, setLabels] = useState([]);
   const [numberAnswer, setNumberAnswer] = useState(labels.map(() => 0));
   const [question, setQuestion] = useState('');
@@ -100,47 +83,43 @@ function Presentation() {
   console.log('slideIndex', slideIndex);
 
   useEffect(() => {
+    socket = io(HOST_SK);
+
     socket.on('connect', () => {
       socket.emit('join', { room: roomCode, slideIndex });
-
-      socket.on('chart', (data) => {
-        if (data) {
-          setQuestion(data.question);
-          setLabels(data.answer);
-          setNumberAnswer(data.numberAnswer);
-        }
-      });
-
-      socket.on('slide-change', (data) => {
-        if (data) {
-          console.log('Slide-change event', slideIndex);
-          setSlideIndex(data.slideIndex);
-          setQuestion(data.question);
-          setLabels(data.answer);
-          setNumberAnswer(data.numberAnswer);
-          setError(false);
-          setHelperText('Choose wisely');
-        }
-      });
-
-      socket.on('vote', (data) => {
-        if (data) {
-          setNumberAnswer(data.numberAnswer);
-        }
-      });
     });
 
-    socket.on('disconnect', () => {
-      // remove cacheAnswerId
-      cacheAnswerId.clear();
+    socket.on('chart', (data) => {
+      console.log('chart', data);
+      if (data) {
+        console.log(data.answer);
+        setQuestion(data.question);
+        setLabels(data.answer);
+        setNumberAnswer(data.numberAnswer);
+      }
+    });
+
+    socket.on('slide-change', (data) => {
+      if (data) {
+        setSlideIndex(data.slideIndex);
+        setQuestion(data.question);
+        setLabels(data.answer);
+        setNumberAnswer(data.numberAnswer);
+      }
+    });
+
+    socket.on('vote', (data) => {
+      if (data) {
+        setNumberAnswer(data.numberAnswer);
+      }
     });
 
     return () => {
       socket.off('connect');
-      socket.off('disconnect');
       socket.off('chart');
       socket.off('slide-change');
       socket.off('vote');
+      socket.off('disconnect');
     };
   }, []);
 
@@ -162,18 +141,11 @@ function Presentation() {
   };
 
   const onSubmit = async (data) => {
-    if (cacheAnswerId.has(`${socket.id}-${slideIndex}`)) {
-      setHelperText('You already voted');
-      setError(true);
-      return;
-    }
-    cacheAnswerId.set(`${socket.id}-${slideIndex}`, true);
     socket.emit('answer', {
       slideIndex,
       answer,
       id: socket.id
     });
-
     if (answer === '') {
       setError(true);
       setHelperText('Please select an option.');
@@ -241,4 +213,4 @@ const template = () => (
   </FlexBox>
 );
 
-export default Presentation;
+export default PresentationGroup;
