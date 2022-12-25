@@ -171,7 +171,9 @@ function Presentation() {
     socket.emit('answer', {
       slideIndex,
       answer,
-      id: socket.id
+      id: socket.id,
+      isInGroup: false,
+      time: Date.now()
     });
 
     if (answer === '') {

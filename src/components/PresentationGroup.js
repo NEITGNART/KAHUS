@@ -28,6 +28,7 @@ import { useParams } from 'react-router';
 import { FormProvider } from './hook-form';
 import RHFMyRadioGroup from './hook-form/RHFMyRadioGroup';
 import { HOST_SK } from '../config';
+import useAuth from '../hooks/useAuth';
 
 ChartJS.register(
   CategoryScale,
@@ -62,8 +63,10 @@ const options = {
 };
 
 let socket;
+const cacheAnswerId = new Map();
 
 function PresentationGroup() {
+  const { user } = useAuth();
   const [labels, setLabels] = useState([]);
   const [numberAnswer, setNumberAnswer] = useState(labels.map(() => 0));
   const [question, setQuestion] = useState('');
@@ -141,10 +144,20 @@ function PresentationGroup() {
   };
 
   const onSubmit = async (data) => {
+
+    if (cacheAnswerId.has(`${socket.id}-${slideIndex}`)) {
+      setHelperText('You already voted');
+      setError(true);
+      return;
+    }
+    cacheAnswerId.set(`${socket.id}-${slideIndex}`, true);
+    
     socket.emit('answer', {
       slideIndex,
       answer,
-      id: socket.id
+      id: user.email,
+      isInGroup: true,
+      time: Date.now()
     });
     if (answer === '') {
       setError(true);
