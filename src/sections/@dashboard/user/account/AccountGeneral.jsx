@@ -68,13 +68,13 @@ export default function AccountGeneral({ user, onSubmit, ...other }) {
     [setValue]
   );
 
-  setValue('firstName', user.firstName);
-  setValue('lastName', user.lastName);
-  setValue('dob', user.dob);
+  // setValue('firstName', user.firstName);
+  // setValue('lastName', user.lastName);
+  // setValue('dob', user.dob);
 
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
-      <Grid container spacing={3} alignItems="stretch">
+       <Grid container spacing={3} alignItems="stretch">
         <Grid item xs={12} md={4}>
           <Card sx={{ py: 10, px: 3, textAlign: 'center', height: '100%' }}>
             <RHFUploadAvatar
@@ -119,7 +119,7 @@ export default function AccountGeneral({ user, onSubmit, ...other }) {
             </Stack>
           </Card>
         </Grid>
-      </Grid>
+       </Grid>
     </FormProvider>
   );
 }
