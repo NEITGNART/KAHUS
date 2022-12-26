@@ -1,16 +1,19 @@
 import { useEffect, useState } from 'react';
 import { Box, Button, Stack, TextField, Typography } from '@mui/material';
+import Textarea from '@mui/joy/Textarea';
 import AddIcon from '@mui/icons-material/Add';
 import PropTypes from 'prop-types';
 import ChoiceField from './ChoiceField';
 import Scrollbar from '../../../components/Scrollbar';
+import { SlideType } from '../../../pages/dashboard/Prestation/value/SlideType';
 
 SlideForm.propTypes = {
   slide: PropTypes.object,
   onChangeQuestion: PropTypes.func,
   onChangeOption: PropTypes.func,
   onAddOptionButtonClick: PropTypes.func,
-  onDeleteOptionClick: PropTypes.func
+  onDeleteOptionClick: PropTypes.func,
+  onChangeContent: PropTypes.func
 };
 
 const newOption = () => {
@@ -24,11 +27,13 @@ export default function SlideForm({
   slide,
   onChangeQuestion,
   onChangeOption,
+  onChangeContent,
   onAddOptionButtonClick,
   onDeleteOptionClick
 }) {
   const [question, setQuestion] = useState(slide.question || '');
   const [options, setOptions] = useState(slide.options || []);
+  const [content, setContent] = useState('');
   // const { question, options } = slide;
 
   useEffect(() => {
@@ -39,6 +44,11 @@ export default function SlideForm({
   const questionChange = (event) => {
     setQuestion(event.target.value);
     onChangeQuestion(slide.id, event.target.value);
+  };
+
+  const contentChange = (event) => {
+    setContent(event.target.value);
+    onChangeContent(slide.id, event.target.value);
   };
 
   const onAddButtonClick = () => {
@@ -56,22 +66,37 @@ export default function SlideForm({
         value={question}
         onChange={questionChange}
       />
-      <Box sx={{ height: { md: '60vh' } }}>
-        <Scrollbar>
-          {options.map((option) => (
-            <ChoiceField
-              key={option.id}
-              option={option}
-              slideId={slide.id}
-              onChange={onChangeOption}
-              onDelete={onDeleteOptionClick}
+
+      {(slide.type === undefined ||
+        slide.type === SlideType.MULTIPLE_CHOICE) && (
+        <Box sx={{ height: { md: '60vh' } }}>
+          <Scrollbar>
+            {options.map((option) => (
+              <ChoiceField
+                key={option.id}
+                option={option}
+                slideId={slide.id}
+                onChange={onChangeOption}
+                onDelete={onDeleteOptionClick}
+              />
+            ))}
+          </Scrollbar>
+          <Button onClick={onAddButtonClick} variant="contained">
+            <AddIcon /> Add option
+          </Button>
+        </Box>
+      )}
+      {slide.type === SlideType.HEADING &&
+        slide.type === SlideType.PARAGRAPH && (
+          <Box sx={{ height: { md: '60vh' } }}>
+            <Textarea
+              value={content}
+              onChange={contentChange}
+              placeholder="Type anything…"
             />
-          ))}
-        </Scrollbar>
-      </Box>
-      <Button onClick={onAddButtonClick} variant="contained">
-        <AddIcon /> Add option
-      </Button>
+            ;
+          </Box>
+        )}
     </Stack>
   );
 }

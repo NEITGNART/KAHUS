@@ -1,0 +1,9 @@
+const MULTIPLE_CHOICE = 'MULTIPLE_CHOICE';
+const HEADING = 'HEADING';
+const PARAGRAPH = 'PARAGRAPH';
+
+export const SlideType = {
+  MULTIPLE_CHOICE,
+  HEADING,
+  PARAGRAPH
+};

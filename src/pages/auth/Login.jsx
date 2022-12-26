@@ -35,7 +35,6 @@ import { HOST_API, HOST_SK } from '../../config';
 // ----------------------------------------------------------------------
 
 export default function Login() {
-
   console.log(HOST_SK);
   const { googleLogin } = useAuth();
   const navigate = useNavigate();

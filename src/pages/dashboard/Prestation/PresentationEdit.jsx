@@ -8,6 +8,8 @@ import {
   Drawer,
   Grid,
   List,
+  Menu,
+  MenuItem,
   Stack,
   Typography
 } from '@mui/material';
@@ -29,6 +31,9 @@ import SlideReport from '../../../sections/presentation/slideReport/SlideReport'
 import SlideForm from '../../../sections/presentation/SlideForm/SlideForm';
 import Scrollbar from '../../../components/Scrollbar';
 import axios from '../../../utils/axios';
+import Iconify from '../../../components/Iconify';
+import { SlideType } from './value/SlideType';
+import { SlideFactory } from './value/SlideFactory';
 
 const BarSubmitContainer = styled('div')({
   flexGrow: 1,
@@ -51,11 +56,13 @@ export default function PresentationEdit() {
   const { presentationId } = useParams();
   const [searchParams, setSearchParams] = useSearchParams();
   const code = searchParams.get('code');
-  const [open, setOpen] = useState(false);
   const [presentation, setPresentation] = useState(null);
   const [currentSelect, setCurrentSelect] = useState(0);
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const slideTypeDialogOpen = Boolean(anchorEl);
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     axios
@@ -139,6 +146,21 @@ export default function PresentationEdit() {
     });
   };
 
+  const onChangeContent = (slideId, content) => {
+    const newState = presentation.slides.map((slide) => {
+      if (slideId === slide.id) {
+        return { ...slide, content };
+      }
+      return slide;
+    });
+
+    setPresentation((prev) => {
+      const newPresentation = { ...prev };
+      newPresentation.slides = newState;
+      return newPresentation;
+    });
+  };
+
   const onChangeOption = (slideId, option) => {
     const newState = presentation.slides.map((slide) => {
       if (slideId === slide.id) {
@@ -162,23 +184,24 @@ export default function PresentationEdit() {
     setCurrentSelect(index);
   };
 
-  const addNewSlide = () => {
+  const onAddSlideButtonClick = (event) => {
+    setAnchorEl(event.currentTarget);
+    // setSlideTypeDialogOpen(true);
+  };
+
+  const onCloseSlideTypeDialog = (selectedValue) => {
+    // if (selectedValue === null) {
+    //   return;
+    // }
+    setAnchorEl(null);
+    // setSlideTypeDialogOpen(false);
+  };
+
+  const addNewSlide = (slideType) => {
+    console.log(slideType);
     const { length } = presentation.slides || { length: 0 };
     const id = length > 0 ? presentation.slides[length - 1].id + 1 : 0;
-    const slide = {
-      id,
-      question: '',
-      options: [
-        { id: 1, content: 'Option 1', isCorrect: false, numberAnswer: 0 },
-        {
-          id: 2,
-          content: 'Option 2',
-          isCorrect: false,
-          numberAnswer: 0
-        },
-        { id: 3, content: 'Option 3', isCorrect: false, numberAnswer: 0 }
-      ]
-    };
+    const slide = SlideFactory.createNew(slideType, id);
 
     setPresentation((prev) => {
       const newPresentation = { ...prev };
@@ -186,6 +209,7 @@ export default function PresentationEdit() {
       return newPresentation;
     });
     setCurrentSelect(length);
+    onCloseSlideTypeDialog(null);
   };
 
   const removeSelectedSlide = () => {
@@ -256,6 +280,7 @@ export default function PresentationEdit() {
           }
         }}
       />
+
       {presentation && (
         <Card sx={{ height: { md: '92vh' }, display: { md: 'flex' } }}>
           <Drawer
@@ -269,9 +294,60 @@ export default function PresentationEdit() {
                 <Button onClick={removeSelectedSlide}>
                   <Close /> Delete
                 </Button>
-                <Button onClick={addNewSlide}>
-                  <Add /> Add new
-                </Button>
+                <div>
+                  <Button
+                    id="add-slide-button"
+                    aria-controls={
+                      slideTypeDialogOpen ? 'slide-type-menu' : undefined
+                    }
+                    aria-haspopup="true"
+                    aria-expanded={slideTypeDialogOpen ? 'true' : undefined}
+                    onClick={(event) => onAddSlideButtonClick(event)}
+                  >
+                    <Add /> Add new
+                  </Button>
+                  <Menu
+                    id="slide-type-menu"
+                    aria-labelledby="add-slide-button"
+                    anchorEl={anchorEl}
+                    open={slideTypeDialogOpen}
+                    onClose={() => onCloseSlideTypeDialog(null)}
+                    anchorOrigin={{
+                      vertical: 'top',
+                      horizontal: 'right'
+                    }}
+                    transformOrigin={{
+                      vertical: 'top',
+                      horizontal: 'left'
+                    }}
+                    sx={{
+                      mt: -1,
+                      width: 170,
+                      '& .MuiMenuItem-root': {
+                        px: 1,
+                        typography: 'body2',
+                        borderRadius: 0.75,
+                        '& svg': { mr: 1 }
+                      }
+                    }}
+                  >
+                    <MenuItem
+                      onClick={() => addNewSlide(SlideType.MULTIPLE_CHOICE)}
+                    >
+                      {' '}
+                      <Iconify icon="material-symbols:select-check-box" />{' '}
+                      Multiple choice
+                    </MenuItem>
+                    <MenuItem onClick={() => addNewSlide(SlideType.HEADING)}>
+                      {' '}
+                      <Iconify icon="humbleicons:heading" /> Heading
+                    </MenuItem>
+                    <MenuItem onClick={() => addNewSlide(SlideType.HEADING)}>
+                      {' '}
+                      <Iconify icon="teenyicons:paragraph-outline" /> Paragraph
+                    </MenuItem>
+                  </Menu>
+                </div>
               </Stack>
             </Box>
             <Divider />
@@ -325,6 +401,7 @@ export default function PresentationEdit() {
                   <SlideForm
                     slide={presentation.slides[currentSelect]}
                     onChangeQuestion={onChangeQuestion}
+                    onChangeContent={onChangeContent}
                     onChangeOption={(optionChange) =>
                       onChangeOption(
                         presentation.slides[currentSelect].id,

@@ -144,14 +144,13 @@ function PresentationGroup() {
   };
 
   const onSubmit = async (data) => {
-
     if (cacheAnswerId.has(`${socket.id}-${slideIndex}`)) {
       setHelperText('You already voted');
       setError(true);
       return;
     }
     cacheAnswerId.set(`${socket.id}-${slideIndex}`, true);
-    
+
     socket.emit('answer', {
       slideIndex,
       answer,
