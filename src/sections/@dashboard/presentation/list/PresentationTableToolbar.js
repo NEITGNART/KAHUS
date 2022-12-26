@@ -63,7 +63,7 @@ export default function PresentationTableToolbar({
         fullWidth
         value={filterName}
         onChange={(event) => onFilterName(event.target.value)}
-        placeholder="Search user..."
+        placeholder="Search presentation..."
         InputProps={{
           startAdornment: (
             <InputAdornment position="start">

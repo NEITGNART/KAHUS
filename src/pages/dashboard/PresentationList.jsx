@@ -65,10 +65,25 @@ const OWNER_OPTIONS = ['all', 'owned by me', 'shared by me', 'shared with me'];
 
 const TABLE_HEAD = [
   { id: 'name', label: 'Name', align: 'left' },
-  { id: 'owner', label: 'Owner', align: 'left' },
+  {
+    id: 'owner',
+    label: 'Owner',
+    align: 'left'
+  },
   { id: 'modified', label: 'modified', align: 'left' },
-  { id: 'created', label: 'created', align: 'left' },
-  { id: '' }
+  {
+    id: 'created',
+    label: 'created',
+    align: 'left'
+  },
+  {
+    id: 'share link',
+    label: 'share link',
+    align: 'left'
+  },
+  {
+    id: ''
+  }
 ];
 
 const selectedPresentationSelector = (state) => {
@@ -89,13 +104,11 @@ export default function PresentationList() {
     order,
     orderBy,
     rowsPerPage,
-    setPage,
-    //
+    setPage, //
     selected,
     setSelected,
     onSelectRow,
-    onSelectAllRows,
-    //
+    onSelectAllRows, //
     onSort,
     onChangeDense,
     onChangePage,
@@ -116,7 +129,10 @@ export default function PresentationList() {
 
   const dispatch = useDispatch();
   const selectedPresentation = useSelector(selectedPresentationSelector);
-  const { presentations, isOpenModal } = useSelector(
+  //  selectEdit: false,
+  //   selectDelete: false, selectShare: false,
+  //   selectDuplicate: false
+  const { presentations, isOpenModal, selectEdit, selectShare, selectDuplicate} = useSelector(
     (state) => state.presentation
   );
 
@@ -155,7 +171,15 @@ export default function PresentationList() {
 
   const handleEditRow = (id) => {
     // navigate(PATH_DASHBOARD.user.edit(paramCase(id)));
-    dispatch(selectPresentation(id));
+    dispatch(selectPresentation({ id, event: 'selectEdit' }));
+  };
+
+  const handleShareInGroup = (id) => {
+    dispatch(selectPresentation({ id, event: 'selectShare' }));
+  };
+
+  const handleDuplicate = (id) => {
+    dispatch(selectPresentation({ id, event: 'selectDuplicate' }));
   };
 
   const dataFiltered = applySortFilter({
@@ -171,6 +195,34 @@ export default function PresentationList() {
     (!dataFiltered.length && !!filterName) ||
     (!dataFiltered.length && !!filterRole);
 
+  let renderModal = null;
+
+  if (selectEdit) {
+    renderModal = (
+      <>
+        <DialogTitle>
+          {selectedPresentation ? 'Edit Presentation' : ''}
+        </DialogTitle>
+        <CreatePresentationForm
+          presentation={selectedPresentation || {}}
+          onCancel={handleCloseModal}
+        />
+      </>
+    );
+  } else if (selectShare) {
+    renderModal = <div>Hehe</div>;
+  } else if (selectDuplicate) {
+    renderModal = <div>Duplicate nè</div>;
+  }
+  else {
+    renderModal = (
+      <>
+        <DialogTitle>Create Presentation</DialogTitle>
+        <CreatePresentationForm presentation={selectedPresentation || {}} onCancel={handleCloseModal} />
+      </>
+    );
+  }
+
   return (
     <Page title="Presentation: List">
       <Container maxWidth={themeStretch ? false : 'lg'}>
@@ -178,7 +230,10 @@ export default function PresentationList() {
           heading="Presentation List"
           links={[
             { name: 'Dashboard', href: PATH_DASHBOARD.root },
-            { name: 'User', href: PATH_DASHBOARD.user.root },
+            {
+              name: 'User',
+              href: PATH_DASHBOARD.user.root
+            },
             { name: 'List' }
           ]}
           action={
@@ -271,6 +326,8 @@ export default function PresentationList() {
                         onSelectRow={() => onSelectRow(row.id)}
                         onDeleteRow={() => handleDeleteRow(row.id)}
                         onEditRow={() => handleEditRow(row.id)}
+                        onShareRow={() => handleShareInGroup(row.id)}
+                        onDuplicateRow={() => handleDuplicate(row.id)}
                       />
                     ))}
 
@@ -309,15 +366,20 @@ export default function PresentationList() {
         </Card>
 
         <DialogAnimate open={isOpenModal} onClose={handleCloseModal}>
-          <DialogTitle>
-            {selectedPresentation ? 'Edit Presentation' : 'Create Presentation'}
-          </DialogTitle>
-
-          <CreatePresentationForm
-            presentation={selectedPresentation || {}}
-            onCancel={handleCloseModal}
-          />
+          {renderModal}
         </DialogAnimate>
+        {/* )} */}
+        {/* {selectShare === true ? (<div>Hehe, share nè</div>) : (<> */}
+        {/*    <DialogTitle> */}
+        {/*      
+          
+          {selectedPresentation ? 'Edit Presentation' : 'Create Presentation'} */}
+        {/*    </DialogTitle> */}
+        {/*    <CreatePresentationForm */}
+        {/*      presentation={selectedPresentation || {}} */}
+        {/*      onCancel={handleCloseModal} */}
+        {/*    /> */}
+        {/*  </>)} */}
       </Container>
     </Page>
   );
