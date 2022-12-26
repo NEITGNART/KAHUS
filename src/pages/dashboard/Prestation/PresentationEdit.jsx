@@ -342,7 +342,7 @@ export default function PresentationEdit() {
                       {' '}
                       <Iconify icon="humbleicons:heading" /> Heading
                     </MenuItem>
-                    <MenuItem onClick={() => addNewSlide(SlideType.HEADING)}>
+                    <MenuItem onClick={() => addNewSlide(SlideType.PARAGRAPH)}>
                       {' '}
                       <Iconify icon="teenyicons:paragraph-outline" /> Paragraph
                     </MenuItem>

@@ -4,7 +4,7 @@ export function headingSlide(id, title, content) {
   return {
     id,
     type: SlideType.HEADING,
-    title,
+    question: title,
     content
   };
 }

@@ -86,17 +86,16 @@ export default function SlideForm({
           </Button>
         </Box>
       )}
-      {slide.type === SlideType.HEADING &&
-        slide.type === SlideType.PARAGRAPH && (
-          <Box sx={{ height: { md: '60vh' } }}>
-            <Textarea
-              value={content}
-              onChange={contentChange}
-              placeholder="Type anything…"
-            />
-            ;
-          </Box>
-        )}
+      {(slide.type === SlideType.HEADING ||
+        slide.type === SlideType.PARAGRAPH) && (
+        <TextField
+          multiline
+          rows={4}
+          value={content}
+          onChange={contentChange}
+          placeholder="Type anything…"
+        />
+      )}
     </Stack>
   );
 }

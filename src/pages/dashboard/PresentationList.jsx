@@ -132,9 +132,13 @@ export default function PresentationList() {
   //  selectEdit: false,
   //   selectDelete: false, selectShare: false,
   //   selectDuplicate: false
-  const { presentations, isOpenModal, selectEdit, selectShare, selectDuplicate} = useSelector(
-    (state) => state.presentation
-  );
+  const {
+    presentations,
+    isOpenModal,
+    selectEdit,
+    selectShare,
+    selectDuplicate
+  } = useSelector((state) => state.presentation);
 
   useEffect(() => {
     dispatch(getPresentations());
@@ -213,12 +217,14 @@ export default function PresentationList() {
     renderModal = <div>Hehe</div>;
   } else if (selectDuplicate) {
     renderModal = <div>Duplicate nè</div>;
-  }
-  else {
+  } else {
     renderModal = (
       <>
         <DialogTitle>Create Presentation</DialogTitle>
-        <CreatePresentationForm presentation={selectedPresentation || {}} onCancel={handleCloseModal} />
+        <CreatePresentationForm
+          presentation={selectedPresentation || {}}
+          onCancel={handleCloseModal}
+        />
       </>
     );
   }

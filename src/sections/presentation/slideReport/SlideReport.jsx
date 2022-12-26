@@ -14,6 +14,7 @@ import { PropTypes } from 'prop-types';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { useSnackbar } from 'notistack';
 import Iconify from '../../../components/Iconify';
+import { SlideType } from '../../../pages/dashboard/Prestation/value/SlideType';
 
 const options = {
   plugins: {
@@ -45,9 +46,13 @@ SlideReport.propTypes = {
 };
 
 export default function SlideReport({ slide, link }) {
-  const numberAnswer = slide.options.map((option) => option.numberAnswer);
+  const numberAnswer = slide.options
+    ? slide.options.map((option) => option.numberAnswer)
+    : null;
   const { enqueueSnackbar } = useSnackbar();
-  const labels = slide.options.map((option) => option.content);
+  const labels = slide.options
+    ? slide.options.map((option) => option.content)
+    : null;
 
   const datas = {
     labels,
@@ -81,7 +86,20 @@ export default function SlideReport({ slide, link }) {
         {slide.question}
       </Typography>
       <Container sx={{ height: '80%' }}>
-        <Bar options={options} data={datas} />
+        {(slide.type === undefined ||
+          slide.type === SlideType.MULTIPLE_CHOICE) && (
+          <Bar options={options} data={datas} />
+        )}
+        {slide.type === SlideType.HEADING && (
+          <Typography variant="h4" noWrap textAlign="center">
+            {slide.content}
+          </Typography>
+        )}
+        {slide.type === SlideType.PARAGRAPH && (
+          <Typography variant="h6" noWrap textAlign="center">
+            {slide.content}
+          </Typography>
+        )}
       </Container>
     </Container>
   );
