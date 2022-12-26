@@ -88,6 +88,7 @@ function Presentation() {
   const [error, setError] = useState(false);
   const [helperText, setHelperText] = useState('Choose wisely');
   const [searchParams, setSearchParams] = useSearchParams();
+  const [typeQuestion, setTypeQuestion] = useState('paragraph');
   const { code } = useParams();
 
   // get query params from url
@@ -196,32 +197,60 @@ function Presentation() {
     formState: { errors, isSubmitting, isSubmitSuccessful }
   } = methods;
 
+  let questionSlide;
+
+  if (typeQuestion === 'bar-chart') {
+    questionSlide = (
+      <FlexBox>
+        <Box height="100%" width="70%">
+          {labels.length > 0 ? (
+            <Bar options={options} data={datas} />
+          ) : (
+            <>Loading</>
+          )}
+        </Box>
+        <FormProvider
+          methods={methods}
+          onSubmit={handleSubmit(onSubmit)}
+          width="30%"
+        >
+          <RHFMyRadioGroup
+            onChange={handleRadioChange}
+            labels={labels}
+            value={answer}
+            error={error}
+            helperText={helperText}
+          />
+        </FormProvider>
+      </FlexBox>
+    );
+  } else if (typeQuestion === 'heading') {
+    questionSlide = (
+      <Text color="#212B36">
+        A highly customizable and versatile GraphQL client, A highly
+        customizable and versatile GraphQL clientA highly customizable
+      </Text>
+    );
+  } else {
+    questionSlide = (
+      <Text color="#212B36" fontSize={32}>
+        A highly customizable and versatile GraphQL client, A highly
+        customizable and versatile GraphQL clientA highly customizable and
+        versatile GraphQL clientA highly customizable and versatile GraphQL
+        clientA highly customizable and versatile GraphQL clientA highly
+        customizable and versatile GraphQL client, A highly customizable and
+        versatile GraphQL clientA highly customizable and versatile GraphQL
+        clientA highly customizable and versatile GraphQL clientA highly
+        customizable and versatile GraphQL client
+      </Text>
+    );
+  }
+
   return (
     <Deck template={template}>
       <Slide backgroundColor="white" slideNum={1}>
         <Heading color="#212B36">{question}</Heading>
-        <FlexBox>
-          <Box height="100%" width="70%">
-            {labels.length > 0 ? (
-              <Bar options={options} data={datas} />
-            ) : (
-              <>Loading</>
-            )}
-          </Box>
-          <FormProvider
-            methods={methods}
-            onSubmit={handleSubmit(onSubmit)}
-            width="30%"
-          >
-            <RHFMyRadioGroup
-              onChange={handleRadioChange}
-              labels={labels}
-              value={answer}
-              error={error}
-              helperText={helperText}
-            />
-          </FormProvider>
-        </FlexBox>
+        {questionSlide}
       </Slide>
     </Deck>
   );

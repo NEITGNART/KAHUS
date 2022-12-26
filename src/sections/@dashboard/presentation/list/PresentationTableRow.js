@@ -17,7 +17,6 @@ import TextMaxLine from '../../../../components/TextMaxLine';
 import { PATH_PRESENTATION } from '../../../../routes/paths';
 
 // components
-import Label from '../../../../components/Label';
 import Iconify from '../../../../components/Iconify';
 import { TableMoreMenu } from '../../../../components/table';
 // ----------------------------------------------------------------------
@@ -27,7 +26,9 @@ PresentationTableRow.propTypes = {
   selected: PropTypes.bool,
   onEditRow: PropTypes.func,
   onSelectRow: PropTypes.func,
-  onDeleteRow: PropTypes.func
+  onDeleteRow: PropTypes.func,
+  onDuplicateRow: PropTypes.func,
+  onShareRow: PropTypes.func
 };
 
 export default function PresentationTableRow({
@@ -35,11 +36,14 @@ export default function PresentationTableRow({
   selected,
   onEditRow,
   onSelectRow,
-  onDeleteRow
+  onDeleteRow,
+  onDuplicateRow,
+  onShareRow
 }) {
   const theme = useTheme();
 
   const { id, title, createdAt, modifiedAt, createdBy } = row;
+  const share = row.share || 'public';
 
   const [openMenu, setOpenMenuActions] = useState(null);
 
@@ -78,6 +82,10 @@ export default function PresentationTableRow({
         <ReactTimeAgo date={Date.parse(createdAt)} locale="en-US" />
       </TableCell>
 
+      <TableCell align="left" sx={{ textTransform: 'capitalize' }}>
+        {share}
+      </TableCell>
+
       <TableCell align="right">
         <TableMoreMenu
           open={openMenu}
@@ -103,6 +111,26 @@ export default function PresentationTableRow({
               >
                 <Iconify icon="eva:edit-fill" />
                 Edit
+              </MenuItem>
+
+              <MenuItem
+                onClick={() => {
+                  onShareRow();
+                  handleCloseMenu();
+                }}
+              >
+                <Iconify icon="material-symbols:share-outline" />
+                Share in group
+              </MenuItem>
+
+              <MenuItem
+                onClick={() => {
+                  onDuplicateRow();
+                  handleCloseMenu();
+                }}
+              >
+                <Iconify icon="fad:duplicate" />
+                Duplicate
               </MenuItem>
             </>
           }

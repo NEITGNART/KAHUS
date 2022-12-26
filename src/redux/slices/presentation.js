@@ -12,7 +12,11 @@ const initialState = {
   presentations: [],
   isOpenModal: false,
   selectedPresentationId: null,
-  selectedRange: null
+  selectedRange: null,
+  selectEdit: false,
+  selectDelete: false,
+  selectShare: false,
+  selectDuplicate: false
 };
 
 const slice = createSlice({
@@ -62,15 +66,15 @@ const slice = createSlice({
     // DELETE PRESENTATION
     deletePresentationSuccess(state, action) {
       const { presentationId } = action.payload;
-      const deletePresentationLocal = state.presentations.filter(
+      state.presentations = state.presentations.filter(
         (presentation) => presentation.id !== presentationId
       );
-      state.presentations = deletePresentationLocal;
     },
 
     // SELECT PRESENTATION
     selectPresentation(state, action) {
-      const presentationId = action.payload;
+      const presentationId = action.payload.id;
+      state[`${action.payload.event}`] = true;
       state.isOpenModal = true;
       state.selectedPresentationId = presentationId;
     },
@@ -85,6 +89,10 @@ const slice = createSlice({
       state.isOpenModal = false;
       state.selectedPresentationId = null;
       state.selectedRange = null;
+      state.selectEdit = false;
+      state.selectDelete = false;
+      state.selectShare = false;
+      state.selectDuplicate = false;
     }
   }
 });
@@ -161,3 +169,19 @@ export function deletePresentation(presentationId) {
 }
 
 // ----------------------------------------------------------------------
+
+export function sharePresentationInGroup(presentationId, groupId) {
+  return async () => {
+    dispatch(slice.actions.startLoading());
+    try {
+      await axios.post('/api/presentation/share-group', {
+        presentationId,
+        groupId
+      });
+      const response = await axios.get(`/api/presentation/my-presentations`);
+      dispatch(slice.actions.getPresentationsSuccess(response.data));
+    } catch (error) {
+      dispatch(slice.actions.hasError(error));
+    }
+  };
+}
