@@ -40,8 +40,8 @@ export default function PresentationTableRow({
   onDuplicateRow,
   onShareRow
 }) {
-  const theme = useTheme();
 
+  const theme = useTheme();
   const { id, title, createdAt, modifiedAt, createdBy } = row;
   const share = row.share || 'public';
 

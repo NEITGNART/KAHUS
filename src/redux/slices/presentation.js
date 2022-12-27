@@ -10,13 +10,15 @@ const initialState = {
   isLoading: false,
   error: null,
   presentations: [],
+  groups: [],
+  recipients: [],
   isOpenModal: false,
   selectedPresentationId: null,
   selectedRange: null,
   selectEdit: false,
   selectDelete: false,
   selectShare: false,
-  selectDuplicate: false
+  selectDuplicate: false,
 };
 
 const slice = createSlice({
@@ -38,6 +40,11 @@ const slice = createSlice({
     getPresentationsSuccess(state, action) {
       state.isLoading = false;
       state.presentations = action.payload;
+    },
+
+    getMyGroupSuccess(state, action) {
+      state.isLoading = false;
+      state.groups = action.payload;
     },
 
     // CREATE PRESENTATION
@@ -79,6 +86,10 @@ const slice = createSlice({
       state.selectedPresentationId = presentationId;
     },
 
+    addRecipients(state, action) {
+      state.recipients = action.payload;
+    },
+
     // OPEN MODAL
     openModal(state) {
       state.isOpenModal = true;
@@ -93,6 +104,7 @@ const slice = createSlice({
       state.selectDelete = false;
       state.selectShare = false;
       state.selectDuplicate = false;
+      state.recipients = [];
     }
   }
 });
@@ -101,7 +113,7 @@ const slice = createSlice({
 export default slice.reducer;
 
 // Actions
-export const { openModal, closeModal, selectPresentation } = slice.actions;
+export const { openModal, closeModal, selectPresentation, addRecipients } = slice.actions;
 
 // ----------------------------------------------------------------------
 
@@ -127,7 +139,6 @@ export function createPresentation(newPresentation) {
         '/api/presentation/create',
         newPresentation
       );
-      console.log(response.data);
       dispatch(slice.actions.createPresentationSuccess(response.data));
     } catch (error) {
       dispatch(slice.actions.hasError(error));
@@ -170,16 +181,28 @@ export function deletePresentation(presentationId) {
 
 // ----------------------------------------------------------------------
 
-export function sharePresentationInGroup(presentationId, groupId) {
+export function sharePresentationInGroup(presentationId, groups) {
   return async () => {
     dispatch(slice.actions.startLoading());
     try {
       await axios.post('/api/presentation/share-group', {
         presentationId,
-        groupId
+        groups
       });
       const response = await axios.get(`/api/presentation/my-presentations`);
       dispatch(slice.actions.getPresentationsSuccess(response.data));
+    } catch (error) {
+      dispatch(slice.actions.hasError(error));
+    }
+  };
+}
+
+export function getAllGroup() {
+  return async () => {
+    dispatch(slice.actions.startLoading());
+    try {
+      const response = await axios.get(`/api/group/my-group`);
+      dispatch(slice.actions.getMyGroupSuccess(response.data.groups));
     } catch (error) {
       dispatch(slice.actions.hasError(error));
     }

@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { Box, Button, Stack, TextField, Typography } from '@mui/material';
-import Textarea from '@mui/joy/Textarea';
 import AddIcon from '@mui/icons-material/Add';
 import PropTypes from 'prop-types';
 import ChoiceField from './ChoiceField';

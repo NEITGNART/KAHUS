@@ -45,7 +45,7 @@ export default function InviteMemberForm({ onCancel, classId, className }) {
   const { enqueueSnackbar } = useSnackbar();
 
   const InvitationSchema = Yup.object().shape({
-    tags: Yup.array().min(1, 'Emails is required')
+    tags: Yup.array().min(1, 'Emails is required!')
   });
 
   const methods = useForm({

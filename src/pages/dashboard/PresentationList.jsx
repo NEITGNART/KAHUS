@@ -19,9 +19,17 @@ import {
   TableContainer,
   TablePagination,
   FormControlLabel,
-  DialogTitle
+  DialogTitle,
+  Stack,
+  DialogActions
 } from '@mui/material';
 // routes
+import { LoadingButton } from '@mui/lab';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
+import * as Yup from 'yup';
+import merge from 'lodash/merge';
+import context from 'react-redux/lib/components/Context';
 import { PATH_DASHBOARD } from '../../routes/paths';
 // hooks
 import useTabs from '../../hooks/useTabs';
@@ -51,11 +59,19 @@ import useAuth from '../../hooks/useAuth';
 import { useDispatch, useSelector } from '../../redux/store';
 import {
   getPresentations,
+  addRecipients,
+  getAllGroup,
   closeModal,
   openModal,
   deletePresentation,
-  selectPresentation
+  sharePresentationInGroup,
+  selectPresentation,
+  createPresentation,
+  updatePresentation
 } from '../../redux/slices/presentation';
+import ShareGroup from '../../sections/@dashboard/share-group/ShareGroup';
+import { FormProvider, RHFTextField } from '../../components/hook-form';
+import ShareGroupForm from '../../sections/@dashboard/share-group/ShareGroupForm';
 
 // ----------------------------------------------------------------------
 
@@ -128,16 +144,19 @@ export default function PresentationList() {
   const { enqueueSnackbar } = useSnackbar();
 
   const dispatch = useDispatch();
+
   const selectedPresentation = useSelector(selectedPresentationSelector);
   //  selectEdit: false,
   //   selectDelete: false, selectShare: false,
   //   selectDuplicate: false
   const {
     presentations,
+    recipients,
     isOpenModal,
     selectEdit,
     selectShare,
-    selectDuplicate
+    selectDuplicate,
+    groups
   } = useSelector((state) => state.presentation);
 
   useEffect(() => {
@@ -165,13 +184,6 @@ export default function PresentationList() {
     dispatch(deletePresentation(id));
   };
 
-  // const handleDeleteRows = (selectedDeletion) => {
-  //   const deleteRows = tableData.filter(
-  //     (row) => !selectedDeletion.includes(row.id)
-  //   );
-  //   setSelected([]);
-  //   setTableData(deleteRows);
-  // };
 
   const handleEditRow = (id) => {
     // navigate(PATH_DASHBOARD.user.edit(paramCase(id)));
@@ -180,6 +192,16 @@ export default function PresentationList() {
 
   const handleShareInGroup = (id) => {
     dispatch(selectPresentation({ id, event: 'selectShare' }));
+    dispatch(getAllGroup());
+  };
+
+  const onSubmitShareGroup = () => {
+    dispatch(
+      sharePresentationInGroup(
+        selectedPresentation.id,
+        recipients.map((recipient) => recipient.id)
+      )
+    );
   };
 
   const handleDuplicate = (id) => {
@@ -201,9 +223,38 @@ export default function PresentationList() {
 
   let renderModal = null;
 
+  const getInitialValues = () => {
+    return {
+      groups: []
+    };
+  };
+
+  const CreatePresentationSchema = Yup.object().shape({
+    groups: Yup.array().min(1).required('Group is required')
+  });
+
+  const methods = useForm({
+    resolver: yupResolver(CreatePresentationSchema),
+    defaultValues: getInitialValues()
+  });
+
+  const {
+    reset,
+    watch,
+    handleSubmit,
+    formState: { isSubmitting }
+  } = methods;
+
+  const values = watch();
+
+  // eslint-disable-next-line no-shadow
+  const handleAddRecipients = (recipients) => {
+    dispatch(addRecipients(recipients));
+  };
+
   if (selectEdit) {
     renderModal = (
-      <>
+      <DialogAnimate open={isOpenModal} onClose={handleCloseModal}>
         <DialogTitle>
           {selectedPresentation ? 'Edit Presentation' : ''}
         </DialogTitle>
@@ -211,21 +262,33 @@ export default function PresentationList() {
           presentation={selectedPresentation || {}}
           onCancel={handleCloseModal}
         />
-      </>
+      </DialogAnimate>
     );
   } else if (selectShare) {
-    renderModal = <div>Hehe</div>;
+    renderModal = (
+      <DialogAnimate open={isOpenModal} onClose={handleCloseModal}>
+        <div style={{ width: '100%', height: '100%' }}>
+          <ShareGroupForm
+            onAddRecipients={handleAddRecipients}
+            onCancel={handleCloseModal}
+            contacts={groups}
+            recipients={recipients}
+            onSummit={onSubmitShareGroup}
+          />
+        </div>
+      </DialogAnimate>
+    );
   } else if (selectDuplicate) {
     renderModal = <div>Duplicate nè</div>;
   } else {
     renderModal = (
-      <>
+      <DialogAnimate open={isOpenModal} onClose={handleCloseModal}>
         <DialogTitle>Create Presentation</DialogTitle>
         <CreatePresentationForm
           presentation={selectedPresentation || {}}
           onCancel={handleCloseModal}
         />
-      </>
+      </DialogAnimate>
     );
   }
 
@@ -371,21 +434,7 @@ export default function PresentationList() {
           </Box>
         </Card>
 
-        <DialogAnimate open={isOpenModal} onClose={handleCloseModal}>
-          {renderModal}
-        </DialogAnimate>
-        {/* )} */}
-        {/* {selectShare === true ? (<div>Hehe, share nè</div>) : (<> */}
-        {/*    <DialogTitle> */}
-        {/*      
-          
-          {selectedPresentation ? 'Edit Presentation' : 'Create Presentation'} */}
-        {/*    </DialogTitle> */}
-        {/*    <CreatePresentationForm */}
-        {/*      presentation={selectedPresentation || {}} */}
-        {/*      onCancel={handleCloseModal} */}
-        {/*    /> */}
-        {/*  </>)} */}
+        {renderModal}
       </Container>
     </Page>
   );

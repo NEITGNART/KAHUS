@@ -53,7 +53,7 @@ export default function CreatePresentationForm({ presentation, onCancel }) {
   const isCreating = Object.keys(presentation).length === 0;
 
   const CreatePresentationSchema = Yup.object().shape({
-    title: Yup.string().max(255).required('Name is required!')
+    title: Yup.string().min(1).max(255).required('Name is required!')
   });
 
   const methods = useForm({

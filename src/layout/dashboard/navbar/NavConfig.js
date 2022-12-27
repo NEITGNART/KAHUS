@@ -136,7 +136,7 @@ const navConfig = [
   //         </Label>
   //       ),
   //     },
-  //     { title: 'chat', path: PATH_DASHBOARD.chat.root, icon: ICONS.chat },
+  //     { title: 'share-group', path: PATH_DASHBOARD.share-group.root, icon: ICONS.share-group },
   //     { title: 'calendar', path: PATH_DASHBOARD.calendar, icon: ICONS.calendar },
   //     { title: 'kanban', path: PATH_DASHBOARD.kanban, icon: ICONS.kanban },
   //   ],
