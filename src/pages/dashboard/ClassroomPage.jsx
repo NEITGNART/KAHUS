@@ -1,16 +1,9 @@
 import { capitalCase } from 'change-case';
-import { useCallback, useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useParams } from 'react-router';
 // @mui
 import { styled } from '@mui/material/styles';
-import {
-  Tab,
-  Box,
-  Card,
-  Tabs,
-  Container,
-  CircularProgress
-} from '@mui/material';
+import { Box, Card, Container, Tab, Tabs } from '@mui/material';
 // routes
 import { useQuery } from '@tanstack/react-query';
 import { PATH_DASHBOARD } from '../../routes/paths';
@@ -25,15 +18,12 @@ import HeaderBreadcrumbs from '../../components/HeaderBreadcrumbs';
 // sections
 import {
   Classroom,
-  ClassroomCover,
-  ClassroomMember,
-  ClassroomWork
+  ClassroomCover
 } from '../../sections/@dashboard/classroom/room';
-import { _userAbout, _userFeeds, _userMembers } from '../../_mock';
 import axios from '../../utils/axios';
-import useIsMountedRef from '../../hooks/useIsMountedRef';
 import LoadingScreen from '../../components/LoadingScreen';
 import MemberList from './MemberList';
+import PresentationCard from '../../components/PresentationCard';
 
 // ----------------------------------------------------------------------
 
@@ -132,7 +122,7 @@ export default function ClassroomPage() {
             description: classRoom.description,
             linkUrl: classRoom.link
           }}
-          // posts={_userFeeds}
+          // posts={_userfeeds}
           posts={[]}
         />
       )
@@ -141,6 +131,13 @@ export default function ClassroomPage() {
       value: 'memberList',
       icon: <Iconify icon="eva:people-fill" width={20} height={20} />,
       component: <MemberList classId={classId} />
+    },
+    {
+      value: 'presentation',
+      icon: (
+        <Iconify icon="ph:presentation-chart-fill" width={20} height={20} />
+      ),
+      component: <PresentationCard classId={classId} />
     }
     // {
     //   value: 'classwork',

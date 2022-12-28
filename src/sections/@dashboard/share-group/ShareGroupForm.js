@@ -11,8 +11,6 @@ import { LoadingButton } from '@mui/lab';
 import { useSnackbar } from 'notistack';
 import { FormProvider } from '../../../components/hook-form';
 import ShareGroup from './ShareGroup';
-import { closeModal } from '../../../redux/slices/presentation';
-import axios from '../../../utils/axios';
 
 // ----------------------------------------------------------------------
 
@@ -27,8 +25,7 @@ ShareGroupForm.propTypes = {
 };
 
 const ShareGroupSchema = Yup.object().shape({
-  groups: Yup.array()
-    .min(1, 'Please select at least one group')
+  groups: Yup.array().min(1, 'Please select at least one group')
 });
 
 export default function ShareGroupForm({
@@ -47,7 +44,6 @@ export default function ShareGroupForm({
 
   const {
     reset,
-    watch,
     control,
     handleSubmit,
     formState: { isSubmitting }

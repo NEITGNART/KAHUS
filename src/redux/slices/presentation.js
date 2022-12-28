@@ -18,7 +18,7 @@ const initialState = {
   selectEdit: false,
   selectDelete: false,
   selectShare: false,
-  selectDuplicate: false,
+  selectDuplicate: false
 };
 
 const slice = createSlice({
@@ -113,7 +113,8 @@ const slice = createSlice({
 export default slice.reducer;
 
 // Actions
-export const { openModal, closeModal, selectPresentation, addRecipients } = slice.actions;
+export const { openModal, closeModal, selectPresentation, addRecipients } =
+  slice.actions;
 
 // ----------------------------------------------------------------------
 
@@ -122,6 +123,23 @@ export function getPresentations() {
     dispatch(slice.actions.startLoading());
     try {
       const response = await axios.get(`/api/presentation/my-presentations`);
+      dispatch(slice.actions.getPresentationsSuccess(response.data));
+    } catch (error) {
+      dispatch(slice.actions.hasError(error));
+    }
+  };
+}
+
+export function getPresentationsByGroupId(groupId) {
+  return async () => {
+    dispatch(slice.actions.startLoading());
+    try {
+      const response = await axios.post(
+        `/api/presentation/group-presentation`,
+        {
+          groupId
+        }
+      );
       dispatch(slice.actions.getPresentationsSuccess(response.data));
     } catch (error) {
       dispatch(slice.actions.hasError(error));
