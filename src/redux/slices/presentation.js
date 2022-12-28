@@ -18,7 +18,8 @@ const initialState = {
   selectEdit: false,
   selectDelete: false,
   selectShare: false,
-  selectDuplicate: false
+  selectDuplicate: false,
+  selectInvite: false
 };
 
 const slice = createSlice({
@@ -104,6 +105,7 @@ const slice = createSlice({
       state.selectDelete = false;
       state.selectShare = false;
       state.selectDuplicate = false;
+      state.selectInvite = false;
       state.recipients = [];
     }
   }

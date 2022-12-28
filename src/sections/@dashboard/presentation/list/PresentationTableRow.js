@@ -1,16 +1,7 @@
 import PropTypes from 'prop-types';
 import { useState } from 'react';
 // @mui
-import { useTheme } from '@mui/material/styles';
-import {
-  Avatar,
-  Checkbox,
-  TableRow,
-  TableCell,
-  Typography,
-  MenuItem,
-  Link
-} from '@mui/material';
+import { Checkbox, Link, MenuItem, TableCell, TableRow } from '@mui/material';
 
 import ReactTimeAgo from 'react-time-ago';
 import TextMaxLine from '../../../../components/TextMaxLine';
@@ -28,7 +19,8 @@ PresentationTableRow.propTypes = {
   onSelectRow: PropTypes.func,
   onDeleteRow: PropTypes.func,
   onDuplicateRow: PropTypes.func,
-  onShareRow: PropTypes.func
+  onShareRow: PropTypes.func,
+  onInviteRow: PropTypes.func
 };
 
 export default function PresentationTableRow({
@@ -37,11 +29,10 @@ export default function PresentationTableRow({
   onEditRow,
   onSelectRow,
   onDeleteRow,
+  onInviteRow,
   onDuplicateRow,
   onShareRow
 }) {
-
-  const theme = useTheme();
   const { id, title, createdAt, modifiedAt, createdBy } = row;
   const share = row.share || 'public';
 
@@ -121,6 +112,16 @@ export default function PresentationTableRow({
               >
                 <Iconify icon="material-symbols:share-outline" />
                 Share in group
+              </MenuItem>
+
+              <MenuItem
+                onClick={() => {
+                  onInviteRow();
+                  handleCloseMenu();
+                }}
+              >
+                <Iconify icon="wpf:collaborator" />
+                Invite Collaborator
               </MenuItem>
 
               <MenuItem

@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { Stack, InputAdornment, TextField, MenuItem } from '@mui/material';
+import { InputAdornment, MenuItem, Stack, TextField } from '@mui/material';
 // components
 import Iconify from '../../../../components/Iconify';
 
@@ -10,7 +10,8 @@ MemberTableToolbar.propTypes = {
   filterRole: PropTypes.string,
   onFilterName: PropTypes.func,
   onFilterRole: PropTypes.func,
-  optionsRole: PropTypes.arrayOf(PropTypes.string)
+  optionsRole: PropTypes.arrayOf(PropTypes.string),
+  placeholder: PropTypes.string
 };
 
 export default function MemberTableToolbar({
@@ -18,7 +19,8 @@ export default function MemberTableToolbar({
   filterRole,
   onFilterName,
   onFilterRole,
-  optionsRole
+  optionsRole,
+  placeholder = 'Search user...'
 }) {
   return (
     <Stack
@@ -63,7 +65,7 @@ export default function MemberTableToolbar({
         fullWidth
         value={filterName}
         onChange={(event) => onFilterName(event.target.value)}
-        placeholder="Search user..."
+        placeholder={placeholder}
         InputProps={{
           startAdornment: (
             <InputAdornment position="start">

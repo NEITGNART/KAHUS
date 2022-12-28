@@ -1,25 +1,23 @@
-import PropTypes, { element } from 'prop-types';
-import { paramCase } from 'change-case';
+import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 // @mui
 import {
   Box,
-  Tab,
-  Tabs,
-  Card,
-  Table,
-  Switch,
   Button,
-  Tooltip,
-  Divider,
-  TableBody,
+  Card,
   Container,
+  DialogTitle,
+  Divider,
+  FormControlLabel,
   IconButton,
+  Switch,
+  Tab,
+  Table,
+  TableBody,
   TableContainer,
   TablePagination,
-  FormControlLabel,
-  DialogTitle
+  Tabs,
+  Tooltip
 } from '@mui/material';
 // routes
 import { useSnackbar } from 'notistack';
@@ -28,9 +26,8 @@ import { PATH_DASHBOARD } from '../../routes/paths';
 // hooks
 import useTabs from '../../hooks/useTabs';
 import useSettings from '../../hooks/useSettings';
-import useTable, { getComparator, emptyRows } from '../../hooks/useTable';
+import useTable, { emptyRows, getComparator } from '../../hooks/useTable';
 // _mock_
-import { _userList } from '../../_mock';
 // components
 import Page from '../../components/Page';
 import Iconify from '../../components/Iconify';
@@ -46,14 +43,13 @@ import {
 } from '../../components/table';
 // sections
 import {
-  MemberTableToolbar,
-  MemberTableRow
+  MemberTableRow,
+  MemberTableToolbar
 } from '../../sections/@dashboard/user/list';
 import axios from '../../utils/axios';
 import useAuth from '../../hooks/useAuth';
 
 // ----------------------------------------------------------------------
-
 const STATUS_OPTIONS = ['all'];
 
 const ROLE_OPTIONS = ['all', 'owner', 'co-owner', 'member', 'kick-out'];

@@ -47,6 +47,7 @@ import {
 import { DialogAnimate } from './animate';
 import CreatePresentationForm from '../sections/@dashboard/presentation/CreatePresentationForm';
 import ShareGroupForm from '../sections/@dashboard/share-group/ShareGroupForm';
+import CollaborationList from '../pages/dashboard/CollaborationList';
 
 const STATUS_OPTIONS = ['all'];
 
@@ -122,6 +123,7 @@ function PresentationCard(props) {
     isOpenModal,
     selectEdit,
     selectShare,
+    selectInvite,
     selectDuplicate,
     groups
   } = useSelector((state) => state.presentation);
@@ -161,6 +163,10 @@ function PresentationCard(props) {
   const handleShareInGroup = (id) => {
     dispatch(selectPresentation({ id, event: 'selectShare' }));
     dispatch(getAllGroup());
+  };
+
+  const handleInviteCollaborator = (id) => {
+    dispatch(selectPresentation({ id, event: 'selectInvite' }));
   };
 
   const onSubmitShareGroup = () => {
@@ -242,6 +248,15 @@ function PresentationCard(props) {
             onSummit={onSubmitShareGroup}
           />
         </div>
+      </DialogAnimate>
+    );
+  } else if (selectInvite) {
+    renderModal = (
+      <DialogAnimate open={isOpenModal} onClose={handleCloseModal} size="md">
+        <DialogTitle>
+          Following people have access to edit this presentation
+        </DialogTitle>
+        <CollaborationList presentationId={selectedPresentation.id} />
       </DialogAnimate>
     );
   } else if (selectDuplicate) {
@@ -339,6 +354,7 @@ function PresentationCard(props) {
                       onEditRow={() => handleEditRow(row.id)}
                       onShareRow={() => handleShareInGroup(row.id)}
                       onDuplicateRow={() => handleDuplicate(row.id)}
+                      onInviteRow={() => handleInviteCollaborator(row.id)}
                     />
                   ))}
 

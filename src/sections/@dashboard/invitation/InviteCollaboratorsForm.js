@@ -34,13 +34,12 @@ const getInitialValues = () => {
 
 // ----------------------------------------------------------------------
 
-InviteMemberForm.propTypes = {
+InviteCollaboratorsForm.propTypes = {
   onCancel: PropTypes.func,
-  classId: PropTypes.string,
-  className: PropTypes.string
+  presentationId: PropTypes.string
 };
 
-export default function InviteMemberForm({ onCancel, classId, className }) {
+export default function InviteCollaboratorsForm({ onCancel, presentationId }) {
   const { enqueueSnackbar } = useSnackbar();
 
   const InvitationSchema = Yup.object().shape({
@@ -67,11 +66,13 @@ export default function InviteMemberForm({ onCancel, classId, className }) {
     try {
       const { tags } = values;
       const inviteMembers = async () => {
-        const response = await axios.post(`/api/group/add-member`, {
-          groupId: classId,
-          groupName: className,
-          emails: values.tags
-        });
+        const response = await axios.post(
+          `/api/presentation/add-collaborator`,
+          {
+            presentationId,
+            emails: values.tags
+          }
+        );
         return response.data;
       };
       inviteMembers()
