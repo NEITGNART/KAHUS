@@ -57,7 +57,9 @@ export const PATH_PRESENTATION = {
   root: ROOTS_PRESENTATION,
   presentation: {
     editPresentation: (id, code) =>
-      path(ROOTS_PRESENTATION, `/${id}/edit?code=${code}`)
+      path(ROOTS_PRESENTATION, `/${id}/edit?code=${code}`),
+    editPresentationGroup: (id, code, group) =>
+      path(ROOTS_PRESENTATION, `/${id}/edit?code=${code}&group=${group}`)
   }
 };
 

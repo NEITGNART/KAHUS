@@ -49,14 +49,7 @@ import InviteCollaboratorsForm from '../../sections/@dashboard/invitation/Invite
 // ----------------------------------------------------------------------
 const STATUS_OPTIONS = ['all'];
 
-const ROLE_OPTIONS = [
-  'all',
-  'owner',
-  'co-owner',
-  'member',
-  'kick-out',
-  'collaborator'
-];
+const ROLE_OPTIONS = ['all', 'collaborator'];
 
 const TABLE_HEAD = [
   { id: 'name', label: 'Name', align: 'left' },
@@ -122,7 +115,6 @@ export default function CollaborationList({ presentationId, className }) {
         const response = await axios.post(`/api/presentation/collaborators`, {
           presentationId
         });
-        console.log(response.data);
         const dataTable = response.data.sort((a, b) => {
           return rolesMap.get(a.role) - rolesMap.get(b.role);
         });

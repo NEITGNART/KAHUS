@@ -15,17 +15,12 @@ import {
 } from '@mui/material';
 import { Add, Close } from '@mui/icons-material';
 import { styled } from '@mui/material/styles';
-import {
-  redirect,
-  useNavigate,
-  useParams,
-  useSearchParams
-} from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useSnackbar } from 'notistack';
 import io from 'socket.io-client';
 import DashboardHeader from '../../../layout/dashboard/header';
 import './Prestation.scss';
-import { HEADER, HOST_API, HOST_SK, NAVBAR } from '../../../config';
+import { HEADER, HOST_SK, NAVBAR } from '../../../config';
 import SlideItem from '../../../sections/presentation/slideItem/SlideItem';
 import SlideReport from '../../../sections/presentation/slideReport/SlideReport';
 import SlideForm from '../../../sections/presentation/SlideForm/SlideForm';
@@ -56,6 +51,7 @@ export default function PresentationEdit() {
   const { presentationId } = useParams();
   const [searchParams, setSearchParams] = useSearchParams();
   const code = searchParams.get('code');
+  const group = searchParams.get('group');
   const [presentation, setPresentation] = useState(null);
   const [currentSelect, setCurrentSelect] = useState(0);
   const navigate = useNavigate();
@@ -124,6 +120,16 @@ export default function PresentationEdit() {
   };
 
   const onPresent = async () => {
+    if (group) {
+      await axios.get(`api/group/detail-custom/${group}`).then((res) => {
+        if (res.data) {
+          socket.emit('presentation-started', {
+            groupId: group,
+            message: `Presentation started in group ${res.data.name}, please join!`
+          });
+        }
+      });
+    }
     onSave();
     window.open(
       `/present/${presentation.code}?max=${presentation.slides.length || 0}`,

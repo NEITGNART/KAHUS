@@ -1,28 +1,18 @@
 // @mui
-import { Container, Box, Grid, Stack, Typography } from '@mui/material';
+import { Container, Grid, Stack } from '@mui/material';
 // routes
-import { useQuery } from '@tanstack/react-query';
-import { useEffect, useMemo, useState } from 'react';
-import { PATH_DASHBOARD } from '../../routes/paths';
+import React, { useEffect, useMemo, useState } from 'react';
 // hooks
 import useSettings from '../../hooks/useSettings';
 // _mock_
-import { _classroomCards } from '../../_mock';
 // components
 import Page from '../../components/Page';
 import HeaderBreadcrumbs from '../../components/HeaderBreadcrumbs';
 // sections
-import { ClassroomCard } from '../../sections/@dashboard/classroom/cards';
 import ClassCard from '../../sections/@dashboard/classroom/cards/ClassCard';
 import axios from '../../utils/axios';
-import useAuth from '../../hooks/useAuth';
-import LoadingScreen from '../../components/LoadingScreen';
 import EmptyContent from '../../components/EmptyContent';
-import TableNoData from '../../components/table/TableNoData';
-import ClassroomSearch from '../../sections/@dashboard/classroom/ClassroomSearch';
 import ClassFilter from '../../sections/@dashboard/classroom/ClassFilter';
-import emptyImage from '../../assets/illustration_empty_content.svg';
-import Image from '../../components/Image';
 
 const SORT_OPTIONS = [
   // { value: 'all', label: 'All' },
@@ -33,7 +23,6 @@ const SORT_OPTIONS = [
 // ----------------------------------------------------------------------
 export default function ClassroomList() {
   const { themeStretch } = useSettings();
-  const { user } = useAuth();
 
   const [classrooms, setClassrooms] = useState([]);
   const [filters, setFilters] = useState('attended');
@@ -42,7 +31,6 @@ export default function ClassroomList() {
       .get(`/api/group/group-invited`)
       .then((response) => {
         setClassrooms(response.data);
-        console.log(response.data);
       })
       .catch((err) => {
         console.log(err);
@@ -83,7 +71,6 @@ export default function ClassroomList() {
             onSort={handleChangeFilter}
           />
         </Stack>
-
         {classrooms.length !== 0 ? (
           <Grid container spacing={3}>
             {classrooms?.map((classroom, index) => (
