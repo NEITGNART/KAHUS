@@ -51,13 +51,13 @@ import CollaborationList from '../pages/dashboard/CollaborationList';
 
 const STATUS_OPTIONS = ['all'];
 
-const OWNER_OPTIONS = ['all', 'owned by me', 'shared by me', 'shared with me'];
+const OWNER_OPTIONS = ['all', 'owner', 'collaborator'];
 
 const TABLE_HEAD = [
   { id: 'name', label: 'Name', align: 'left' },
   {
-    id: 'owner',
-    label: 'Owner',
+    id: 'role',
+    label: 'Role',
     align: 'left'
   },
   { id: 'modified', label: 'modified', align: 'left' },
@@ -297,6 +297,7 @@ function PresentationCard(props) {
           onFilterName={handleFilterName}
           onFilterRole={handleFilterRole}
           optionsTypeOwner={OWNER_OPTIONS}
+          label="Role"
         />
 
         <Scrollbar>

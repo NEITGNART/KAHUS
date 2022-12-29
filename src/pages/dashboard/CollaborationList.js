@@ -183,22 +183,6 @@ export default function CollaborationList({ presentationId, className }) {
     setTableData(deleteRows);
   };
 
-  const handleEditRole = (email, newRole, setRole) => {
-    axios
-      .post(`/api/group/update-role`, {
-        email,
-        groupId: presentationId,
-        role: newRole
-      })
-      .then((data) => {
-        setRole(newRole);
-        enqueueSnackbar('assign role successfully', { variant: 'success' });
-      })
-      .catch((error) => {
-        enqueueSnackbar('You are not the owner!', { variant: 'error' });
-      });
-  };
-
   const handleCloseModal = () => {
     setOpenModal(false);
   };

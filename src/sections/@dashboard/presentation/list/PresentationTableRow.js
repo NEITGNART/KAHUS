@@ -33,7 +33,7 @@ export default function PresentationTableRow({
   onDuplicateRow,
   onShareRow
 }) {
-  const { id, title, createdAt, modifiedAt, createdBy } = row;
+  const { id, title, createdAt, modifiedAt, createdBy, role } = row;
   const share = row.share || 'public';
 
   const [openMenu, setOpenMenuActions] = useState(null);
@@ -63,7 +63,7 @@ export default function PresentationTableRow({
         </Link>
       </TableCell>
 
-      <TableCell align="left">me</TableCell>
+      <TableCell align="left">{role}</TableCell>
 
       <TableCell align="left" sx={{ textTransform: 'capitalize' }}>
         <ReactTimeAgo date={Date.parse(modifiedAt)} locale="en-US" />

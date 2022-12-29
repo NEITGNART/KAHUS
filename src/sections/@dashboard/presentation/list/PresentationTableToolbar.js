@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { Stack, InputAdornment, TextField, MenuItem } from '@mui/material';
+import { InputAdornment, MenuItem, Stack, TextField } from '@mui/material';
 // components
 import Iconify from '../../../../components/Iconify';
 
@@ -10,7 +10,8 @@ PresentationTableToolbar.propTypes = {
   filterTypeOwner: PropTypes.string,
   onFilterName: PropTypes.func,
   onFilterRole: PropTypes.func,
-  optionsTypeOwner: PropTypes.arrayOf(PropTypes.string)
+  optionsTypeOwner: PropTypes.arrayOf(PropTypes.string),
+  label: PropTypes.string
 };
 
 export default function PresentationTableToolbar({
@@ -18,7 +19,8 @@ export default function PresentationTableToolbar({
   filterTypeOwner,
   onFilterName,
   onFilterRole,
-  optionsTypeOwner
+  optionsTypeOwner,
+  label = 'Owner'
 }) {
   return (
     <Stack
@@ -29,7 +31,7 @@ export default function PresentationTableToolbar({
       <TextField
         fullWidth
         select
-        label="Owner"
+        label={label}
         value={filterTypeOwner}
         onChange={onFilterRole}
         SelectProps={{
