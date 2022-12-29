@@ -19,7 +19,9 @@ import {
   Tooltip,
   Legend
 } from 'chart.js';
-
+import { Card, DialogContent } from '@mui/material';
+import MessageIcon from '@mui/icons-material/Message';
+import Fab from '@mui/material/Fab';
 // eslint-disable-next-line import/no-unresolved
 import { Bar } from 'react-chartjs-2';
 import io from 'socket.io-client';
@@ -29,6 +31,9 @@ import { FormProvider } from './hook-form';
 import RHFMyRadioGroup from './hook-form/RHFMyRadioGroup';
 import { HOST_SK } from '../config';
 import useAuth from '../hooks/useAuth';
+import { DialogAnimate } from './animate';
+import ChatWindow from '../sections/@dashboard/chat/ChatWindow';
+import ChatSidebar from '../sections/@dashboard/chat/ChatSidebar';
 
 ChartJS.register(
   CategoryScale,
@@ -204,7 +209,23 @@ function PresentationGroup() {
             />
           </FormProvider>
         </FlexBox>
+        <Fab
+          color="primary"
+          aria-label="message"
+          onClick={() => {
+            console.log('hello');
+          }}
+        >
+          <MessageIcon />
+        </Fab>
       </Slide>
+      <DialogAnimate fullWidth maxWidth="md" open={true}>
+        <DialogContent>
+          <Card sx={{ height: '72vh', display: 'flex' }}>
+            <ChatWindow />
+          </Card>
+        </DialogContent>
+      </DialogAnimate>
     </Deck>
   );
 }

@@ -50,6 +50,11 @@ export const PATH_DASHBOARD = {
   },
   presentation: {
     presentations: path(ROOTS_DASHBOARD, '/presentations')
+  },
+  chat: {
+    root: path(ROOTS_DASHBOARD, '/chat'),
+    new: path(ROOTS_DASHBOARD, '/chat/new'),
+    view: (name) => path(ROOTS_DASHBOARD, `/chat/${name}`)
   }
 };
 
