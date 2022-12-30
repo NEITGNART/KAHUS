@@ -43,12 +43,13 @@ export default function ChatMessageItem({
 }) {
   const { user } = useAuth();
   const sender = conversation.participants.find(
-    (participant) => participant.id === message.senderId
+    // eslint-disable-next-line no-underscore-dangle
+    (participant) => participant._id === message.senderId
   );
   const senderDetails =
     message.senderId === user.id
       ? { type: 'me' }
-      : { avatar: sender?.avatar, name: sender?.name };
+      : { avatar: sender?.avatar, name: sender?.firstName };
 
   const isMe = senderDetails.type === 'me';
   const isImage = message.contentType === 'image';

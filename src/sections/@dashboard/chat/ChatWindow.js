@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
+import PropTypes from 'prop-types';
 // @mui
 import { Box, Button, Divider, Stack } from '@mui/material';
 // redux
@@ -10,7 +11,8 @@ import {
   getConversation,
   getParticipants,
   markConversationAsRead,
-  resetActiveConversation
+  resetActiveConversation,
+  onReceiveMessage
 } from '../../../redux/slices/chat';
 // routes
 import { PATH_DASHBOARD } from '../../../routes/paths';
@@ -41,7 +43,11 @@ const conversationSelector = (state) => {
   return initState;
 };
 
-export default function ChatWindow() {
+ChatWindow.propTypes = {
+  socket: PropTypes.object.isRequired
+};
+
+export default function ChatWindow({ socket }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { pathname } = useLocation();
@@ -84,6 +90,29 @@ export default function ChatWindow() {
 
   const handleSendMessage = async (value) => {
     try {
+      const {
+        conversationId,
+        messageId,
+        message,
+        contentType,
+        attachments,
+        createdAt,
+        senderId
+      } = value;
+
+      const newMessage = {
+        id: messageId,
+        body: message,
+        contentType,
+        attachments,
+        createdAt,
+        senderId
+      };
+
+      socket.emit('sendMsg', {
+        id: conversationId,
+        message: newMessage
+      });
       dispatch(onSendMessage(value));
     } catch (error) {
       console.error(error);

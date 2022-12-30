@@ -72,6 +72,16 @@ const slice = createSlice({
       }
     },
 
+    // ON RECEIVE MESSAGE
+    onReceiveMessage(state, action) {
+      const conversation = action.payload;
+      console.log(conversation);
+
+      state.conversations.byId[conversation.id].messages.push(
+        conversation.message
+      );
+    },
+
     // ON SEND MESSAGE
     onSendMessage(state, action) {
       const conversation = action.payload;
@@ -101,7 +111,7 @@ const slice = createSlice({
         });
       };
 
-      sendMessage();
+      // sendMessage();
 
       state.conversations.byId[conversationId].messages.push(newMessage);
     },
@@ -136,8 +146,12 @@ const slice = createSlice({
 export default slice.reducer;
 
 // Actions
-export const { addRecipients, onSendMessage, resetActiveConversation } =
-  slice.actions;
+export const {
+  addRecipients,
+  onSendMessage,
+  onReceiveMessage,
+  resetActiveConversation
+} = slice.actions;
 
 // ----------------------------------------------------------------------
 
