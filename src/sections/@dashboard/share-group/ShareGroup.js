@@ -67,7 +67,10 @@ export default function ShareGroup({
 
   const handleAddRecipients = (value) => {
     setQuery('');
-    methods.setValue('groups', value, { shouldValidate: true, shouldDirty: true });
+    methods.setValue('groups', value, {
+      shouldValidate: true,
+      shouldDirty: true
+    });
     onAddRecipients(value);
   };
 

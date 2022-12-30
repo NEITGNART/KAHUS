@@ -18,7 +18,7 @@ import { TableMoreMenu } from '../../../../components/table';
 
 const roles = [
   { name: 'co-owner', value: '1' },
-  { name: 'member', value: '2' },
+  { name: 'member', value: '2' }
 ];
 
 MemberTableRow.propTypes = {
