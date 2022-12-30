@@ -20,6 +20,7 @@ import PresentationAudience from '../components/Presentation';
 import PresentationHost from '../components/PresentationHost';
 import PresentationGroup from '../components/PresentationGroup';
 import RoleBasedGuard from '../guards/RoleBasedGuard';
+import GlobalAlert from '../layout/dashboard/GlobalAlert';
 // ----------------------------------------------------------------------
 
 const Loadable = (Component) =>
@@ -130,6 +131,7 @@ export default function Router() {
       path: 'dashboard',
       element: (
         <AuthGuard>
+          <GlobalAlert />
           <DashboardLayout />
         </AuthGuard>
       ),

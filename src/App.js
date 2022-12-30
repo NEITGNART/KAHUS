@@ -14,7 +14,6 @@ function App() {
         <NotistackProvider>
           <MotionLazyContainer>
             <>
-              <GlobalAlert />
               <Router />
             </>
           </MotionLazyContainer>

@@ -46,13 +46,25 @@ export default function ClassroomList() {
     }
   };
 
-  useMemo(() => {
+  const [cache, setCache] = useState({});
+
+  useEffect(() => {
+    // Check if the current filters are in the cache
+    if (cache[JSON.stringify(filters)]) {
+      // If they are, use the cached data instead of making a new request
+      setClassrooms(cache[JSON.stringify(filters)]);
+      return;
+    }
+
+    // If the filters are not in the cache, make a new request and update the cache
     axios
       .get('api/group/search', { params: { filter: filters } })
       .then((res) => {
+        setCache({ ...cache, [JSON.stringify(filters)]: res.data });
         setClassrooms(res.data);
       });
-  }, [filters]);
+  }, [filters, cache]);
+
 
   return (
     <Page title="Classes | KAHUS">
