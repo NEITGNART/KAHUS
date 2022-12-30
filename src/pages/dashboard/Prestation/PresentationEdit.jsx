@@ -46,6 +46,51 @@ const BarSubmit = styled('div')(({ theme }) => ({
 
 const socket = io(HOST_SK);
 
+const presentationStart = async (groupId, link, presentationId) => {
+  if (groupId) {
+    await axios
+      .post(`api/group/presentation-start`, {
+        presentationId,
+        groupId,
+        link
+      })
+      .then((res) => {
+        if (res.data) {
+          socket.emit('presentation-started', {
+            groupId,
+            message: `Presentation started in group ${res.data.name}, please join!`
+          });
+        }
+      });
+  } else {
+    await axios.post(`api/presentation/presentation-stop`, {
+      presentationId
+    });
+  }
+};
+
+const presentationStop = async (groupId, presentationId) => {
+  if (groupId) {
+    await axios
+      .post(`api/group/presentation-stop`, {
+        presentationId,
+        groupId
+      })
+      .then((res) => {
+        // if (res.data) {
+        //   socket.emit('presentation-started', {
+        //     groupId,
+        //     message: `Presentation started in group ${res.data.name}, please join!`
+        //   });
+        // }
+      });
+  } else {
+    await axios.post(`api/presentation/presentation-stop`, {
+      presentationId
+    });
+  }
+};
+
 /* A function that is exported by default. */
 export default function PresentationEdit() {
   const { presentationId } = useParams();
@@ -88,6 +133,7 @@ export default function PresentationEdit() {
 
   useEffect(() => {
     socket.on('vote', (data) => {
+      console.log('vote', data);
       if (data) {
         setPresentation((prev) => {
           const newPresentation = { ...prev };
@@ -106,7 +152,7 @@ export default function PresentationEdit() {
     return () => {
       socket.off('vote');
     };
-  }, [presentation]);
+  }, []);
 
   const onSave = () => {
     axios
@@ -120,21 +166,27 @@ export default function PresentationEdit() {
   };
 
   const onPresent = async () => {
-    if (group) {
-      await axios.get(`api/group/detail-custom/${group}`).then((res) => {
-        if (res.data) {
-          socket.emit('presentation-started', {
-            groupId: group,
-            message: `Presentation started in group ${res.data.name}, please join!`
-          });
-        }
-      });
-    }
+    await presentationStart(group, presentation.link, presentationId);
     onSave();
     window.open(
       `/present/${presentation.code}?max=${presentation.slides.length || 0}`,
       '_blank'
     );
+
+    setPresentation((prev) => {
+      const newPresentation = { ...prev };
+      newPresentation.isPresenting = true;
+      return newPresentation;
+    });
+  };
+
+  const onStopPresent = async () => {
+    await presentationStop(group, presentationId);
+    setPresentation((prev) => {
+      const newPresentation = { ...prev };
+      newPresentation.isPresenting = false;
+      return newPresentation;
+    });
   };
 
   const onChangeQuestion = (slideId, question) => {
@@ -340,16 +392,13 @@ export default function PresentationEdit() {
                     <MenuItem
                       onClick={() => addNewSlide(SlideType.MULTIPLE_CHOICE)}
                     >
-                      {' '}
                       <Iconify icon="material-symbols:select-check-box" />{' '}
                       Multiple choice
                     </MenuItem>
                     <MenuItem onClick={() => addNewSlide(SlideType.HEADING)}>
-                      {' '}
                       <Iconify icon="humbleicons:heading" /> Heading
                     </MenuItem>
                     <MenuItem onClick={() => addNewSlide(SlideType.PARAGRAPH)}>
-                      {' '}
                       <Iconify icon="teenyicons:paragraph-outline" /> Paragraph
                     </MenuItem>
                   </Menu>
@@ -381,7 +430,11 @@ export default function PresentationEdit() {
                 sx={{ display: 'flex', alignItems: 'center', flexShrink: 0 }}
               >
                 <Button onClick={onSave}> Save </Button>
-                <Button onClick={onPresent}> Present </Button>
+                {presentation.isPresenting ? (
+                  <Button onClick={onStopPresent}> Stop Present </Button>
+                ) : (
+                  <Button onClick={onPresent}> Present </Button>
+                )}
               </Box>
             </Box>
             <Divider />

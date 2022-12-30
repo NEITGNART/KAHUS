@@ -24,8 +24,7 @@ ClassroomAbout.propTypes = {
 export default function ClassroomAbout({ description }) {
   return (
     <Card>
-      <CardHeader title="About class" />
-
+      <CardHeader avatar={<Iconify icon='mdi:about' />} title="About class" />
       <Stack spacing={2} sx={{ p: 3 }}>
         <Typography variant="body2">{description}</Typography>
       </Stack>
