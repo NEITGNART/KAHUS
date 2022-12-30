@@ -22,11 +22,13 @@ import {
 import { Card, DialogContent } from '@mui/material';
 import MessageIcon from '@mui/icons-material/Message';
 import Fab from '@mui/material/Fab';
+
 // eslint-disable-next-line import/no-unresolved
 import { Bar } from 'react-chartjs-2';
 import io from 'socket.io-client';
 import { useSearchParams } from 'react-router-dom';
 import { useParams } from 'react-router';
+import { useDispatch } from 'react-redux';
 import { FormProvider } from './hook-form';
 import RHFMyRadioGroup from './hook-form/RHFMyRadioGroup';
 import { HOST_SK } from '../config';
@@ -80,6 +82,7 @@ function PresentationGroup() {
   const [helperText, setHelperText] = useState('Choose wisely');
   const [searchParams, setSearchParams] = useSearchParams();
   const { code } = useParams();
+  const [isOpenChat, setIsOpenChat] = useState(false);
 
   // get query params from url
   const [slideIndex, setSlideIndex] = useState(
@@ -88,7 +91,11 @@ function PresentationGroup() {
 
   const roomCode = code || '123456';
 
-  console.log('slideIndex', slideIndex);
+  const dispatch = useDispatch();
+
+  const handleOpenChatConsole = () => {
+    setIsOpenChat(true);
+  };
 
   useEffect(() => {
     socket = io(HOST_SK);
@@ -212,14 +219,12 @@ function PresentationGroup() {
         <Fab
           color="primary"
           aria-label="message"
-          onClick={() => {
-            console.log('hello');
-          }}
+          onClick={handleOpenChatConsole}
         >
           <MessageIcon />
         </Fab>
       </Slide>
-      <DialogAnimate fullWidth maxWidth="md" open={true}>
+      <DialogAnimate fullWidth maxWidth="md" open={isOpenChat}>
         <DialogContent>
           <Card sx={{ height: '72vh', display: 'flex' }}>
             <ChatWindow />

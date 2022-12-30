@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 import { createSlice } from '@reduxjs/toolkit';
 // utils
 import axios from '../../utils/axios';
@@ -56,8 +57,10 @@ const slice = createSlice({
 
     // GET CONVERSATION
     getConversationSuccess(state, action) {
-      const conversation = action.payload;
-
+      const temp = action.payload;
+      let conversation = temp[0];
+      const id = conversation._id;
+      conversation = { ...conversation, id };
       if (conversation) {
         state.conversations.byId[conversation.id] = conversation;
         state.activeConversationId = conversation.id;
@@ -90,6 +93,15 @@ const slice = createSlice({
         createdAt,
         senderId
       };
+
+      const sendMessage = async () => {
+        const response = await axios.post('/api/conversation/addMessage', {
+          conversationId,
+          message: newMessage
+        });
+      };
+
+      sendMessage();
 
       state.conversations.byId[conversationId].messages.push(newMessage);
     },
@@ -163,11 +175,12 @@ export function getConversation(conversationKey) {
   return async () => {
     dispatch(slice.actions.startLoading());
     try {
-      const response = await axios.get('/api/chat/conversation', {
+      const response = await axios.get('/api/conversation', {
         params: { conversationKey }
       });
       dispatch(
-        slice.actions.getConversationSuccess(response.data.conversation)
+        // slice.actions.getConversationSuccess(response.data.conversation)
+        slice.actions.getConversationSuccess(response.data)
       );
     } catch (error) {
       dispatch(slice.actions.hasError(error));
@@ -197,7 +210,7 @@ export function getParticipants(conversationKey) {
   return async () => {
     dispatch(slice.actions.startLoading());
     try {
-      const response = await axios.get('/api/chat/participants', {
+      const response = await axios.get('/api/conversation/participants', {
         params: { conversationKey }
       });
       dispatch(

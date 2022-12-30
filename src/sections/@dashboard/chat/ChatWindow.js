@@ -1,7 +1,7 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 // @mui
-import { Box, Divider, Stack } from '@mui/material';
+import { Box, Button, Divider, Stack } from '@mui/material';
 // redux
 import { useDispatch, useSelector } from '../../../redux/store';
 import {
@@ -45,15 +45,15 @@ export default function ChatWindow() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { pathname } = useLocation();
-  const { conversationKey } = useParams();
+  const { code } = useParams();
   const { contacts, recipients, participants, activeConversationId } =
     useSelector((state) => state.chat);
+  const conversationKey = code;
   const conversation = useSelector((state) => conversationSelector(state));
-
   const mode = conversationKey ? 'DETAIL' : 'COMPOSE';
-  const displayParticipants = participants.filter(
-    (item) => item.id !== '8864c717-587d-472a-929a-8e5f298024da-0'
-  );
+  // const displayParticipants = participants.filter(
+  //   (item) => item.id !== '8864c717-587d-472a-929a-8e5f298024da-0'
+  // );
 
   useEffect(() => {
     const getDetails = async () => {
@@ -92,7 +92,7 @@ export default function ChatWindow() {
 
   return (
     <Stack sx={{ flexGrow: 1, minWidth: '1px' }}>
-      {mode === 'DETAIL' ? (
+      {/* {mode === 'DETAIL' ? (
         <ChatHeaderDetail participants={displayParticipants} />
       ) : (
         <ChatHeaderCompose
@@ -100,7 +100,9 @@ export default function ChatWindow() {
           contacts={Object.values(contacts.byId)}
           onAddRecipients={handleAddRecipients}
         />
-      )}
+      )} */}
+
+      {/* <ChatHeaderDetail participants={displayParticipants} /> */}
 
       <Divider />
 
@@ -117,12 +119,12 @@ export default function ChatWindow() {
           />
         </Stack>
 
-        {mode === 'DETAIL' && (
+        {/* {mode === 'DETAIL' && (
           <ChatRoom
             conversation={conversation}
             participants={displayParticipants}
           />
-        )}
+        )} */}
       </Box>
     </Stack>
   );

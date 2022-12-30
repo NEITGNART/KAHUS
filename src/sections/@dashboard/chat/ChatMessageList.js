@@ -4,6 +4,7 @@ import { useEffect, useState, useRef } from 'react';
 import Scrollbar from '../../../components/Scrollbar';
 import LightboxModal from '../../../components/LightboxModal';
 import ChatMessageItem from './ChatMessageItem';
+import useAuth from '../../../hooks/useAuth';
 
 // ----------------------------------------------------------------------
 
@@ -13,7 +14,6 @@ ChatMessageList.propTypes = {
 
 export default function ChatMessageList({ conversation }) {
   const scrollRef = useRef(null);
-
   const [openLightbox, setOpenLightbox] = useState(false);
 
   const [selectedImage, setSelectedImage] = useState(0);

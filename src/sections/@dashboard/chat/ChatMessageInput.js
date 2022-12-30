@@ -14,6 +14,7 @@ import uuidv4 from '../../../utils/uuidv4';
 // components
 import Iconify from '../../../components/Iconify';
 import EmojiPicker from '../../../components/EmojiPicker';
+import useAuth from '../../../hooks/useAuth';
 
 // ----------------------------------------------------------------------
 
@@ -36,7 +37,7 @@ ChatMessageInput.propTypes = {
 export default function ChatMessageInput({ disabled, conversationId, onSend }) {
   const fileInputRef = useRef(null);
   const [message, setMessage] = useState('');
-
+  const { user } = useAuth();
   const handleAttach = () => {
     fileInputRef.current?.click();
   };
@@ -59,7 +60,7 @@ export default function ChatMessageInput({ disabled, conversationId, onSend }) {
         contentType: 'text',
         attachments: [],
         createdAt: new Date(),
-        senderId: '8864c717-587d-472a-929a-8e5f298024da-0'
+        senderId: user.id
       });
     }
     return setMessage('');
