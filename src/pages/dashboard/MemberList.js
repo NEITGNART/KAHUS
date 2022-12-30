@@ -174,10 +174,11 @@ export default function MemberList({ classId, className }) {
       })
       .then((data) => {
         setRole(newRole);
-        enqueueSnackbar('assign role successfully', { variant: 'success' });
+        enqueueSnackbar('Assign role successfully', { variant: 'success' });
       })
       .catch((error) => {
-        enqueueSnackbar('You are not the owner!', { variant: 'error' });
+        console.log(error);
+        enqueueSnackbar(error.message, { variant: 'error' });
       });
   };
 

@@ -5,7 +5,6 @@ import Router from './routes';
 import ThemeProvider from './theme';
 import MotionLazyContainer from './components/animate/MotionLazyContainer';
 import NotistackProvider from './components/NotistackProvider';
-import GlobalAlert from './layout/dashboard/GlobalAlert';
 
 function App() {
   return (

@@ -19,7 +19,6 @@ import { TableMoreMenu } from '../../../../components/table';
 const roles = [
   { name: 'co-owner', value: '1' },
   { name: 'member', value: '2' },
-  { name: 'kick out', value: '3' }
 ];
 
 MemberTableRow.propTypes = {
@@ -139,16 +138,7 @@ export default function MemberTableRow({
                 sx={{ color: 'error.main' }}
               >
                 <Iconify icon="eva:trash-2-outline" />
-                Delete
-              </MenuItem>
-              <MenuItem
-                onClick={() => {
-                  onEditRow();
-                  handleCloseMenu();
-                }}
-              >
-                <Iconify icon="eva:edit-fill" />
-                Edit
+                Kick out
               </MenuItem>
             </>
           }
