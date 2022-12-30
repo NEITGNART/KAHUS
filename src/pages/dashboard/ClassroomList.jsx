@@ -65,7 +65,6 @@ export default function ClassroomList() {
       });
   }, [filters, cache]);
 
-
   return (
     <Page title="Classes | KAHUS">
       <Container maxWidth={themeStretch ? false : 'lg'}>
