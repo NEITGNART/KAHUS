@@ -1,8 +1,8 @@
-import React, { Suspense, lazy, useEffect, useState } from 'react';
+import React, { lazy, Suspense, useEffect } from 'react';
 import {
   Navigate,
-  useRoutes,
   useLocation,
+  useRoutes,
   useSearchParams
 } from 'react-router-dom';
 
@@ -20,6 +20,7 @@ import PresentationAudience from '../components/Presentation';
 import PresentationHost from '../components/PresentationHost';
 import PresentationGroup from '../components/PresentationGroup';
 import RoleBasedGuard from '../guards/RoleBasedGuard';
+import GlobalAlert from '../layout/dashboard/GlobalAlert';
 // ----------------------------------------------------------------------
 
 const Loadable = (Component) =>
@@ -130,6 +131,7 @@ export default function Router() {
       path: 'dashboard',
       element: (
         <AuthGuard>
+          <GlobalAlert />
           <DashboardLayout />
         </AuthGuard>
       ),
@@ -145,7 +147,14 @@ export default function Router() {
               element: <Navigate to="/dashboard/classroom/classes" replace />,
               index: true
             },
-            { path: 'classes', element: <ClassroomList /> },
+            {
+              path: 'classes',
+              element: (
+                <>
+                  <ClassroomList />
+                </>
+              )
+            },
             {
               path: 'classes/join',
               element: (
@@ -157,7 +166,10 @@ export default function Router() {
               )
             },
             { path: 'create', element: <CreateClass /> },
-            { path: 'class/:classId', element: <ClassroomPage /> },
+            {
+              path: 'class/:classId',
+              element: <ClassroomPage />
+            },
             { path: 'member', element: <MemberList /> }
           ]
         },
@@ -173,7 +185,11 @@ export default function Router() {
         },
         {
           path: 'presentations',
-          element: <PresentationManagement />
+          element: (
+            <>
+              <PresentationManagement />
+            </>
+          )
         }
       ]
     },
@@ -184,7 +200,14 @@ export default function Router() {
           element: <Navigate to="/dashboard/presentations" replace />,
           index: true
         },
-        { path: ':presentationId/edit', element: <Presentation /> }
+        {
+          path: ':presentationId/edit',
+          element: (
+            <>
+              <Presentation />
+            </>
+          )
+        }
       ]
     },
     {

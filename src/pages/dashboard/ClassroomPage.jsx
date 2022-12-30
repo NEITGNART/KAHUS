@@ -119,6 +119,7 @@ export default function ClassroomPage() {
       component: (
         <Classroom
           classInfo={{
+            notification: classRoom.notification,
             description: classRoom.description,
             linkUrl: classRoom.link
           }}

@@ -7,6 +7,8 @@ import ClassroomLink from './ClassroomLink';
 import PostCard from './PostCard';
 import PostInput from './PostInput';
 import ProfileSocialInfo from './ProfileSocialInfo';
+import Iconify from '../../../../components/Iconify';
+import ClassroomLinkAlert from './ClassroomLinkAlert';
 
 // ----------------------------------------------------------------------
 
@@ -19,11 +21,24 @@ export default function Classroom({ classInfo, posts }) {
   return (
     <Grid container spacing={3}>
       <Grid item xs={12} md={4}>
-        <Stack spacing={3}>
+        {classInfo.notification && (
+          <Stack spacing={3}>
+            <ClassroomLinkAlert
+              title="Important notice"
+              linkUrl={classInfo.notification}
+              description="The presentation has been started. Please join the presentation using the link below."
+            />
+          </Stack>
+        )}
+        <Stack spacing={3} mt={3}>
           <ClassroomAbout description={classInfo.description} />
         </Stack>
         <Stack spacing={3} mt={3}>
-          <ClassroomLink linkUrl={classInfo.linkUrl} />
+          <ClassroomLink
+            title="Invitation link"
+            linkUrl={classInfo.linkUrl}
+            description="This is a private class. Only students with the link can join. Please do not share the link with anyone."
+          />
         </Stack>
       </Grid>
 

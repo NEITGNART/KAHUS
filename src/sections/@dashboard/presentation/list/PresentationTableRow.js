@@ -46,7 +46,13 @@ export default function PresentationTableRow({
     setOpenMenuActions(null);
   };
 
-  const linkTo = PATH_PRESENTATION.presentation.editPresentation(id, row.code);
+  const linkTo = row.group
+    ? PATH_PRESENTATION.presentation.editPresentationGroup(
+        id,
+        row.code,
+        row.group
+      )
+    : PATH_PRESENTATION.presentation.editPresentation(id, row.code);
 
   return (
     <TableRow hover selected={selected}>
@@ -101,7 +107,7 @@ export default function PresentationTableRow({
                 }}
               >
                 <Iconify icon="eva:edit-fill" />
-                Edit
+                Rename
               </MenuItem>
 
               <MenuItem
@@ -121,7 +127,7 @@ export default function PresentationTableRow({
                 }}
               >
                 <Iconify icon="wpf:collaborator" />
-                Invite Collaborator
+                Manage Collaborator
               </MenuItem>
 
               <MenuItem

@@ -52,7 +52,7 @@ import useAuth from '../../hooks/useAuth';
 // ----------------------------------------------------------------------
 const STATUS_OPTIONS = ['all'];
 
-const ROLE_OPTIONS = ['all', 'owner', 'co-owner', 'member', 'kick-out'];
+const ROLE_OPTIONS = ['all', 'owner', 'co-owner', 'member'];
 
 const TABLE_HEAD = [
   { id: 'name', label: 'Name', align: 'left' },
@@ -68,8 +68,7 @@ MemberList.propTypes = {
 const rolesMap = new Map([
   ['owner', 1],
   ['co-owner', 2],
-  ['member', 3],
-  ['kick out', 4]
+  ['member', 3]
 ]);
 
 // ----------------------------------------------------------------------
@@ -175,10 +174,11 @@ export default function MemberList({ classId, className }) {
       })
       .then((data) => {
         setRole(newRole);
-        enqueueSnackbar('assign role successfully', { variant: 'success' });
+        enqueueSnackbar('Assign role successfully', { variant: 'success' });
       })
       .catch((error) => {
-        enqueueSnackbar('You are not the owner!', { variant: 'error' });
+        console.log(error);
+        enqueueSnackbar(error.message, { variant: 'error' });
       });
   };
 

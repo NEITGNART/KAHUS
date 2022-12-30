@@ -1,39 +1,24 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import {
-  FlexBox,
-  Heading,
-  SpectacleLogo,
-  UnorderedList,
-  CodeSpan,
-  OrderedList,
-  ListItem,
-  FullScreen,
-  AnimatedProgress,
-  Appear,
-  Slide,
-  Deck,
-  Text,
-  Grid,
   Box,
-  Image,
-  CodePane,
-  MarkdownSlide,
-  MarkdownSlideSet,
-  Notes,
-  SlideLayout,
+  Deck,
+  FlexBox,
+  FullScreen,
+  Heading,
   Progress,
-  useSteps
+  Slide,
+  Text
 } from 'spectacle';
 
 import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
   BarElement,
+  CategoryScale,
+  Chart as ChartJS,
+  Legend,
+  LinearScale,
   Title,
-  Tooltip,
-  Legend
+  Tooltip
 } from 'chart.js';
 
 // eslint-disable-next-line import/no-unresolved
@@ -88,7 +73,7 @@ function Presentation() {
   const [error, setError] = useState(false);
   const [helperText, setHelperText] = useState('Choose wisely');
   const [searchParams, setSearchParams] = useSearchParams();
-  const [typeQuestion, setTypeQuestion] = useState('paragraph');
+  const [typeQuestion, setTypeQuestion] = useState('bar-chart');
   const { code } = useParams();
 
   // get query params from url

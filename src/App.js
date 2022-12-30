@@ -1,5 +1,6 @@
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import React from 'react';
 import Router from './routes';
 import ThemeProvider from './theme';
 import MotionLazyContainer from './components/animate/MotionLazyContainer';
@@ -11,7 +12,9 @@ function App() {
       <ThemeProvider>
         <NotistackProvider>
           <MotionLazyContainer>
-            <Router />
+            <>
+              <Router />
+            </>
           </MotionLazyContainer>
         </NotistackProvider>
       </ThemeProvider>
