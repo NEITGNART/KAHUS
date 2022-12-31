@@ -96,7 +96,9 @@ function PresentationHost() {
 
   useEffect(() => {
     axios.get(`api/presentation/code/${code}`).then((res) => {
-      console.log(res.data);
+      if (res.data === undefined || res.data === null) {
+        return;
+      }
       setPresentQuestions([...res.data.questions, ...presentQuestions]);
     });
   }, []);
