@@ -1,5 +1,6 @@
 import {
   Box,
+  Card,
   Container,
   Grid,
   IconButton,
@@ -13,6 +14,15 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { PropTypes } from 'prop-types';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { useSnackbar } from 'notistack';
+import {
+  Deck,
+  FlexBox,
+  FullScreen,
+  Heading,
+  Progress,
+  Slide,
+  Text
+} from 'spectacle';
 import Iconify from '../../../components/Iconify';
 import { SlideType } from '../../../pages/dashboard/Prestation/value/SlideType';
 import QuestionBox from '../../../components/QuestionBox';
@@ -66,6 +76,41 @@ export default function SlideReport({ slide, link }) {
     ]
   };
 
+  let renderSlide;
+
+  if (slide.type === undefined || slide.type === SlideType.MULTIPLE_CHOICE) {
+    renderSlide = (
+      <Container sx={{ height: '80%' }}>
+        <Typography variant="h2" noWrap textAlign="left">
+          {slide.question}
+        </Typography>
+        <Bar options={options} data={datas} />
+      </Container>
+    );
+  } else if (slide.type === SlideType.HEADING) {
+    renderSlide = (
+      <>
+        <Typography variant="h2" noWrap textAlign="left">
+          {slide.question}
+        </Typography>
+        <Text color="#212B36" fontSize={48}>
+          {slide.content}
+        </Text>
+      </>
+    );
+  } else if (slide.type === SlideType.PARAGRAPH) {
+    renderSlide = (
+      <>
+        <Typography variant="h2" noWrap textAlign="left">
+          {slide.question}
+        </Typography>
+        <Text color="#212B36" fontSize={32}>
+          {slide.content}
+        </Text>
+      </>
+    );
+  }
+
   return (
     <Container sx={{ padding: '20px', pb: '50px', height: '100%' }}>
       <Typography variant="body2" noWrap textAlign="center">
@@ -82,26 +127,7 @@ export default function SlideReport({ slide, link }) {
           </IconButton>
         </CopyToClipboard>
       </Typography>
-
-      <Typography variant="h2" noWrap textAlign="left">
-        {slide.question}
-      </Typography>
-      <Container sx={{ height: '80%' }}>
-        {(slide.type === undefined ||
-          slide.type === SlideType.MULTIPLE_CHOICE) && (
-          <Bar options={options} data={datas} />
-        )}
-        {slide.type === SlideType.HEADING && (
-          <Typography variant="h4" noWrap textAlign="center">
-            {slide.content}
-          </Typography>
-        )}
-        {slide.type === SlideType.PARAGRAPH && (
-          <Typography variant="h6" noWrap textAlign="center">
-            {slide.content}
-          </Typography>
-        )}
-      </Container>
+      {renderSlide}
       <QuestionBox />
     </Container>
   );

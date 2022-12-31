@@ -21,9 +21,10 @@ const QuestionDialog = styled(Dialog)(({ theme }) => ({
 }));
 
 QuestionDialogTitle.propTypes = {
-  children: PropTypes.object,
-  onClose: PropTypes.func
+  onClose: PropTypes.func,
+  children: PropTypes.node
 };
+
 function QuestionDialogTitle(props) {
   const { children, onClose, ...other } = props;
 
@@ -76,7 +77,7 @@ export default function QuestionBox() {
         aria-labelledby="question-dialog-title"
       >
         <QuestionDialogTitle id="question-dialog-title" onClose={handleClose}>
-          this is the title
+          <>this is the title</>
         </QuestionDialogTitle>
         <DialogContent
           sx={{
