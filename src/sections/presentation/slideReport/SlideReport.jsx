@@ -15,7 +15,8 @@ import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { useSnackbar } from 'notistack';
 import Iconify from '../../../components/Iconify';
 import { SlideType } from '../../../pages/dashboard/Prestation/value/SlideType';
-import QuestionBox from '../../../components/QuestionBox';
+import QuestionBox from '../question/QuestionBox';
+import QuestionBoxClient from '../question/QuestionBoxClient';
 
 const options = {
   plugins: {
@@ -103,6 +104,7 @@ export default function SlideReport({ slide, link }) {
         )}
       </Container>
       <QuestionBox />
+      <QuestionBoxClient />
     </Container>
   );
 }

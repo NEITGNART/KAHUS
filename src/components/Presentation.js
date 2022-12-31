@@ -26,9 +26,11 @@ import { Bar } from 'react-chartjs-2';
 import io from 'socket.io-client';
 import { useSearchParams } from 'react-router-dom';
 import { useParams } from 'react-router';
+import Fab from '@mui/material/Fab';
 import { FormProvider } from './hook-form';
 import RHFMyRadioGroup from './hook-form/RHFMyRadioGroup';
 import { HOST_SK } from '../config';
+import QuestionBoxClient from '../sections/presentation/question/QuestionBoxClient';
 
 ChartJS.register(
   CategoryScale,
@@ -147,6 +149,11 @@ function Presentation() {
     setError(false);
   };
 
+  const handleSendQuestion = (data) => {
+    console.log('alo');
+    socket.emit('question', data);
+  };
+
   const onSubmit = async (data) => {
     if (cacheAnswerId.has(`${socket.id}-${slideIndex}`)) {
       setHelperText('You already voted');
@@ -236,6 +243,9 @@ function Presentation() {
       <Slide backgroundColor="white" slideNum={1}>
         <Heading color="#212B36">{question}</Heading>
         {questionSlide}
+        <Fab sx={{ backgroundColor: 'white' }}>
+          <QuestionBoxClient onSendQuestion={handleSendQuestion} />
+        </Fab>
       </Slide>
     </Deck>
   );

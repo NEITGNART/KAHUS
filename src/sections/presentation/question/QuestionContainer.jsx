@@ -1,7 +1,7 @@
 import { Box, Button, IconButton, Stack, Typography } from '@mui/material';
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
-import Iconify from './Iconify';
+import Iconify from '../../../components/Iconify';
 
 QuestionContainer.propTypes = {
   questions: PropTypes.array
@@ -13,11 +13,12 @@ export default function QuestionContainer({ questions }) {
   const [questionList, setQuestionList] = useState([]);
 
   useEffect(() => {
-    setDisableNext(currentIndex + 1 >= questions.length);
+    setDisableNext(currentIndex + 1 >= questionList.length);
     setDisablePrev(currentIndex <= 0);
-  }, [currentIndex]);
+  }, [currentIndex, questionList]);
 
   useEffect(() => {
+    console.log(questions);
     setQuestionList(questions);
   }, [questions]);
   const onPrevButtonClick = () => {
@@ -72,7 +73,9 @@ export default function QuestionContainer({ questions }) {
               paragraph
               flex={1}
             >
-              {questionList[currentIndex].content}
+              {questionList[currentIndex].content
+                ? questionList[currentIndex].content
+                : ''}
             </Typography>
             <IconButton onClick={onNextButtonClick} disabled={disableNext}>
               <Iconify icon="ooui:previous-rtl" />
