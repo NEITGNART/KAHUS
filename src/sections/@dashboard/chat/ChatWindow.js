@@ -51,7 +51,7 @@ const conversationSelector = (state) => {
 };
 
 ChatWindow.propTypes = {
-  socket: PropTypes.object.isRequired
+  socket: PropTypes.object
 };
 
 export default function ChatWindow({ socket }) {
