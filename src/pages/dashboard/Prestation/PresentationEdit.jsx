@@ -45,6 +45,34 @@ const BarSubmit = styled('div')(({ theme }) => ({
   padding: 1
 }));
 
+const MyDrawer = styled(Drawer, {
+  // when the screen is smaller, take the full width
+  shouldForwardProp: (prop) => prop !== 'open'
+})(({ theme, open }) => ({
+  '& .MuiDrawer-paper': {
+    position: 'relative',
+    whiteSpace: 'nowrap',
+    width: 240,
+    backgroundColor: theme.palette.background.default,
+    border: 'none',
+    overflowX: 'hidden',
+    transition: theme.transitions.create('width', {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.enteringScreen
+    })
+  }, // take it fullwidth when size is small,
+  [theme.breakpoints.down('sm')]: {
+    '& .MuiDrawer-paper': {
+      width: '100%'
+    }
+  },
+  [theme.breakpoints.down('md')]: {
+    '& .MuiDrawer-paper': {
+      width: '100%'
+    }
+  }
+}));
+
 const socket = io(HOST_SK);
 
 const presentationStart = async (groupId, link, presentationId) => {
@@ -344,7 +372,7 @@ export default function PresentationEdit() {
 
       {presentation && (
         <Card sx={{ height: { md: '92vh' }, display: { md: 'flex' } }}>
-          <Drawer
+          <MyDrawer
             variant="permanent"
             PaperProps={{
               sx: { width: NAVBAR.BASE_WIDTH, position: 'relative' }
@@ -423,7 +451,7 @@ export default function PresentationEdit() {
                 ))}
               </List>
             </Scrollbar>
-          </Drawer>
+          </MyDrawer>
 
           <BarSubmitContainer>
             <Box sx={{ p: 1, display: 'flex' }}>
@@ -458,7 +486,7 @@ export default function PresentationEdit() {
                   </Container>
                 )}
               </Grid>
-              <Grid item xs={3}>
+              <Grid item xs={12} sm={6} md={4} lg={3} xl={2}>
                 {presentation.slides[currentSelect] && (
                   <SlideForm
                     slide={presentation.slides[currentSelect]}
