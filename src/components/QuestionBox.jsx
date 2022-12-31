@@ -10,6 +10,7 @@ import { styled } from '@mui/material/styles';
 import { useState } from 'react';
 import Iconify from './Iconify';
 import QuestionContainer from './QuestionContainer';
+import { _questions } from '../_mock/_question';
 
 const QuestionDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialogContent-root': {
@@ -49,11 +50,15 @@ function QuestionDialogTitle(props) {
   );
 }
 
-QuestionBox.propTypes = {};
+QuestionBox.propTypes = {
+  questions: PropTypes.array
+};
 
-export default function QuestionBox() {
+export default function QuestionBox({ questions }) {
   const [open, setOpen] = useState(false);
 
+  // TODO change to real data
+  questions = _questions;
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -76,17 +81,14 @@ export default function QuestionBox() {
         onClose={handleClose}
         aria-labelledby="question-dialog-title"
       >
-        <QuestionDialogTitle id="question-dialog-title" onClose={handleClose}>
-          <>this is the title</>
-        </QuestionDialogTitle>
+        <QuestionDialogTitle id="question-dialog-title" onClose={handleClose} />
         <DialogContent
           sx={{
             overflow: 'hidden',
             maxWidth: 'fit-content'
           }}
-          dividers
         >
-          <QuestionContainer />
+          <QuestionContainer questions={questions} />
         </DialogContent>
       </QuestionDialog>
     </>
