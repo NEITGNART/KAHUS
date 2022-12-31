@@ -35,12 +35,8 @@ ChatMessageInput.propTypes = {
 };
 
 export default function ChatMessageInput({ disabled, conversationId, onSend }) {
-  const fileInputRef = useRef(null);
   const [message, setMessage] = useState('');
   const { user } = useAuth();
-  const handleAttach = () => {
-    fileInputRef.current?.click();
-  };
 
   const handleKeyUp = (event) => {
     if (event.key === 'Enter') {
@@ -58,7 +54,6 @@ export default function ChatMessageInput({ disabled, conversationId, onSend }) {
         messageId: uuidv4(),
         message,
         contentType: 'text',
-        attachments: [],
         createdAt: new Date(),
         senderId: user.id
       });
@@ -85,23 +80,6 @@ export default function ChatMessageInput({ disabled, conversationId, onSend }) {
             />
           </InputAdornment>
         }
-        endAdornment={
-          <Stack direction="row" spacing={1} sx={{ flexShrink: 0, mr: 1.5 }}>
-            <IconButton disabled={disabled} size="small" onClick={handleAttach}>
-              <Iconify
-                icon="ic:round-add-photo-alternate"
-                width={22}
-                height={22}
-              />
-            </IconButton>
-            <IconButton disabled={disabled} size="small" onClick={handleAttach}>
-              <Iconify icon="eva:attach-2-fill" width={22} height={22} />
-            </IconButton>
-            <IconButton disabled={disabled} size="small">
-              <Iconify icon="eva:mic-fill" width={22} height={22} />
-            </IconButton>
-          </Stack>
-        }
       />
 
       <Divider orientation="vertical" flexItem />
@@ -114,8 +92,6 @@ export default function ChatMessageInput({ disabled, conversationId, onSend }) {
       >
         <Iconify icon="ic:round-send" width={22} height={22} />
       </IconButton>
-
-      <input type="file" ref={fileInputRef} style={{ display: 'none' }} />
     </RootStyle>
   );
 }

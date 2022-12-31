@@ -1,16 +1,25 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
+import PropTypes from 'prop-types';
 // @mui
-import { Box, Button, Divider, Stack } from '@mui/material';
+import {
+  Box,
+  Button,
+  Card,
+  DialogContent,
+  Divider,
+  Stack
+} from '@mui/material';
 // redux
 import { useDispatch, useSelector } from '../../../redux/store';
 import {
-  addRecipients,
   onSendMessage,
   getConversation,
   getParticipants,
   markConversationAsRead,
-  resetActiveConversation
+  resetActiveConversation,
+  onReceiveMessage,
+  closeModal
 } from '../../../redux/slices/chat';
 // routes
 import { PATH_DASHBOARD } from '../../../routes/paths';
@@ -20,17 +29,17 @@ import ChatMessageList from './ChatMessageList';
 import ChatHeaderDetail from './ChatHeaderDetail';
 import ChatMessageInput from './ChatMessageInput';
 import ChatHeaderCompose from './ChatHeaderCompose';
+import { DialogAnimate } from '../../../components/animate';
 
 // ----------------------------------------------------------------------
 
 const conversationSelector = (state) => {
-  const { conversations, activeConversationId } = state.chat;
-  const conversation = activeConversationId
-    ? conversations.byId[activeConversationId]
-    : null;
+  const { conversation, activeConversationId } = state.chat;
+
   if (conversation) {
     return conversation;
   }
+
   const initState = {
     id: '',
     messages: [],
@@ -41,13 +50,22 @@ const conversationSelector = (state) => {
   return initState;
 };
 
-export default function ChatWindow() {
+ChatWindow.propTypes = {
+  socket: PropTypes.object
+};
+
+export default function ChatWindow({ socket }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const { code } = useParams();
-  const { contacts, recipients, participants, activeConversationId } =
-    useSelector((state) => state.chat);
+  const {
+    contacts,
+    recipients,
+    participants,
+    activeConversationId,
+    isOpenModal
+  } = useSelector((state) => state.chat);
   const conversationKey = code;
   const conversation = useSelector((state) => conversationSelector(state));
   const mode = conversationKey ? 'DETAIL' : 'COMPOSE';
@@ -72,18 +90,41 @@ export default function ChatWindow() {
     }
   }, [conversationKey]);
 
-  useEffect(() => {
-    if (activeConversationId) {
-      dispatch(markConversationAsRead(activeConversationId));
-    }
-  }, [dispatch, activeConversationId]);
+  // useEffect(() => {
+  //   if (activeConversationId) {
+  //     dispatch(markConversationAsRead(activeConversationId));
+  //   }
+  // }, [dispatch, activeConversationId]);
 
-  const handleAddRecipients = (localRecipients) => {
-    dispatch(addRecipients(localRecipients));
+  const handleCloseModal = () => {
+    dispatch(closeModal());
   };
 
   const handleSendMessage = async (value) => {
     try {
+      const {
+        conversationId,
+        messageId,
+        message,
+        contentType,
+        attachments,
+        createdAt,
+        senderId
+      } = value;
+
+      const newMessage = {
+        id: messageId,
+        body: message,
+        contentType,
+        attachments,
+        createdAt,
+        senderId
+      };
+
+      socket.emit('sendMsg', {
+        id: conversationId,
+        message: newMessage
+      });
       dispatch(onSendMessage(value));
     } catch (error) {
       console.error(error);
@@ -91,8 +132,17 @@ export default function ChatWindow() {
   };
 
   return (
-    <Stack sx={{ flexGrow: 1, minWidth: '1px' }}>
-      {/* {mode === 'DETAIL' ? (
+    <>
+      <DialogAnimate
+        fullWidth
+        maxWidth="md"
+        open={isOpenModal}
+        onClose={handleCloseModal}
+      >
+        <DialogContent>
+          <Card sx={{ height: '72vh', display: 'flex' }}>
+            <Stack sx={{ flexGrow: 1, minWidth: '1px' }}>
+              {/* {mode === 'DETAIL' ? (
         <ChatHeaderDetail participants={displayParticipants} />
       ) : (
         <ChatHeaderCompose
@@ -102,30 +152,27 @@ export default function ChatWindow() {
         />
       )} */}
 
-      {/* <ChatHeaderDetail participants={displayParticipants} /> */}
+              {/* <ChatHeaderDetail participants={displayParticipants} /> */}
 
-      <Divider />
+              <Divider />
 
-      <Box sx={{ flexGrow: 1, display: 'flex', overflow: 'hidden' }}>
-        <Stack sx={{ flexGrow: 1 }}>
-          <ChatMessageList conversation={conversation} />
+              <Box sx={{ flexGrow: 1, display: 'flex', overflow: 'hidden' }}>
+                <Stack sx={{ flexGrow: 1 }}>
+                  <ChatMessageList conversation={conversation} />
 
-          <Divider />
+                  <Divider />
 
-          <ChatMessageInput
-            conversationId={activeConversationId}
-            onSend={handleSendMessage}
-            disabled={pathname === PATH_DASHBOARD.chat.new}
-          />
-        </Stack>
-
-        {/* {mode === 'DETAIL' && (
-          <ChatRoom
-            conversation={conversation}
-            participants={displayParticipants}
-          />
-        )} */}
-      </Box>
-    </Stack>
+                  <ChatMessageInput
+                    conversationId={activeConversationId}
+                    onSend={handleSendMessage}
+                    disabled={pathname === PATH_DASHBOARD.chat.new}
+                  />
+                </Stack>
+              </Box>
+            </Stack>
+          </Card>
+        </DialogContent>
+      </DialogAnimate>
+    </>
   );
 }

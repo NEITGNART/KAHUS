@@ -19,7 +19,7 @@ import {
   Tooltip,
   Legend
 } from 'chart.js';
-import { Card, DialogContent } from '@mui/material';
+import { Button, Card, DialogContent } from '@mui/material';
 import MessageIcon from '@mui/icons-material/Message';
 import Fab from '@mui/material/Fab';
 
@@ -36,6 +36,7 @@ import useAuth from '../hooks/useAuth';
 import { DialogAnimate } from './animate';
 import ChatWindow from '../sections/@dashboard/chat/ChatWindow';
 import ChatSidebar from '../sections/@dashboard/chat/ChatSidebar';
+import { onReceiveMessage, openModal } from '../redux/slices/chat';
 
 ChartJS.register(
   CategoryScale,
@@ -95,6 +96,7 @@ function PresentationGroup() {
 
   const handleOpenChatConsole = () => {
     setIsOpenChat(true);
+    dispatch(openModal());
   };
 
   useEffect(() => {
@@ -129,11 +131,18 @@ function PresentationGroup() {
       }
     });
 
+    socket.on('receiveMsg', (data) => {
+      if (data) {
+        dispatch(onReceiveMessage(data));
+      }
+    });
+
     return () => {
       socket.off('connect');
       socket.off('chart');
       socket.off('slide-change');
       socket.off('vote');
+      socket.off('receiveMsg');
       socket.off('disconnect');
     };
   }, []);
@@ -224,13 +233,7 @@ function PresentationGroup() {
           <MessageIcon />
         </Fab>
       </Slide>
-      <DialogAnimate fullWidth maxWidth="md" open={isOpenChat}>
-        <DialogContent>
-          <Card sx={{ height: '72vh', display: 'flex' }}>
-            <ChatWindow />
-          </Card>
-        </DialogContent>
-      </DialogAnimate>
+      <ChatWindow socket={socket} />
     </Deck>
   );
 }
