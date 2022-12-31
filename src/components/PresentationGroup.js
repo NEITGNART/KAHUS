@@ -28,15 +28,13 @@ import { Bar } from 'react-chartjs-2';
 import io from 'socket.io-client';
 import { useSearchParams } from 'react-router-dom';
 import { useParams } from 'react-router';
-import { useDispatch } from 'react-redux';
 import { FormProvider } from './hook-form';
 import RHFMyRadioGroup from './hook-form/RHFMyRadioGroup';
 import { HOST_SK } from '../config';
 import useAuth from '../hooks/useAuth';
-import { DialogAnimate } from './animate';
 import ChatWindow from '../sections/@dashboard/chat/ChatWindow';
-import ChatSidebar from '../sections/@dashboard/chat/ChatSidebar';
-import { onReceiveMessage, openModal } from '../redux/slices/chat';
+import { onReceiveMessage, openChatBox } from '../redux/slices/chat';
+import { useDispatch } from '../redux/store';
 
 ChartJS.register(
   CategoryScale,
@@ -83,8 +81,7 @@ function PresentationGroup() {
   const [helperText, setHelperText] = useState('Choose wisely');
   const [searchParams, setSearchParams] = useSearchParams();
   const { code } = useParams();
-  const [isOpenChat, setIsOpenChat] = useState(false);
-
+  console.log(user);
   // get query params from url
   const [slideIndex, setSlideIndex] = useState(
     Number(searchParams.get('slideIndex'))
@@ -95,15 +92,14 @@ function PresentationGroup() {
   const dispatch = useDispatch();
 
   const handleOpenChatConsole = () => {
-    setIsOpenChat(true);
-    dispatch(openModal());
+    dispatch(openChatBox());
   };
 
   useEffect(() => {
     socket = io(HOST_SK);
 
     socket.on('connect', () => {
-      socket.emit('join', { room: roomCode, slideIndex });
+      socket.emit('join', { room: roomCode, slideIndex, userId: user.id });
     });
 
     socket.on('chart', (data) => {

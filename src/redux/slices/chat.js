@@ -16,7 +16,7 @@ function objFromArray(array, key = 'id') {
 
 const initialState = {
   isLoading: false,
-  isOpenModal: false,
+  isOpenChatBox: false,
   error: null,
   conversation: null,
   activeConversationId: null,
@@ -103,13 +103,13 @@ const slice = createSlice({
       state.activeConversationId = null;
     },
     // OPEN MODAL
-    openModal(state) {
-      state.isOpenModal = true;
+    openChatBox(state) {
+      state.isOpenChatBox = true;
     },
 
     // CLOSE MODAL
-    closeModal(state) {
-      state.isOpenModal = false;
+    closeChatBox(state) {
+      state.isOpenChatBox = false;
     }
   }
 });
@@ -122,8 +122,8 @@ export const {
   onSendMessage,
   onReceiveMessage,
   resetActiveConversation,
-  openModal,
-  closeModal
+  openChatBox,
+  closeChatBox
 } = slice.actions;
 
 // ----------------------------------------------------------------------

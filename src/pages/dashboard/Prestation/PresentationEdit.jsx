@@ -29,6 +29,7 @@ import axios from '../../../utils/axios';
 import Iconify from '../../../components/Iconify';
 import { SlideType } from './value/SlideType';
 import { SlideFactory } from './value/SlideFactory';
+import useAuth from '../../../hooks/useAuth';
 
 const BarSubmitContainer = styled('div')({
   flexGrow: 1,
@@ -42,6 +43,34 @@ const BarSubmit = styled('div')(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
   padding: 1
+}));
+
+const MyDrawer = styled(Drawer, {
+  // when the screen is smaller, take the full width
+  shouldForwardProp: (prop) => prop !== 'open'
+})(({ theme, open }) => ({
+  '& .MuiDrawer-paper': {
+    position: 'relative',
+    whiteSpace: 'nowrap',
+    width: 240,
+    backgroundColor: theme.palette.background.default,
+    border: 'none',
+    overflowX: 'hidden',
+    transition: theme.transitions.create('width', {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.enteringScreen
+    })
+  }, // take it fullwidth when size is small,
+  [theme.breakpoints.down('sm')]: {
+    '& .MuiDrawer-paper': {
+      width: '100%'
+    }
+  },
+  [theme.breakpoints.down('md')]: {
+    '& .MuiDrawer-paper': {
+      width: '100%'
+    }
+  }
 }));
 
 const socket = io(HOST_SK);
@@ -104,6 +133,7 @@ export default function PresentationEdit() {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const slideTypeDialogOpen = Boolean(anchorEl);
   const [open, setOpen] = useState(false);
+  const { user } = useAuth();
 
   useEffect(() => {
     axios
@@ -121,7 +151,8 @@ export default function PresentationEdit() {
     socket.on('connect', () => {
       socket.emit('join', {
         room: code,
-        slideIndex: 0
+        slideIndex: 0,
+        userId: user.id
       });
     });
 
@@ -341,7 +372,7 @@ export default function PresentationEdit() {
 
       {presentation && (
         <Card sx={{ height: { md: '92vh' }, display: { md: 'flex' } }}>
-          <Drawer
+          <MyDrawer
             variant="permanent"
             PaperProps={{
               sx: { width: NAVBAR.BASE_WIDTH, position: 'relative' }
@@ -420,7 +451,7 @@ export default function PresentationEdit() {
                 ))}
               </List>
             </Scrollbar>
-          </Drawer>
+          </MyDrawer>
 
           <BarSubmitContainer>
             <Box sx={{ p: 1, display: 'flex' }}>
@@ -455,7 +486,7 @@ export default function PresentationEdit() {
                   </Container>
                 )}
               </Grid>
-              <Grid item xs={3}>
+              <Grid item xs={12} sm={6} md={4} lg={3} xl={2}>
                 {presentation.slides[currentSelect] && (
                   <SlideForm
                     slide={presentation.slides[currentSelect]}

@@ -1,5 +1,12 @@
 import { useEffect, useState } from 'react';
-import { Box, Button, Stack, TextField, Typography } from '@mui/material';
+import {
+  Alert,
+  Box,
+  Button,
+  Stack,
+  TextField,
+  Typography
+} from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import PropTypes from 'prop-types';
 import ChoiceField from './ChoiceField';
@@ -32,10 +39,28 @@ export default function SlideForm({
 }) {
   const [question, setQuestion] = useState(slide.question || '');
   const [options, setOptions] = useState(slide.options || []);
-  const [content, setContent] = useState('');
+  const [error, setError] = useState('');
+  const MAX_LIMIT_CONTENT = slide.type === 'HEADING' ? 100 : 200;
+  let label;
+  if (slide.type === SlideType.HEADING) {
+    label = 'Heading question';
+  } else if (slide.type === SlideType.MULTIPLE_CHOICE) {
+    label = 'Multiple choice question';
+  } else {
+    label = 'Paragraph question';
+  }
+
   // const { question, options } = slide;
 
   useEffect(() => {
+    if (
+      slide.content !== undefined &&
+      slide.content.length > MAX_LIMIT_CONTENT
+    ) {
+      setError(`Maximum ${MAX_LIMIT_CONTENT} characters`);
+    } else {
+      setError('');
+    }
     setQuestion(slide.question || '');
     setOptions(slide.options || []);
   }, [slide, slide.options]);
@@ -46,8 +71,12 @@ export default function SlideForm({
   };
 
   const contentChange = (event) => {
-    setContent(event.target.value);
-    onChangeContent(slide.id, event.target.value);
+    if (event.target.value.length <= MAX_LIMIT_CONTENT) {
+      onChangeContent(slide.id, event.target.value);
+      setError(null);
+    } else {
+      setError(`You can only enter ${MAX_LIMIT_CONTENT} characters`);
+    }
   };
 
   const onAddButtonClick = () => {
@@ -61,7 +90,8 @@ export default function SlideForm({
     >
       <Typography> Your question:</Typography>
       <TextField
-        label="Multiple choice"
+        label={label}
+        placeholder="Input your title"
         value={question}
         onChange={questionChange}
       />
@@ -90,11 +120,12 @@ export default function SlideForm({
         <TextField
           multiline
           rows={4}
-          value={content}
+          value={slide.content}
           onChange={contentChange}
           placeholder="Type anything…"
         />
       )}
+      {error && <Alert severity="error">{error}</Alert>}
     </Stack>
   );
 }

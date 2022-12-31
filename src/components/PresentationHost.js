@@ -41,6 +41,7 @@ import { HOST_API, HOST_SK } from '../config';
 import Iconify from './Iconify';
 import axios from '../utils/axios';
 import QuestionBox from '../sections/presentation/question/QuestionBox';
+import useAuth from '../hooks/useAuth';
 
 ChartJS.register(
   CategoryScale,
@@ -109,7 +110,6 @@ function PresentationHost() {
       socket.emit('join', { room: roomCode, slideIndex });
 
       socket.on('chart', (data) => {
-        console.log(data);
         if (data) {
           setQuestion(data.question);
           setLabels(data.answer);

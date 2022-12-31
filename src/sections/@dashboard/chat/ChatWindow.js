@@ -1,25 +1,16 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import PropTypes from 'prop-types';
 // @mui
-import {
-  Box,
-  Button,
-  Card,
-  DialogContent,
-  Divider,
-  Stack
-} from '@mui/material';
+import { Box, Card, DialogContent, Divider, Stack } from '@mui/material';
 // redux
 import { useDispatch, useSelector } from '../../../redux/store';
 import {
   onSendMessage,
   getConversation,
   getParticipants,
-  markConversationAsRead,
   resetActiveConversation,
-  onReceiveMessage,
-  closeModal
+  closeChatBox
 } from '../../../redux/slices/chat';
 // routes
 import { PATH_DASHBOARD } from '../../../routes/paths';
@@ -59,16 +50,11 @@ export default function ChatWindow({ socket }) {
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const { code } = useParams();
-  const {
-    contacts,
-    recipients,
-    participants,
-    activeConversationId,
-    isOpenModal
-  } = useSelector((state) => state.chat);
+  const { participants, activeConversationId, isOpenChatBox } = useSelector(
+    (state) => state.chat
+  );
   const conversationKey = code;
   const conversation = useSelector((state) => conversationSelector(state));
-  const mode = conversationKey ? 'DETAIL' : 'COMPOSE';
   // const displayParticipants = participants.filter(
   //   (item) => item.id !== '8864c717-587d-472a-929a-8e5f298024da-0'
   // );
@@ -97,7 +83,7 @@ export default function ChatWindow({ socket }) {
   // }, [dispatch, activeConversationId]);
 
   const handleCloseModal = () => {
-    dispatch(closeModal());
+    dispatch(closeChatBox());
   };
 
   const handleSendMessage = async (value) => {
@@ -136,22 +122,12 @@ export default function ChatWindow({ socket }) {
       <DialogAnimate
         fullWidth
         maxWidth="md"
-        open={isOpenModal}
+        open={isOpenChatBox}
         onClose={handleCloseModal}
       >
         <DialogContent>
           <Card sx={{ height: '72vh', display: 'flex' }}>
             <Stack sx={{ flexGrow: 1, minWidth: '1px' }}>
-              {/* {mode === 'DETAIL' ? (
-        <ChatHeaderDetail participants={displayParticipants} />
-      ) : (
-        <ChatHeaderCompose
-          recipients={recipients}
-          contacts={Object.values(contacts.byId)}
-          onAddRecipients={handleAddRecipients}
-        />
-      )} */}
-
               {/* <ChatHeaderDetail participants={displayParticipants} /> */}
 
               <Divider />

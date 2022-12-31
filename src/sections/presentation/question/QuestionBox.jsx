@@ -22,9 +22,10 @@ const QuestionDialog = styled(Dialog)(({ theme }) => ({
 }));
 
 QuestionDialogTitle.propTypes = {
-  children: PropTypes.object,
-  onClose: PropTypes.func
+  onClose: PropTypes.func,
+  children: PropTypes.node
 };
+
 function QuestionDialogTitle(props) {
   const { children, onClose, ...other } = props;
 
