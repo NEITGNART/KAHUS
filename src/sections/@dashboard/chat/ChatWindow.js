@@ -6,7 +6,6 @@ import { Box, Button, Divider, Stack } from '@mui/material';
 // redux
 import { useDispatch, useSelector } from '../../../redux/store';
 import {
-  addRecipients,
   onSendMessage,
   getConversation,
   getParticipants,
@@ -26,13 +25,12 @@ import ChatHeaderCompose from './ChatHeaderCompose';
 // ----------------------------------------------------------------------
 
 const conversationSelector = (state) => {
-  const { conversations, activeConversationId } = state.chat;
-  const conversation = activeConversationId
-    ? conversations.byId[activeConversationId]
-    : null;
+  const { conversation, activeConversationId } = state.chat;
+
   if (conversation) {
     return conversation;
   }
+
   const initState = {
     id: '',
     messages: [],
@@ -78,15 +76,11 @@ export default function ChatWindow({ socket }) {
     }
   }, [conversationKey]);
 
-  useEffect(() => {
-    if (activeConversationId) {
-      dispatch(markConversationAsRead(activeConversationId));
-    }
-  }, [dispatch, activeConversationId]);
-
-  const handleAddRecipients = (localRecipients) => {
-    dispatch(addRecipients(localRecipients));
-  };
+  // useEffect(() => {
+  //   if (activeConversationId) {
+  //     dispatch(markConversationAsRead(activeConversationId));
+  //   }
+  // }, [dispatch, activeConversationId]);
 
   const handleSendMessage = async (value) => {
     try {
@@ -147,13 +141,6 @@ export default function ChatWindow({ socket }) {
             disabled={pathname === PATH_DASHBOARD.chat.new}
           />
         </Stack>
-
-        {/* {mode === 'DETAIL' && (
-          <ChatRoom
-            conversation={conversation}
-            participants={displayParticipants}
-          />
-        )} */}
       </Box>
     </Stack>
   );

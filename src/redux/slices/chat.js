@@ -17,11 +17,9 @@ function objFromArray(array, key = 'id') {
 const initialState = {
   isLoading: false,
   error: null,
-  contacts: { byId: {}, allIds: [] },
-  conversations: { byId: {}, allIds: [] },
+  conversation: null,
   activeConversationId: null,
-  participants: [],
-  recipients: []
+  participants: []
 };
 
 const slice = createSlice({
@@ -39,22 +37,6 @@ const slice = createSlice({
       state.error = action.payload;
     },
 
-    // GET CONTACT SSUCCESS
-    getContactsSuccess(state, action) {
-      const contacts = action.payload;
-
-      state.contacts.byId = objFromArray(contacts);
-      state.contacts.allIds = Object.keys(state.contacts.byId);
-    },
-
-    // GET CONVERSATIONS
-    getConversationsSuccess(state, action) {
-      const conversations = action.payload;
-
-      state.conversations.byId = objFromArray(conversations);
-      state.conversations.allIds = Object.keys(state.conversations.byId);
-    },
-
     // GET CONVERSATION
     getConversationSuccess(state, action) {
       const temp = action.payload;
@@ -62,24 +44,11 @@ const slice = createSlice({
       const id = conversation._id;
       conversation = { ...conversation, id };
       if (conversation) {
-        state.conversations.byId[conversation.id] = conversation;
+        state.conversation = conversation;
         state.activeConversationId = conversation.id;
-        if (!state.conversations.allIds.includes(conversation.id)) {
-          state.conversations.allIds.push(conversation.id);
-        }
       } else {
         state.activeConversationId = null;
       }
-    },
-
-    // ON RECEIVE MESSAGE
-    onReceiveMessage(state, action) {
-      const conversation = action.payload;
-      console.log(conversation);
-
-      state.conversations.byId[conversation.id].messages.push(
-        conversation.message
-      );
     },
 
     // ON SEND MESSAGE
@@ -104,24 +73,22 @@ const slice = createSlice({
         senderId
       };
 
-      const sendMessage = async () => {
-        const response = await axios.post('/api/conversation/addMessage', {
-          conversationId,
-          message: newMessage
-        });
-      };
+      state.conversation.messages.push(newMessage);
+    },
 
-      // sendMessage();
+    // ON RECEIVE MESSAGE
+    onReceiveMessage(state, action) {
+      const conversation = action.payload;
 
-      state.conversations.byId[conversationId].messages.push(newMessage);
+      state.conversation.messages.push(conversation.message);
     },
 
     markConversationAsReadSuccess(state, action) {
-      const { conversationId } = action.payload;
-      const conversation = state.conversations.byId[conversationId];
-      if (conversation) {
-        conversation.unreadCount = 0;
-      }
+      // const { conversationId } = action.payload;
+      // const conversation = state.conversations.byId[conversationId];
+      // if (conversation) {
+      //   conversation.unreadCount = 0;
+      // }
     },
 
     // GET PARTICIPANTS
@@ -133,11 +100,6 @@ const slice = createSlice({
     // RESET ACTIVE CONVERSATION
     resetActiveConversation(state) {
       state.activeConversationId = null;
-    },
-
-    addRecipients(state, action) {
-      const recipients = action.payload;
-      state.recipients = recipients;
     }
   }
 });
@@ -146,42 +108,8 @@ const slice = createSlice({
 export default slice.reducer;
 
 // Actions
-export const {
-  addRecipients,
-  onSendMessage,
-  onReceiveMessage,
-  resetActiveConversation
-} = slice.actions;
-
-// ----------------------------------------------------------------------
-
-export function getContacts() {
-  return async () => {
-    dispatch(slice.actions.startLoading());
-    try {
-      const response = await axios.get('/api/chat/contacts');
-      dispatch(slice.actions.getContactsSuccess(response.data.contacts));
-    } catch (error) {
-      dispatch(slice.actions.hasError(error));
-    }
-  };
-}
-
-// ----------------------------------------------------------------------
-
-export function getConversations() {
-  return async () => {
-    dispatch(slice.actions.startLoading());
-    try {
-      const response = await axios.get('/api/chat/conversations');
-      dispatch(
-        slice.actions.getConversationsSuccess(response.data.conversations)
-      );
-    } catch (error) {
-      dispatch(slice.actions.hasError(error));
-    }
-  };
-}
+export const { onSendMessage, onReceiveMessage, resetActiveConversation } =
+  slice.actions;
 
 // ----------------------------------------------------------------------
 
