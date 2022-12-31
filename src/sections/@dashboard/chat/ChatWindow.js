@@ -2,7 +2,14 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import PropTypes from 'prop-types';
 // @mui
-import { Box, Button, Divider, Stack } from '@mui/material';
+import {
+  Box,
+  Button,
+  Card,
+  DialogContent,
+  Divider,
+  Stack
+} from '@mui/material';
 // redux
 import { useDispatch, useSelector } from '../../../redux/store';
 import {
@@ -11,7 +18,8 @@ import {
   getParticipants,
   markConversationAsRead,
   resetActiveConversation,
-  onReceiveMessage
+  onReceiveMessage,
+  closeModal
 } from '../../../redux/slices/chat';
 // routes
 import { PATH_DASHBOARD } from '../../../routes/paths';
@@ -21,6 +29,7 @@ import ChatMessageList from './ChatMessageList';
 import ChatHeaderDetail from './ChatHeaderDetail';
 import ChatMessageInput from './ChatMessageInput';
 import ChatHeaderCompose from './ChatHeaderCompose';
+import { DialogAnimate } from '../../../components/animate';
 
 // ----------------------------------------------------------------------
 
@@ -50,8 +59,13 @@ export default function ChatWindow({ socket }) {
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const { code } = useParams();
-  const { contacts, recipients, participants, activeConversationId } =
-    useSelector((state) => state.chat);
+  const {
+    contacts,
+    recipients,
+    participants,
+    activeConversationId,
+    isOpenModal
+  } = useSelector((state) => state.chat);
   const conversationKey = code;
   const conversation = useSelector((state) => conversationSelector(state));
   const mode = conversationKey ? 'DETAIL' : 'COMPOSE';
@@ -81,6 +95,10 @@ export default function ChatWindow({ socket }) {
   //     dispatch(markConversationAsRead(activeConversationId));
   //   }
   // }, [dispatch, activeConversationId]);
+
+  const handleCloseModal = () => {
+    dispatch(closeModal());
+  };
 
   const handleSendMessage = async (value) => {
     try {
@@ -114,8 +132,17 @@ export default function ChatWindow({ socket }) {
   };
 
   return (
-    <Stack sx={{ flexGrow: 1, minWidth: '1px' }}>
-      {/* {mode === 'DETAIL' ? (
+    <>
+      <DialogAnimate
+        fullWidth
+        maxWidth="md"
+        open={isOpenModal}
+        onClose={handleCloseModal}
+      >
+        <DialogContent>
+          <Card sx={{ height: '72vh', display: 'flex' }}>
+            <Stack sx={{ flexGrow: 1, minWidth: '1px' }}>
+              {/* {mode === 'DETAIL' ? (
         <ChatHeaderDetail participants={displayParticipants} />
       ) : (
         <ChatHeaderCompose
@@ -125,23 +152,27 @@ export default function ChatWindow({ socket }) {
         />
       )} */}
 
-      {/* <ChatHeaderDetail participants={displayParticipants} /> */}
+              {/* <ChatHeaderDetail participants={displayParticipants} /> */}
 
-      <Divider />
+              <Divider />
 
-      <Box sx={{ flexGrow: 1, display: 'flex', overflow: 'hidden' }}>
-        <Stack sx={{ flexGrow: 1 }}>
-          <ChatMessageList conversation={conversation} />
+              <Box sx={{ flexGrow: 1, display: 'flex', overflow: 'hidden' }}>
+                <Stack sx={{ flexGrow: 1 }}>
+                  <ChatMessageList conversation={conversation} />
 
-          <Divider />
+                  <Divider />
 
-          <ChatMessageInput
-            conversationId={activeConversationId}
-            onSend={handleSendMessage}
-            disabled={pathname === PATH_DASHBOARD.chat.new}
-          />
-        </Stack>
-      </Box>
-    </Stack>
+                  <ChatMessageInput
+                    conversationId={activeConversationId}
+                    onSend={handleSendMessage}
+                    disabled={pathname === PATH_DASHBOARD.chat.new}
+                  />
+                </Stack>
+              </Box>
+            </Stack>
+          </Card>
+        </DialogContent>
+      </DialogAnimate>
+    </>
   );
 }
