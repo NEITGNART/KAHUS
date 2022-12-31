@@ -29,6 +29,7 @@ import axios from '../../../utils/axios';
 import Iconify from '../../../components/Iconify';
 import { SlideType } from './value/SlideType';
 import { SlideFactory } from './value/SlideFactory';
+import useAuth from '../../../hooks/useAuth';
 
 const BarSubmitContainer = styled('div')({
   flexGrow: 1,
@@ -104,6 +105,7 @@ export default function PresentationEdit() {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const slideTypeDialogOpen = Boolean(anchorEl);
   const [open, setOpen] = useState(false);
+  const { user } = useAuth();
 
   useEffect(() => {
     axios
@@ -121,7 +123,8 @@ export default function PresentationEdit() {
     socket.on('connect', () => {
       socket.emit('join', {
         room: code,
-        slideIndex: 0
+        slideIndex: 0,
+        userId: user.id
       });
     });
 

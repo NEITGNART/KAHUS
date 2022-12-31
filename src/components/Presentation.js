@@ -29,6 +29,7 @@ import { useParams } from 'react-router';
 import { FormProvider } from './hook-form';
 import RHFMyRadioGroup from './hook-form/RHFMyRadioGroup';
 import { HOST_SK } from '../config';
+import useAuth from '../hooks/useAuth';
 
 ChartJS.register(
   CategoryScale,
@@ -75,6 +76,8 @@ function Presentation() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [typeQuestion, setTypeQuestion] = useState('bar-chart');
   const { code } = useParams();
+  const { user } = useAuth();
+  console.log(user);
 
   // get query params from url
   const [slideIndex, setSlideIndex] = useState(
@@ -87,7 +90,7 @@ function Presentation() {
 
   useEffect(() => {
     socket.on('connect', () => {
-      socket.emit('join', { room: roomCode, slideIndex });
+      socket.emit('join', { room: roomCode, slideIndex, userId: user.id });
 
       socket.on('chart', (data) => {
         if (data) {
