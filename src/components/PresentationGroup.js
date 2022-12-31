@@ -19,7 +19,7 @@ import {
   Tooltip,
   Legend
 } from 'chart.js';
-import { Button, Card, DialogContent } from '@mui/material';
+import { Button, Card, DialogContent, Stack } from '@mui/material';
 import MessageIcon from '@mui/icons-material/Message';
 import Fab from '@mui/material/Fab';
 
@@ -33,8 +33,9 @@ import RHFMyRadioGroup from './hook-form/RHFMyRadioGroup';
 import { HOST_SK } from '../config';
 import useAuth from '../hooks/useAuth';
 import ChatWindow from '../sections/@dashboard/chat/ChatWindow';
-import { onReceiveMessage, openChatBox } from '../redux/slices/chat';
-import { useDispatch } from '../redux/store';
+import { onReceiveMessage } from '../redux/slices/chat';
+import { useDispatch, useSelector } from '../redux/store';
+import { DialogAnimate } from './animate';
 
 ChartJS.register(
   CategoryScale,
@@ -80,8 +81,8 @@ function PresentationGroup() {
   const [error, setError] = useState(false);
   const [helperText, setHelperText] = useState('Choose wisely');
   const [searchParams, setSearchParams] = useSearchParams();
+  const [showChatConsole, setShowChatConsole] = useState(false);
   const { code } = useParams();
-  console.log(user);
   // get query params from url
   const [slideIndex, setSlideIndex] = useState(
     Number(searchParams.get('slideIndex'))
@@ -91,8 +92,12 @@ function PresentationGroup() {
 
   const dispatch = useDispatch();
 
+  const handleCloseChatConsole = () => {
+    setShowChatConsole(false);
+  };
+
   const handleOpenChatConsole = () => {
-    dispatch(openChatBox());
+    setShowChatConsole(true);
   };
 
   useEffect(() => {
@@ -229,7 +234,20 @@ function PresentationGroup() {
           <MessageIcon />
         </Fab>
       </Slide>
-      <ChatWindow socket={socket} />
+      <DialogAnimate
+        fullWidth
+        maxWidth="md"
+        open={showChatConsole}
+        onClose={handleCloseChatConsole}
+      >
+        <DialogContent>
+          <Card sx={{ height: '72vh', display: 'flex' }}>
+            <Stack sx={{ flexGrow: 1, minWidth: '1px' }}>
+              <ChatWindow socket={socket} />
+            </Stack>
+          </Card>
+        </DialogContent>
+      </DialogAnimate>
     </Deck>
   );
 }

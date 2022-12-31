@@ -9,8 +9,7 @@ import {
   onSendMessage,
   getConversation,
   getParticipants,
-  resetActiveConversation,
-  closeChatBox
+  resetActiveConversation
 } from '../../../redux/slices/chat';
 // routes
 import { PATH_DASHBOARD } from '../../../routes/paths';
@@ -82,10 +81,6 @@ export default function ChatWindow({ socket }) {
   //   }
   // }, [dispatch, activeConversationId]);
 
-  const handleCloseModal = () => {
-    dispatch(closeChatBox());
-  };
-
   const handleSendMessage = async (value) => {
     try {
       const {
@@ -119,36 +114,23 @@ export default function ChatWindow({ socket }) {
 
   return (
     <>
-      <DialogAnimate
-        fullWidth
-        maxWidth="md"
-        open={isOpenChatBox}
-        onClose={handleCloseModal}
-      >
-        <DialogContent>
-          <Card sx={{ height: '72vh', display: 'flex' }}>
-            <Stack sx={{ flexGrow: 1, minWidth: '1px' }}>
-              {/* <ChatHeaderDetail participants={displayParticipants} /> */}
+      {/* <ChatHeaderDetail participants={displayParticipants} /> */}
 
-              <Divider />
+      <Divider />
 
-              <Box sx={{ flexGrow: 1, display: 'flex', overflow: 'hidden' }}>
-                <Stack sx={{ flexGrow: 1 }}>
-                  <ChatMessageList conversation={conversation} />
+      <Box sx={{ flexGrow: 1, display: 'flex', overflow: 'hidden' }}>
+        <Stack sx={{ flexGrow: 1 }}>
+          <ChatMessageList conversation={conversation} />
 
-                  <Divider />
+          <Divider />
 
-                  <ChatMessageInput
-                    conversationId={activeConversationId}
-                    onSend={handleSendMessage}
-                    disabled={pathname === PATH_DASHBOARD.chat.new}
-                  />
-                </Stack>
-              </Box>
-            </Stack>
-          </Card>
-        </DialogContent>
-      </DialogAnimate>
+          <ChatMessageInput
+            conversationId={activeConversationId}
+            onSend={handleSendMessage}
+            disabled={pathname === PATH_DASHBOARD.chat.new}
+          />
+        </Stack>
+      </Box>
     </>
   );
 }
