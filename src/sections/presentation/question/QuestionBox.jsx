@@ -7,10 +7,10 @@ import {
   Typography
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { useState } from 'react';
-import Iconify from './Iconify';
+import { useEffect, useState } from 'react';
+import Iconify from '../../../components/Iconify';
 import QuestionContainer from './QuestionContainer';
-import { _questions } from '../_mock/_question';
+import { _questions } from '../../../_mock';
 
 const QuestionDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialogContent-root': {
@@ -56,9 +56,11 @@ QuestionBox.propTypes = {
 
 export default function QuestionBox({ questions }) {
   const [open, setOpen] = useState(false);
+  const [questionList, setQuestionList] = useState([]);
 
-  // TODO change to real data
-  questions = _questions;
+  useEffect(() => {
+    setQuestionList(questions);
+  }, [questions]);
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -88,7 +90,7 @@ export default function QuestionBox({ questions }) {
             maxWidth: 'fit-content'
           }}
         >
-          <QuestionContainer questions={questions} />
+          <QuestionContainer questions={questionList} />
         </DialogContent>
       </QuestionDialog>
     </>

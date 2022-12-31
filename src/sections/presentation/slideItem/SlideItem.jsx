@@ -18,7 +18,11 @@ export default function SlideItem({ index, slide, onClick, isSelected }) {
       onClick={(event) => onClick(index)}
     >
       <Typography>{index}</Typography>
-      <Card className="slide-item-card-thumb" variant="outlined" style={{width: '100%'}}>
+      <Card
+        className="slide-item-card-thumb"
+        variant="outlined"
+        style={{ width: '100%' }}
+      >
         <Typography>{slide.question}</Typography>
       </Card>
     </Stack>

@@ -62,6 +62,7 @@
     "simplebar-react": "^2.4.3",
     "socket.io-client": "^2.1.0",
     "spectacle": "^9.6.0",
+    "uuid": "^9.0.0",
     "web-vitals": "^2.1.4",
     "yup": "^0.32.11"
   },

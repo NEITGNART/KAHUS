@@ -34,11 +34,13 @@ import { useParams } from 'react-router';
 import { Container, IconButton, Typography } from '@mui/material';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { useSnackbar } from 'notistack';
+import Fab from '@mui/material/Fab';
 import { FormProvider } from './hook-form';
 import RHFMyRadioGroup from './hook-form/RHFMyRadioGroup';
 import { HOST_API, HOST_SK } from '../config';
 import Iconify from './Iconify';
 import axios from '../utils/axios';
+import QuestionBox from '../sections/presentation/question/QuestionBox';
 import useAuth from '../hooks/useAuth';
 
 ChartJS.register(
@@ -84,11 +86,26 @@ function PresentationHost() {
   // const [currentSlide, setCurrentSlide] = useState(searchParams.get('slideIndex'));
   const { enqueueSnackbar } = useSnackbar();
   const { code } = useParams();
+  const [presentQuestions, setPresentQuestions] = useState([]);
+  const [newPresentQuestion, setNewPresentQuestion] = useState();
 
   // get query params from url
   const totalSlide = searchParams.get('max') || 0;
   let slideIndex = Number(searchParams.get('slideIndex'));
   const roomCode = code || '123456';
+
+  useEffect(() => {
+    axios.get(`api/presentation/code/${code}`).then((res) => {
+      if (res.data === undefined || res.data === null) {
+        return;
+      }
+      setPresentQuestions([...res.data.questions, ...presentQuestions]);
+    });
+  }, []);
+
+  useEffect(() => {
+    setPresentQuestions([...presentQuestions, newPresentQuestion]);
+  }, [newPresentQuestion]);
 
   useEffect(() => {
     socket.on('connect', () => {
@@ -117,6 +134,11 @@ function PresentationHost() {
           setNumberAnswer(data.numberAnswer);
         }
       });
+
+      socket.on('question', (data) => {
+        console.log([...presentQuestions, data]);
+        setNewPresentQuestion(data);
+      });
     });
 
     return () => {
@@ -125,8 +147,13 @@ function PresentationHost() {
       socket.off('chart');
       socket.off('vote');
       socket.off('slide-change');
+      socket.off('question');
     };
   }, []);
+
+  useEffect(() => {
+    socket.emit('question');
+  }, [presentQuestions]);
 
   const changeSlide = (num) => {
     socket.emit('slide-change', num);
@@ -196,6 +223,9 @@ function PresentationHost() {
             <>Loading</>
           )}
         </Container>
+        <Fab sx={{ marginBottom: '10px', backgroundColor: 'white' }}>
+          <QuestionBox questions={presentQuestions} />
+        </Fab>
       </Slide>
     </Deck>
   );

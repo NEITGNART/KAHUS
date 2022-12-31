@@ -53,7 +53,10 @@ export default function SlideForm({
   // const { question, options } = slide;
 
   useEffect(() => {
-    if (slide.content !== undefined && slide.content.length > MAX_LIMIT_CONTENT) {
+    if (
+      slide.content !== undefined &&
+      slide.content.length > MAX_LIMIT_CONTENT
+    ) {
       setError(`Maximum ${MAX_LIMIT_CONTENT} characters`);
     } else {
       setError('');
