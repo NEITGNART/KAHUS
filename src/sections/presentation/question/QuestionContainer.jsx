@@ -4,9 +4,10 @@ import { useEffect, useState } from 'react';
 import Iconify from '../../../components/Iconify';
 
 QuestionContainer.propTypes = {
-  questions: PropTypes.array
+  questions: PropTypes.array,
+  onUpdateQuestion: PropTypes.func
 };
-export default function QuestionContainer({ questions }) {
+export default function QuestionContainer({ questions, onUpdateQuestion }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [disablePrev, setDisablePrev] = useState(false);
   const [disableNext, setDisableNext] = useState(false);
@@ -39,6 +40,8 @@ export default function QuestionContainer({ questions }) {
     const newQuestions = questionList.map((prevQuestion) => {
       if (prevQuestion.id === question.id) {
         const isAnswered = !prevQuestion.isAnswered;
+        const updatedQuestion = { ...prevQuestion, isAnswered };
+        onUpdateQuestion(updatedQuestion);
         return { ...prevQuestion, isAnswered };
       }
       return prevQuestion;

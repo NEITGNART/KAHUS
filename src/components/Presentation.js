@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import {
   Box,
@@ -33,6 +33,7 @@ import { HOST_SK } from '../config';
 import QuestionBoxClient from '../sections/presentation/question/QuestionBoxClient';
 import useAuth from '../hooks/useAuth';
 import { SlideType } from '../pages/dashboard/Prestation/value/SlideType';
+import axios from '../utils/axios';
 
 ChartJS.register(
   CategoryScale,
@@ -79,8 +80,11 @@ function Presentation() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [slideType, setSlideType] = useState('');
   const [content, setContent] = useState('');
+  const [presentQuestions, setPresentQuestions] = useState([]);
+  const [newPresentQuestion, setNewPresentQuestion] = useState();
   const { code } = useParams();
   const { user } = useAuth();
+  const elementRef = useRef();
 
   // get query params from url
   const [slideIndex, setSlideIndex] = useState(
@@ -92,9 +96,21 @@ function Presentation() {
   console.log('slideIndex', slideIndex);
 
   useEffect(() => {
-    socket.on('connect', () => {
+    axios.get(`api/presentation/code/${code}`).then((res) => {
+      if (res.data === undefined || res.data === null) {
+        return;
+      }
+      setPresentQuestions([...res.data.questions, ...presentQuestions]);
+    });
+  }, []);
 
-      socket.emit('join', { room: roomCode, slideIndex});
+  useEffect(() => {
+    setPresentQuestions([...presentQuestions, newPresentQuestion]);
+  }, [newPresentQuestion]);
+
+  useEffect(() => {
+    socket.on('connect', () => {
+      socket.emit('join', { room: roomCode, slideIndex });
       socket.on('chart', (data) => {
         if (data) {
           console.log(data);
@@ -149,12 +165,17 @@ function Presentation() {
       cacheAnswerId.clear();
     });
 
+    socket.on('question', (data) => {
+      setNewPresentQuestion(data);
+    });
+
     return () => {
       socket.off('connect');
       socket.off('disconnect');
       socket.off('chart');
       socket.off('slide-change');
       socket.off('vote');
+      socket.off('question');
     };
   }, []);
 
@@ -177,6 +198,7 @@ function Presentation() {
 
   const handleSendQuestion = (data) => {
     socket.emit('question', data);
+    setPresentQuestions([...presentQuestions, data]);
   };
 
   const onSubmit = async (data) => {
@@ -261,7 +283,10 @@ function Presentation() {
         <Heading color="#212B36">{question}</Heading>
         {renderSlide}
         <Fab sx={{ backgroundColor: 'white' }}>
-          <QuestionBoxClient onSendQuestion={handleSendQuestion} />
+          <QuestionBoxClient
+            onSendQuestion={handleSendQuestion}
+            questions={presentQuestions}
+          />
         </Fab>
       </Slide>
     </Deck>

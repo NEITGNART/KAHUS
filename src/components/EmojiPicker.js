@@ -82,7 +82,7 @@ export default function EmojiPicker({
   alignRight = false,
   ...other
 }) {
-  const theme = useTheme();
+  useTheme();
   const [emojiPickerState, setEmojiPicker] = useState(false);
 
   let emojiPicker;
