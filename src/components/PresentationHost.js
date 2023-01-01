@@ -101,7 +101,10 @@ function PresentationHost() {
   }, []);
 
   useEffect(() => {
-    setPresentQuestions([...presentQuestions, newPresentQuestion]);
+    const filteredPresentQuestions = presentQuestions.filter(
+      (presentQuestion) => presentQuestion.id !== newPresentQuestion.id
+    );
+    setPresentQuestions([...filteredPresentQuestions, newPresentQuestion]);
   }, [newPresentQuestion]);
 
   useEffect(() => {
@@ -233,7 +236,7 @@ function PresentationHost() {
   }
 
   const handleUpdateQuestion = (data) => {
-    // socket.emit('question', data);
+    socket.emit('update-question', data);
   };
 
   return (

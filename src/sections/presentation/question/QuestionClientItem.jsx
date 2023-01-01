@@ -25,7 +25,15 @@ export default function QuestionClientItem({ question }) {
           color={isMe ? 'primary' : 'default'}
           size="small"
         />
-        <Typography>{question.content}</Typography>
+        <Typography mr={1} variant="subtitle2">
+          {question.content}
+          {question.isAnswered && (
+            <Typography variant="subtitle2" color="green">
+              {' '}
+              Answered
+            </Typography>
+          )}
+        </Typography>
       </div>
       <Divider variant="inset" component="div" />
     </>

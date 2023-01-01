@@ -38,6 +38,8 @@ import { onReceiveMessage } from '../redux/slices/chat';
 import { useDispatch, useSelector } from '../redux/store';
 import { DialogAnimate } from './animate';
 import { SlideType } from '../pages/dashboard/Prestation/value/SlideType';
+import QuestionBoxClient from '../sections/presentation/question/QuestionBoxClient';
+import axios from '../utils/axios';
 
 ChartJS.register(
   CategoryScale,
@@ -87,6 +89,8 @@ function PresentationGroup() {
   const [content, setContent] = useState('');
   const [slideType, setSlideType] = useState('');
   const { code } = useParams();
+  const [presentQuestions, setPresentQuestions] = useState([]);
+  const [newPresentQuestion, setNewPresentQuestion] = useState();
   // get query params from url
   const [slideIndex, setSlideIndex] = useState(
     Number(searchParams.get('slideIndex'))
@@ -103,6 +107,15 @@ function PresentationGroup() {
   const handleOpenChatConsole = () => {
     setShowChatConsole(true);
   };
+
+  useEffect(() => {
+    axios.get(`api/presentation/code/${code}`).then((res) => {
+      if (res.data === undefined || res.data === null) {
+        return;
+      }
+      setPresentQuestions([...res.data.questions, ...presentQuestions]);
+    });
+  }, []);
 
   useEffect(() => {
     socket = io(HOST_SK);
@@ -157,6 +170,10 @@ function PresentationGroup() {
       }
     });
 
+    socket.on('question', (data) => {
+      setNewPresentQuestion(data);
+    });
+
     return () => {
       socket.off('connect');
       socket.off('chart');
@@ -164,8 +181,21 @@ function PresentationGroup() {
       socket.off('vote');
       socket.off('receiveMsg');
       socket.off('disconnect');
+      socket.off('question');
     };
   }, []);
+
+  useEffect(() => {
+    const filteredPresentQuestions = presentQuestions.filter(
+      (presentQuestion) => presentQuestion.id !== newPresentQuestion.id
+    );
+    setPresentQuestions([...filteredPresentQuestions, newPresentQuestion]);
+  }, [newPresentQuestion]);
+
+  const handleSendQuestion = (data) => {
+    socket.emit('question', data);
+    setPresentQuestions([...presentQuestions, data]);
+  };
 
   const datas = {
     labels,
@@ -269,6 +299,13 @@ function PresentationGroup() {
           onClick={handleOpenChatConsole}
         >
           <MessageIcon />
+        </Fab>
+
+        <Fab sx={{ backgroundColor: 'white' }}>
+          <QuestionBoxClient
+            onSendQuestion={handleSendQuestion}
+            questions={presentQuestions}
+          />
         </Fab>
       </Slide>
       <DialogAnimate

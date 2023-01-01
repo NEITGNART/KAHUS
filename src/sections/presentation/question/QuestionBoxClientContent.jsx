@@ -44,7 +44,8 @@ export default function QuestionBoxClientContent({
         id: uuid(),
         content: questionInput,
         author: fullname,
-        email
+        email,
+        isAnswered: false
       });
       setQuestionInput('');
       setScroll2Bottom(true);

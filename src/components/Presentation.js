@@ -83,8 +83,6 @@ function Presentation() {
   const [presentQuestions, setPresentQuestions] = useState([]);
   const [newPresentQuestion, setNewPresentQuestion] = useState();
   const { code } = useParams();
-  const { user } = useAuth();
-  const elementRef = useRef();
 
   // get query params from url
   const [slideIndex, setSlideIndex] = useState(
@@ -105,7 +103,10 @@ function Presentation() {
   }, []);
 
   useEffect(() => {
-    setPresentQuestions([...presentQuestions, newPresentQuestion]);
+    const filteredPresentQuestions = presentQuestions.filter(
+      (presentQuestion) => presentQuestion.id !== newPresentQuestion.id
+    );
+    setPresentQuestions([...filteredPresentQuestions, newPresentQuestion]);
   }, [newPresentQuestion]);
 
   useEffect(() => {
