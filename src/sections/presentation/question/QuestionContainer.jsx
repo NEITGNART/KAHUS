@@ -2,6 +2,7 @@ import { Box, Button, IconButton, Stack, Typography } from '@mui/material';
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 import Iconify from '../../../components/Iconify';
+import Image from '../../../components/Image';
 
 QuestionContainer.propTypes = {
   questions: PropTypes.array,
@@ -53,10 +54,10 @@ export default function QuestionContainer({ questions, onUpdateQuestion }) {
     <Box
       sx={{
         width: 500,
-        height: 300
+        height: 500
       }}
     >
-      {questionList && questionList.length && (
+      {questionList && questionList.length > 0 && (
         <Stack sx={{ height: '100%' }}>
           <Typography align="center">
             {' '}
@@ -102,6 +103,12 @@ export default function QuestionContainer({ questions, onUpdateQuestion }) {
             {questionList[currentIndex].isAnswered ? 'Answered' : 'Answer'}
           </Button>
         </Stack>
+      )}
+      {(!questionList || questionList.length <= 0) && (
+        <div>
+          <Typography variant="subtitle1">Empty</Typography>
+          <img src={`${process.env.PUBLIC_URL}/polizas_gif.gif`} alt="logo" />
+        </div>
       )}
     </Box>
   );
