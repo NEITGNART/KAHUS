@@ -76,6 +76,24 @@ const TABLE_HEAD = [
   }
 ];
 
+const TABLE_HEAD_GROUP = [
+  { id: 'name', label: 'Name', align: 'left' },
+  { id: 'modified', label: 'modified', align: 'left' },
+  {
+    id: 'created',
+    label: 'created',
+    align: 'left'
+  },
+  {
+    id: 'share link',
+    label: 'share link',
+    align: 'left'
+  },
+  {
+    id: ''
+  }
+];
+
 const selectedPresentationSelector = (state) => {
   const { presentations, selectedPresentationId } = state.presentation;
   if (selectedPresentationId) {
@@ -117,6 +135,8 @@ function PresentationCard(props) {
 
   const selectedPresentation = useSelector(selectedPresentationSelector);
 
+  const { classId } = props;
+
   const {
     presentations,
     recipients,
@@ -129,7 +149,6 @@ function PresentationCard(props) {
   } = useSelector((state) => state.presentation);
 
   useEffect(() => {
-    const { classId } = props;
     if (classId) {
       console.log('classId', classId);
       dispatch(getPresentationsByGroupId(classId));
@@ -330,7 +349,7 @@ function PresentationCard(props) {
               <TableHeadCustom
                 order={order}
                 orderBy={orderBy}
-                headLabel={TABLE_HEAD}
+                headLabel={classId ? TABLE_HEAD_GROUP : TABLE_HEAD}
                 rowCount={presentations.length}
                 numSelected={selected.length}
                 onSort={onSort}
@@ -347,6 +366,7 @@ function PresentationCard(props) {
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((row) => (
                     <PresentationTableRow
+                      classId={classId}
                       key={row.id}
                       row={row}
                       selected={selected.includes(row.id)}

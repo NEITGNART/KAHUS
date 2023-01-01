@@ -51,10 +51,10 @@ const slice = createSlice({
     // CREATE PRESENTATION
     createPresentationSuccess(state, action) {
       const newPresentation = action.payload;
+      newPresentation.role = 'owner';
       state.isLoading = false;
       state.presentations = [...state.presentations, newPresentation];
     },
-
     // UPDATE PRESENTATION
     updatePresentationSuccess(state, action) {
       const presentation = action.payload;
@@ -66,7 +66,6 @@ const slice = createSlice({
           return _presentation;
         }
       );
-
       state.isLoading = false;
       state.presentations = updatePresentationLocal;
     },
