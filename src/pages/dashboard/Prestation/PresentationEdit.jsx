@@ -38,13 +38,6 @@ const BarSubmitContainer = styled('div')({
   flexDirection: 'column'
 });
 
-const BarSubmit = styled('div')(({ theme }) => ({
-  flexShrink: 0,
-  display: 'flex',
-  alignItems: 'center',
-  padding: 1
-}));
-
 const MyDrawer = styled(Drawer, {
   // when the screen is smaller, take the full width
   shouldForwardProp: (prop) => prop !== 'open'
@@ -378,65 +371,74 @@ export default function PresentationEdit() {
               sx: { width: NAVBAR.BASE_WIDTH, position: 'relative' }
             }}
           >
-            <Box sx={{ p: 1 }}>
-              <Stack justifyContent="center" direction="row">
-                <Button onClick={removeSelectedSlide}>
-                  <Close /> Delete
-                </Button>
-                <div>
-                  <Button
-                    id="add-slide-button"
-                    aria-controls={
-                      slideTypeDialogOpen ? 'slide-type-menu' : undefined
-                    }
-                    aria-haspopup="true"
-                    aria-expanded={slideTypeDialogOpen ? 'true' : undefined}
-                    onClick={(event) => onAddSlideButtonClick(event)}
-                  >
-                    <Add /> Add new
-                  </Button>
-                  <Menu
-                    id="slide-type-menu"
-                    aria-labelledby="add-slide-button"
-                    anchorEl={anchorEl}
-                    open={slideTypeDialogOpen}
-                    onClose={() => onCloseSlideTypeDialog(null)}
-                    anchorOrigin={{
-                      vertical: 'top',
-                      horizontal: 'right'
-                    }}
-                    transformOrigin={{
-                      vertical: 'top',
-                      horizontal: 'left'
-                    }}
-                    sx={{
-                      mt: -1,
-                      width: 170,
-                      '& .MuiMenuItem-root': {
-                        px: 1,
-                        typography: 'body2',
-                        borderRadius: 0.75,
-                        '& svg': { mr: 1 }
-                      }
-                    }}
-                  >
-                    <MenuItem
-                      onClick={() => addNewSlide(SlideType.MULTIPLE_CHOICE)}
-                    >
-                      <Iconify icon="material-symbols:select-check-box" />{' '}
-                      Multiple choice
-                    </MenuItem>
-                    <MenuItem onClick={() => addNewSlide(SlideType.HEADING)}>
-                      <Iconify icon="humbleicons:heading" /> Heading
-                    </MenuItem>
-                    <MenuItem onClick={() => addNewSlide(SlideType.PARAGRAPH)}>
-                      <Iconify icon="teenyicons:paragraph-outline" /> Paragraph
-                    </MenuItem>
-                  </Menu>
-                </div>
-              </Stack>
-            </Box>
-            <Divider />
+            {!presentation.isPresenting && (
+              <>
+                <Box sx={{ p: 1 }}>
+                  <Stack justifyContent="center" direction="row">
+                    <Button onClick={removeSelectedSlide}>
+                      <Close /> Delete
+                    </Button>
+                    <div>
+                      <Button
+                        id="add-slide-button"
+                        aria-controls={
+                          slideTypeDialogOpen ? 'slide-type-menu' : undefined
+                        }
+                        aria-haspopup="true"
+                        aria-expanded={slideTypeDialogOpen ? 'true' : undefined}
+                        onClick={(event) => onAddSlideButtonClick(event)}
+                      >
+                        <Add /> Add new
+                      </Button>
+                      <Menu
+                        id="slide-type-menu"
+                        aria-labelledby="add-slide-button"
+                        anchorEl={anchorEl}
+                        open={slideTypeDialogOpen}
+                        onClose={() => onCloseSlideTypeDialog(null)}
+                        anchorOrigin={{
+                          vertical: 'top',
+                          horizontal: 'right'
+                        }}
+                        transformOrigin={{
+                          vertical: 'top',
+                          horizontal: 'left'
+                        }}
+                        sx={{
+                          mt: -1,
+                          width: 170,
+                          '& .MuiMenuItem-root': {
+                            px: 1,
+                            typography: 'body2',
+                            borderRadius: 0.75,
+                            '& svg': { mr: 1 }
+                          }
+                        }}
+                      >
+                        <MenuItem
+                          onClick={() => addNewSlide(SlideType.MULTIPLE_CHOICE)}
+                        >
+                          <Iconify icon="material-symbols:select-check-box" />{' '}
+                          Multiple choice
+                        </MenuItem>
+                        <MenuItem
+                          onClick={() => addNewSlide(SlideType.HEADING)}
+                        >
+                          <Iconify icon="humbleicons:heading" /> Heading
+                        </MenuItem>
+                        <MenuItem
+                          onClick={() => addNewSlide(SlideType.PARAGRAPH)}
+                        >
+                          <Iconify icon="teenyicons:paragraph-outline" />{' '}
+                          Paragraph
+                        </MenuItem>
+                      </Menu>
+                    </div>
+                  </Stack>
+                </Box>
+                <Divider />
+              </>
+            )}
             <Scrollbar>
               <List disablePadding>
                 {presentation.slides.map((slide, index) => (
@@ -486,27 +488,29 @@ export default function PresentationEdit() {
                   </Container>
                 )}
               </Grid>
-              <Grid item xs={12} sm={6} md={4} lg={3} xl={2}>
-                {presentation.slides[currentSelect] && (
-                  <SlideForm
-                    slide={presentation.slides[currentSelect]}
-                    onChangeQuestion={onChangeQuestion}
-                    onChangeContent={onChangeContent}
-                    onChangeOption={(optionChange) =>
-                      onChangeOption(
-                        presentation.slides[currentSelect].id,
-                        optionChange
-                      )
-                    }
-                    onAddOptionButtonClick={(newOption) =>
-                      addNewOptionToSlide(newOption)
-                    }
-                    onDeleteOptionClick={(deleteOptionId) =>
-                      deleteOptionFromSlide(deleteOptionId)
-                    }
-                  />
-                )}
-              </Grid>
+              {!presentation.isPresenting && (
+                <Grid item xs={12} sm={6} md={4} lg={3} xl={2}>
+                  {presentation.slides[currentSelect] && (
+                    <SlideForm
+                      slide={presentation.slides[currentSelect]}
+                      onChangeQuestion={onChangeQuestion}
+                      onChangeContent={onChangeContent}
+                      onChangeOption={(optionChange) =>
+                        onChangeOption(
+                          presentation.slides[currentSelect].id,
+                          optionChange
+                        )
+                      }
+                      onAddOptionButtonClick={(newOption) =>
+                        addNewOptionToSlide(newOption)
+                      }
+                      onDeleteOptionClick={(deleteOptionId) =>
+                        deleteOptionFromSlide(deleteOptionId)
+                      }
+                    />
+                  )}
+                </Grid>
+              )}
             </Grid>
           </BarSubmitContainer>
         </Card>
