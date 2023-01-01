@@ -12,9 +12,7 @@ function App() {
       <ThemeProvider>
         <NotistackProvider>
           <MotionLazyContainer>
-            <>
-              <Router />
-            </>
+            <Router />
           </MotionLazyContainer>
         </NotistackProvider>
       </ThemeProvider>

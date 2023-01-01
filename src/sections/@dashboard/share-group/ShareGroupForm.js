@@ -37,7 +37,7 @@ export default function ShareGroupForm({
 }) {
   const methods = useForm({
     resolver: yupResolver(ShareGroupSchema),
-    defaultValues: { groups: [] }
+    defaultValues: { groups: recipients.map((recipient) => recipient.id) }
   });
 
   const { enqueueSnackbar } = useSnackbar();

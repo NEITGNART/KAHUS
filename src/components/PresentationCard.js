@@ -195,8 +195,6 @@ function PresentationCard(props) {
     (!dataFiltered.length && !!filterName) ||
     (!dataFiltered.length && !!filterRole);
 
-  let renderModal = null;
-
   const getInitialValues = () => {
     return {
       groups: []
@@ -223,6 +221,8 @@ function PresentationCard(props) {
   const handleAddRecipients = (recipients) => {
     dispatch(addRecipients(recipients));
   };
+
+  let renderModal;
 
   if (selectEdit) {
     renderModal = (

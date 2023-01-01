@@ -32,6 +32,7 @@ import RHFMyRadioGroup from './hook-form/RHFMyRadioGroup';
 import { HOST_SK } from '../config';
 import QuestionBoxClient from '../sections/presentation/question/QuestionBoxClient';
 import useAuth from '../hooks/useAuth';
+import { SlideType } from '../pages/dashboard/Prestation/value/SlideType';
 
 ChartJS.register(
   CategoryScale,
@@ -76,10 +77,10 @@ function Presentation() {
   const [error, setError] = useState(false);
   const [helperText, setHelperText] = useState('Choose wisely');
   const [searchParams, setSearchParams] = useSearchParams();
-  const [typeQuestion, setTypeQuestion] = useState('bar-chart');
+  const [slideType, setSlideType] = useState('');
+  const [content, setContent] = useState('');
   const { code } = useParams();
   const { user } = useAuth();
-  console.log(user);
 
   // get query params from url
   const [slideIndex, setSlideIndex] = useState(
@@ -92,25 +93,47 @@ function Presentation() {
 
   useEffect(() => {
     socket.on('connect', () => {
-      socket.emit('join', { room: roomCode, slideIndex, userId: user.id });
 
+      socket.emit('join', { room: roomCode, slideIndex});
       socket.on('chart', (data) => {
         if (data) {
+          console.log(data);
+          if (data.type === SlideType.MULTIPLE_CHOICE) {
+            setLabels(data.answer);
+            setNumberAnswer(data.numberAnswer);
+          } else if (
+            data.type === SlideType.PARAGRAPH ||
+            data.type === SlideType.HEADING
+          ) {
+            setContent(data.content);
+          }
+          setSlideType(data.type);
           setQuestion(data.question);
-          setLabels(data.answer);
-          setNumberAnswer(data.numberAnswer);
         }
       });
 
       socket.on('slide-change', (data) => {
         if (data) {
-          console.log('Slide-change event', slideIndex);
+          // console.log('Slide-change event', slideIndex);
+          // setSlideIndex(data.slideIndex);
+          // setQuestion(data.question);
+          // setLabels(data.answer);
+          // setNumberAnswer(data.numberAnswer);
+          // setError(false);
+          // setHelperText('Choose wisely');
+
+          if (data.type === SlideType.MULTIPLE_CHOICE) {
+            setLabels(data.answer);
+            setNumberAnswer(data.numberAnswer);
+          } else if (
+            data.type === SlideType.PARAGRAPH ||
+            data.type === SlideType.HEADING
+          ) {
+            setContent(data.content);
+          }
+          setSlideType(data.type);
           setSlideIndex(data.slideIndex);
           setQuestion(data.question);
-          setLabels(data.answer);
-          setNumberAnswer(data.numberAnswer);
-          setError(false);
-          setHelperText('Choose wisely');
         }
       });
 
@@ -191,10 +214,10 @@ function Presentation() {
     formState: { errors, isSubmitting, isSubmitSuccessful }
   } = methods;
 
-  let questionSlide;
+  let renderSlide;
 
-  if (typeQuestion === 'bar-chart') {
-    questionSlide = (
+  if (slideType === SlideType.MULTIPLE_CHOICE) {
+    renderSlide = (
       <FlexBox>
         <Box height="100%" width="70%">
           {labels.length > 0 ? (
@@ -218,24 +241,16 @@ function Presentation() {
         </FormProvider>
       </FlexBox>
     );
-  } else if (typeQuestion === 'heading') {
-    questionSlide = (
-      <Text color="#212B36">
-        A highly customizable and versatile GraphQL client, A highly
-        customizable and versatile GraphQL clientA highly customizable
+  } else if (slideType === SlideType.HEADING) {
+    renderSlide = (
+      <Text color="#212B36" fontSize={48}>
+        {content}
       </Text>
     );
-  } else {
-    questionSlide = (
+  } else if (slideType === SlideType.PARAGRAPH) {
+    renderSlide = (
       <Text color="#212B36" fontSize={32}>
-        A highly customizable and versatile GraphQL client, A highly
-        customizable and versatile GraphQL clientA highly customizable and
-        versatile GraphQL clientA highly customizable and versatile GraphQL
-        clientA highly customizable and versatile GraphQL clientA highly
-        customizable and versatile GraphQL client, A highly customizable and
-        versatile GraphQL clientA highly customizable and versatile GraphQL
-        clientA highly customizable and versatile GraphQL clientA highly
-        customizable and versatile GraphQL client
+        {content}
       </Text>
     );
   }
@@ -244,7 +259,7 @@ function Presentation() {
     <Deck template={template}>
       <Slide backgroundColor="white" slideNum={1}>
         <Heading color="#212B36">{question}</Heading>
-        {questionSlide}
+        {renderSlide}
         <Fab sx={{ backgroundColor: 'white' }}>
           <QuestionBoxClient onSendQuestion={handleSendQuestion} />
         </Fab>

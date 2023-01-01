@@ -1,25 +1,29 @@
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import {
-  FlexBox,
-  Heading,
-  Slide,
-  Deck,
   Box,
+  Deck,
+  FlexBox,
+  FullScreen,
+  Heading,
   Progress,
-  FullScreen
+  Slide,
+  Text
 } from 'spectacle';
 
 import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
   BarElement,
+  CategoryScale,
+  Chart as ChartJS,
+  Legend,
+  LinearScale,
   Title,
-  Tooltip,
-  Legend
+  Tooltip
 } from 'chart.js';
+<<<<<<< Updated upstream
 import { Button, Card, DialogContent, Stack } from '@mui/material';
+=======
+>>>>>>> Stashed changes
 import MessageIcon from '@mui/icons-material/Message';
 import Fab from '@mui/material/Fab';
 
@@ -33,9 +37,15 @@ import RHFMyRadioGroup from './hook-form/RHFMyRadioGroup';
 import { HOST_SK } from '../config';
 import useAuth from '../hooks/useAuth';
 import ChatWindow from '../sections/@dashboard/chat/ChatWindow';
+<<<<<<< Updated upstream
 import { onReceiveMessage } from '../redux/slices/chat';
 import { useDispatch, useSelector } from '../redux/store';
 import { DialogAnimate } from './animate';
+=======
+import { onReceiveMessage, openChatBox } from '../redux/slices/chat';
+import { useDispatch } from '../redux/store';
+import { SlideType } from '../pages/dashboard/Prestation/value/SlideType';
+>>>>>>> Stashed changes
 
 ChartJS.register(
   CategoryScale,
@@ -82,6 +92,8 @@ function PresentationGroup() {
   const [helperText, setHelperText] = useState('Choose wisely');
   const [searchParams, setSearchParams] = useSearchParams();
   const [showChatConsole, setShowChatConsole] = useState(false);
+  const [content, setContent] = useState('');
+  const [slideType, setSlideType] = useState('');
   const { code } = useParams();
   // get query params from url
   const [slideIndex, setSlideIndex] = useState(
@@ -104,25 +116,40 @@ function PresentationGroup() {
     socket = io(HOST_SK);
 
     socket.on('connect', () => {
-      socket.emit('join', { room: roomCode, slideIndex, userId: user.id });
+      socket.emit('join', { room: roomCode, slideIndex });
     });
 
     socket.on('chart', (data) => {
       console.log('chart', data);
       if (data) {
-        console.log(data.answer);
+        if (data.type === SlideType.MULTIPLE_CHOICE) {
+          setLabels(data.answer);
+          setNumberAnswer(data.numberAnswer);
+        } else if (
+          data.type === SlideType.PARAGRAPH ||
+          data.type === SlideType.HEADING
+        ) {
+          setContent(data.content);
+        }
+        setSlideType(data.type);
         setQuestion(data.question);
-        setLabels(data.answer);
-        setNumberAnswer(data.numberAnswer);
       }
     });
 
     socket.on('slide-change', (data) => {
       if (data) {
+        if (data.type === SlideType.MULTIPLE_CHOICE) {
+          setLabels(data.answer);
+          setNumberAnswer(data.numberAnswer);
+        } else if (
+          data.type === SlideType.PARAGRAPH ||
+          data.type === SlideType.HEADING
+        ) {
+          setContent(data.content);
+        }
+        setSlideType(data.type);
         setSlideIndex(data.slideIndex);
         setQuestion(data.question);
-        setLabels(data.answer);
-        setNumberAnswer(data.numberAnswer);
       }
     });
 
@@ -200,32 +227,50 @@ function PresentationGroup() {
     formState: { errors, isSubmitting, isSubmitSuccessful }
   } = methods;
 
+  let renderSlide;
+
+  if (slideType === SlideType.MULTIPLE_CHOICE) {
+    renderSlide = (
+      <>
+        <Box height="100%" width="70%">
+          <Bar options={options} data={datas} />
+        </Box>
+        <FormProvider
+          methods={methods}
+          onSubmit={handleSubmit(onSubmit)}
+          width="30%"
+        >
+          <RHFMyRadioGroup
+            onChange={handleRadioChange}
+            labels={labels}
+            value={answer}
+            error={error}
+            helperText={helperText}
+          />
+        </FormProvider>
+      </>
+    );
+  } else if (slideType === SlideType.HEADING) {
+    renderSlide = (
+      <Text color="#212B36" fontSize={48}>
+        {content}
+      </Text>
+    );
+  } else if (slideType === SlideType.PARAGRAPH) {
+    renderSlide = (
+      <Text color="#212B36" fontSize={32}>
+        {content}
+      </Text>
+    );
+  } else {
+    renderSlide = <div>Waiting</div>;
+  }
+
   return (
     <Deck template={template}>
       <Slide backgroundColor="white" slideNum={1}>
         <Heading color="#212B36">{question}</Heading>
-        <FlexBox>
-          <Box height="100%" width="70%">
-            {labels.length > 0 ? (
-              <Bar options={options} data={datas} />
-            ) : (
-              <>Loading</>
-            )}
-          </Box>
-          <FormProvider
-            methods={methods}
-            onSubmit={handleSubmit(onSubmit)}
-            width="30%"
-          >
-            <RHFMyRadioGroup
-              onChange={handleRadioChange}
-              labels={labels}
-              value={answer}
-              error={error}
-              helperText={helperText}
-            />
-          </FormProvider>
-        </FlexBox>
+        <FlexBox>{renderSlide}</FlexBox>
         <Fab
           color="primary"
           aria-label="message"

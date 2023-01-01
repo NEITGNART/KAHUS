@@ -1,29 +1,23 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import React, { useEffect, useState } from 'react';
 import {
-  FlexBox,
-  Heading,
-  SpectacleLogo,
-  UnorderedList,
-  CodeSpan,
-  OrderedList,
-  ListItem,
-  FullScreen,
-  Slide,
-  Deck,
   Box,
+  Deck,
+  FlexBox,
+  FullScreen,
+  Heading,
   Progress,
+  Slide,
   Text
 } from 'spectacle';
 
 import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
   BarElement,
+  CategoryScale,
+  Chart as ChartJS,
+  Legend,
+  LinearScale,
   Title,
-  Tooltip,
-  Legend
+  Tooltip
 } from 'chart.js';
 
 // eslint-disable-next-line import/no-unresolved
@@ -42,6 +36,7 @@ import Iconify from './Iconify';
 import axios from '../utils/axios';
 import QuestionBox from '../sections/presentation/question/QuestionBox';
 import useAuth from '../hooks/useAuth';
+import { SlideType } from '../pages/dashboard/Prestation/value/SlideType';
 
 ChartJS.register(
   CategoryScale,
@@ -81,8 +76,10 @@ function PresentationHost() {
   const [labels, setLabels] = useState([]);
   const [numberAnswer, setNumberAnswer] = useState(labels.map(() => 0));
   const [question, setQuestion] = useState('');
+  const [slideType, setSlideType] = useState('');
   const [link, setLink] = useState('');
   const [searchParams, setSearchParams] = useSearchParams();
+  const [content, setContent] = useState('');
   // const [currentSlide, setCurrentSlide] = useState(searchParams.get('slideIndex'));
   const { enqueueSnackbar } = useSnackbar();
   const { code } = useParams();
@@ -113,9 +110,17 @@ function PresentationHost() {
 
       socket.on('chart', (data) => {
         if (data) {
+          if (data.type === SlideType.MULTIPLE_CHOICE) {
+            setLabels(data.answer);
+            setNumberAnswer(data.numberAnswer);
+          } else if (
+            data.type === SlideType.PARAGRAPH ||
+            data.type === SlideType.HEADING
+          ) {
+            setContent(data.content);
+          }
+          setSlideType(data.type);
           setQuestion(data.question);
-          setLabels(data.answer);
-          setNumberAnswer(data.numberAnswer);
           setLink(data.link);
         }
       });
@@ -128,10 +133,18 @@ function PresentationHost() {
 
       socket.on('slide-change', (data) => {
         if (data) {
-          slideIndex = data.slideIndex;
+          if (data.type === SlideType.MULTIPLE_CHOICE) {
+            setLabels(data.answer);
+            setNumberAnswer(data.numberAnswer);
+          } else if (
+            data.type === SlideType.PARAGRAPH ||
+            data.type === SlideType.HEADING
+          ) {
+            setContent(data.content);
+          }
+          setSlideType(data.type);
           setQuestion(data.question);
-          setLabels(data.answer);
-          setNumberAnswer(data.numberAnswer);
+          slideIndex = data.slideIndex;
         }
       });
 
@@ -139,6 +152,10 @@ function PresentationHost() {
         console.log([...presentQuestions, data]);
         setNewPresentQuestion(data);
       });
+      // socket.on('duplicate', () => {
+      //   console.log('duplicate');
+      //   enqueueSnackbar('Duplicate code', { variant: 'error' });
+      // });
     });
 
     return () => {
@@ -148,6 +165,7 @@ function PresentationHost() {
       socket.off('vote');
       socket.off('slide-change');
       socket.off('question');
+      // socket.off('duplicate');
     };
   }, []);
 
@@ -190,6 +208,29 @@ function PresentationHost() {
     ]
   };
 
+  let renderSlide;
+
+  if (slideType === SlideType.MULTIPLE_CHOICE) {
+    renderSlide = (
+      <Container sx={{ width: '80%' }}>
+        <Bar options={options} data={datas} />
+      </Container>
+    );
+  } else if (slideType === SlideType.HEADING) {
+    renderSlide = (
+      <Text color="#212B36" fontSize={48}>
+        {content}
+      </Text>
+    );
+  } else if (slideType === SlideType.PARAGRAPH) {
+    renderSlide = (
+      <Text color="#212B36" fontSize={32}>
+        {content}
+      </Text>
+    );
+  } else {
+    renderSlide = <div>Waiting</div>;
+  }
   return (
     <Deck template={template}>
       <Slide backgroundColor="white" slideNum={1}>
@@ -216,13 +257,7 @@ function PresentationHost() {
         <Heading fontSize="50px" textAlign="left" color="#212B36">
           {question}
         </Heading>
-        <Container sx={{ width: '80%' }}>
-          {labels.length > 0 ? (
-            <Bar options={options} data={datas} />
-          ) : (
-            <>Loading</>
-          )}
-        </Container>
+        {renderSlide}
         <Fab sx={{ marginBottom: '10px', backgroundColor: 'white' }}>
           <QuestionBox questions={presentQuestions} />
         </Fab>

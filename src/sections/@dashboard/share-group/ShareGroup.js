@@ -5,12 +5,12 @@ import match from 'autosuggest-highlight/match';
 // @mui
 import { alpha, styled } from '@mui/material/styles';
 import {
-  Box,
-  Avatar,
-  TextField,
-  Typography,
   Autocomplete,
-  Chip
+  Avatar,
+  Box,
+  Chip,
+  TextField,
+  Typography
 } from '@mui/material';
 // components
 import Iconify from '../../../components/Iconify';
@@ -67,6 +67,7 @@ export default function ShareGroup({
 
   const handleAddRecipients = (value) => {
     setQuery('');
+    console.log(value);
     methods.setValue('groups', value, {
       shouldValidate: true,
       shouldDirty: true
