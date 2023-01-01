@@ -20,10 +20,7 @@ import {
   Title,
   Tooltip
 } from 'chart.js';
-<<<<<<< Updated upstream
 import { Button, Card, DialogContent, Stack } from '@mui/material';
-=======
->>>>>>> Stashed changes
 import MessageIcon from '@mui/icons-material/Message';
 import Fab from '@mui/material/Fab';
 
@@ -37,15 +34,10 @@ import RHFMyRadioGroup from './hook-form/RHFMyRadioGroup';
 import { HOST_SK } from '../config';
 import useAuth from '../hooks/useAuth';
 import ChatWindow from '../sections/@dashboard/chat/ChatWindow';
-<<<<<<< Updated upstream
 import { onReceiveMessage } from '../redux/slices/chat';
 import { useDispatch, useSelector } from '../redux/store';
 import { DialogAnimate } from './animate';
-=======
-import { onReceiveMessage, openChatBox } from '../redux/slices/chat';
-import { useDispatch } from '../redux/store';
 import { SlideType } from '../pages/dashboard/Prestation/value/SlideType';
->>>>>>> Stashed changes
 
 ChartJS.register(
   CategoryScale,
