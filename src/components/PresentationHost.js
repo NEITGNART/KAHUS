@@ -37,6 +37,7 @@ import axios from '../utils/axios';
 import QuestionBox from '../sections/presentation/question/QuestionBox';
 import useAuth from '../hooks/useAuth';
 import { SlideType } from '../pages/dashboard/Prestation/value/SlideType';
+import ChatBox from '../sections/presentation/chat/ChatBox';
 
 ChartJS.register(
   CategoryScale,
@@ -168,6 +169,7 @@ function PresentationHost() {
       socket.off('vote');
       socket.off('slide-change');
       socket.off('question');
+      socket.off('receiveMsg');
       // socket.off('duplicate');
     };
   }, []);
@@ -235,6 +237,10 @@ function PresentationHost() {
     renderSlide = <div>Waiting</div>;
   }
 
+  const onSendMessageSocket = (data) => {
+    socket.emit('sendMsg', data);
+  };
+
   const handleUpdateQuestion = (data) => {
     socket.emit('update-question', data);
   };
@@ -265,7 +271,10 @@ function PresentationHost() {
         <Heading fontSize="50px" textAlign="left" color="#212B36">
           {question}
         </Heading>
-        {renderSlide}
+        <FlexBox>{renderSlide}</FlexBox>
+        <Fab sx={{ backgroundColor: 'white' }}>
+          <ChatBox onSendMessageSocket={onSendMessageSocket} />
+        </Fab>
         <Fab sx={{ marginBottom: '10px', backgroundColor: 'white' }}>
           <QuestionBox
             questions={presentQuestions}

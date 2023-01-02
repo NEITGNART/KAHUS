@@ -48,24 +48,23 @@ export default function ChatWindow({ onSendMessageSocket }) {
   const { activeConversationId, isInChatBox } = useSelector(
     (state) => state.chat
   );
-  const conversationKey = code;
   const conversation = useSelector((state) => conversationSelector(state));
 
   useEffect(() => {
     const getDetails = async () => {
-      dispatch(getParticipants(conversationKey));
+      dispatch(getParticipants(code));
       try {
-        await dispatch(getConversation(conversationKey));
+        await dispatch(getConversation(code));
       } catch (error) {
         console.error(error);
       }
     };
-    if (conversationKey) {
+    if (code) {
       getDetails();
     } else if (activeConversationId) {
       dispatch(resetActiveConversation());
     }
-  }, [conversationKey]);
+  }, [code]);
 
   const handleSendMessage = async (value) => {
     try {

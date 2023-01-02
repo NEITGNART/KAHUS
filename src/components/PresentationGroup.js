@@ -306,7 +306,6 @@ function PresentationGroup() {
         <Fab sx={{ backgroundColor: 'white' }}>
           <ChatBox onSendMessageSocket={onSendMessageSocket} />
         </Fab>
-
         <Fab sx={{ backgroundColor: 'white' }}>
           <QuestionBoxClient
             onSendQuestion={handleSendQuestion}
