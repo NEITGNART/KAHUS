@@ -35,8 +35,8 @@ export default function QuestionBoxClient({ questions, onSendQuestion }) {
         <Iconify icon="mdi:message-question-outline" />
       </IconButton>
       <Dialog fullWidth={true} open={open}>
-        <DialogTitle sx={{ m: 0, p: 2 }}>
-          <Typography variant="h4"> Questions from audience</Typography>
+        <DialogTitle variant="h4" sx={{ m: 0, p: 2 }}>
+          Questions from audience
           {onClose ? (
             <IconButton
               aria-label="close"
@@ -54,7 +54,7 @@ export default function QuestionBoxClient({ questions, onSendQuestion }) {
         </DialogTitle>
         <QuestionBoxClientContent
           onSendQuestion={handleSendQuestion}
-          questions={questions}
+          questionList={questions}
         />
       </Dialog>
     </>
