@@ -1,28 +1,11 @@
-import {
-  Box,
-  Card,
-  Container,
-  Grid,
-  IconButton,
-  Link,
-  Stack,
-  Typography
-} from '@mui/material';
+import { Container, IconButton, Typography } from '@mui/material';
 // eslint-disable-next-line import/no-unresolved
 import { Bar } from 'react-chartjs-2';
-import React, { useEffect, useMemo, useState } from 'react';
+import React from 'react';
 import { PropTypes } from 'prop-types';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { useSnackbar } from 'notistack';
-import {
-  Deck,
-  FlexBox,
-  FullScreen,
-  Heading,
-  Progress,
-  Slide,
-  Text
-} from 'spectacle';
+import { Text } from 'spectacle';
 import Iconify from '../../../components/Iconify';
 import { SlideType } from '../../../pages/dashboard/Prestation/value/SlideType';
 import QuestionBox from '../question/QuestionBox';

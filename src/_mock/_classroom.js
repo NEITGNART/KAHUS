@@ -1,6 +1,6 @@
 import _mock from './_mock';
 import { fullName } from './name';
-import { randomNumberRange, randomInArray } from './funcs';
+import { randomNumberRange } from './funcs';
 
 // ----------------------------------------------------------------------
 

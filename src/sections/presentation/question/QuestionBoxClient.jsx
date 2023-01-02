@@ -20,7 +20,6 @@ export default function QuestionBoxClient({ questions, onSendQuestion }) {
   };
 
   const handleSendQuestion = (data) => {
-    console.log(data);
     onSendQuestion(data);
     // add question to list
   };
@@ -55,7 +54,7 @@ export default function QuestionBoxClient({ questions, onSendQuestion }) {
         </DialogTitle>
         <QuestionBoxClientContent
           onSendQuestion={handleSendQuestion}
-          questions={_questions}
+          questions={questions}
         />
       </Dialog>
     </>

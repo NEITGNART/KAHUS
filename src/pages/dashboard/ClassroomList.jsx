@@ -1,7 +1,7 @@
 // @mui
 import { Container, Grid, Stack } from '@mui/material';
 // routes
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 // hooks
 import useSettings from '../../hooks/useSettings';
 // _mock_

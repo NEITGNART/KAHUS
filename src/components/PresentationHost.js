@@ -101,7 +101,10 @@ function PresentationHost() {
   }, []);
 
   useEffect(() => {
-    setPresentQuestions([...presentQuestions, newPresentQuestion]);
+    const filteredPresentQuestions = presentQuestions.filter(
+      (presentQuestion) => presentQuestion.id !== newPresentQuestion.id
+    );
+    setPresentQuestions([...filteredPresentQuestions, newPresentQuestion]);
   }, [newPresentQuestion]);
 
   useEffect(() => {
@@ -231,6 +234,11 @@ function PresentationHost() {
   } else {
     renderSlide = <div>Waiting</div>;
   }
+
+  const handleUpdateQuestion = (data) => {
+    socket.emit('update-question', data);
+  };
+
   return (
     <Deck template={template}>
       <Slide backgroundColor="white" slideNum={1}>
@@ -259,7 +267,10 @@ function PresentationHost() {
         </Heading>
         {renderSlide}
         <Fab sx={{ marginBottom: '10px', backgroundColor: 'white' }}>
-          <QuestionBox questions={presentQuestions} />
+          <QuestionBox
+            questions={presentQuestions}
+            onUpdateQuestion={handleUpdateQuestion}
+          />
         </Fab>
       </Slide>
     </Deck>

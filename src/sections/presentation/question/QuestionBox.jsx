@@ -11,6 +11,7 @@ import { useEffect, useState } from 'react';
 import Iconify from '../../../components/Iconify';
 import QuestionContainer from './QuestionContainer';
 import { _questions } from '../../../_mock';
+import socket from '../../../utils/socket';
 
 const QuestionDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialogContent-root': {
@@ -51,10 +52,11 @@ function QuestionDialogTitle(props) {
 }
 
 QuestionBox.propTypes = {
-  questions: PropTypes.array
+  questions: PropTypes.array,
+  onUpdateQuestion: PropTypes.func
 };
 
-export default function QuestionBox({ questions }) {
+export default function QuestionBox({ questions, onUpdateQuestion }) {
   const [open, setOpen] = useState(false);
   const [questionList, setQuestionList] = useState([]);
 
@@ -66,6 +68,10 @@ export default function QuestionBox({ questions }) {
   };
   const handleClose = () => {
     setOpen(false);
+  };
+
+  const handleUpdateQuestion = (question) => {
+    onUpdateQuestion(question);
   };
 
   return (
@@ -90,7 +96,10 @@ export default function QuestionBox({ questions }) {
             maxWidth: 'fit-content'
           }}
         >
-          <QuestionContainer questions={questionList} />
+          <QuestionContainer
+            questions={questionList}
+            onUpdateQuestion={handleUpdateQuestion}
+          />
         </DialogContent>
       </QuestionDialog>
     </>

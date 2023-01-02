@@ -13,6 +13,7 @@ import { TableMoreMenu } from '../../../../components/table';
 // ----------------------------------------------------------------------
 
 PresentationTableRow.propTypes = {
+  classId: PropTypes.string,
   row: PropTypes.object,
   selected: PropTypes.bool,
   onEditRow: PropTypes.func,
@@ -24,6 +25,7 @@ PresentationTableRow.propTypes = {
 };
 
 export default function PresentationTableRow({
+  classId,
   row,
   selected,
   onEditRow,
@@ -69,7 +71,7 @@ export default function PresentationTableRow({
         </Link>
       </TableCell>
 
-      <TableCell align="left">{role}</TableCell>
+      {!classId && <TableCell align="left">{role}</TableCell>}
 
       <TableCell align="left" sx={{ textTransform: 'capitalize' }}>
         <ReactTimeAgo date={Date.parse(modifiedAt)} locale="en-US" />
@@ -110,15 +112,17 @@ export default function PresentationTableRow({
                 Rename
               </MenuItem>
 
-              <MenuItem
-                onClick={() => {
-                  onShareRow();
-                  handleCloseMenu();
-                }}
-              >
-                <Iconify icon="material-symbols:share-outline" />
-                Share in group
-              </MenuItem>
+              {role === 'owner' && (
+                <MenuItem
+                  onClick={() => {
+                    onShareRow();
+                    handleCloseMenu();
+                  }}
+                >
+                  <Iconify icon="material-symbols:share-outline" />
+                  Share in group
+                </MenuItem>
+              )}
 
               <MenuItem
                 onClick={() => {
