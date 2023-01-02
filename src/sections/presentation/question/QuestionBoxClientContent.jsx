@@ -1,7 +1,12 @@
 import {
+  Autocomplete,
   Box,
   DialogContent,
+  FormControl,
   IconButton,
+  InputLabel,
+  MenuItem,
+  Select,
   Stack,
   TextField,
   Typography
@@ -14,24 +19,40 @@ import QuestionClientItem from './QuestionClientItem';
 import useAuth from '../../../hooks/useAuth';
 
 QuestionBoxClientContent.propTypes = {
-  questions: PropTypes.array,
+  questionList: PropTypes.array,
   onSendQuestion: PropTypes.func
 };
+
+const ALL = 'ALL';
+const ANSWERED = 'ANSWERED';
+const NANSWERED = 'NOT_ANSWERED';
+const options = {
+  all: ALL,
+  answered: ANSWERED,
+  not_answered: NANSWERED
+};
+
 export default function QuestionBoxClientContent({
-  questions,
+  questionList,
   onSendQuestion
 }) {
   const [questionInput, setQuestionInput] = useState('');
   const { user } = useAuth();
   const ref = useRef(null);
   const [scroll2Bottom, setScroll2Bottom] = useState(false);
+  const [inputFilter, setInputFilter] = useState(options.all);
+  const [questions, setQuestions] = useState([]);
 
   useEffect(() => {
+    console.log(questionList);
+    setQuestions(questionList);
     if (scroll2Bottom && ref.current) {
-      ref.current?.scrollIntoView({ behavior: 'smooth' });
+      ref.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      // window.scrollBy(0, 10);
       setScroll2Bottom(false);
     }
-  }, [questions]);
+    handleFilterQuestions(inputFilter);
+  }, [questionList]);
 
   const onInputChange = (evt) => {
     setQuestionInput(evt.target.value);
@@ -45,7 +66,8 @@ export default function QuestionBoxClientContent({
         content: questionInput,
         author: fullname,
         email,
-        isAnswered: false
+        isAnswered: false,
+        createdAt: Date.now()
       });
       setQuestionInput('');
       setScroll2Bottom(true);
@@ -60,6 +82,25 @@ export default function QuestionBoxClientContent({
     }
   };
 
+  const onChangeFilter = (evt) => {
+    const filter = evt.target.value;
+    setInputFilter(filter);
+    handleFilterQuestions(filter);
+  };
+
+  const handleFilterQuestions = (filter) => {
+    switch (filter) {
+      case options.answered:
+        setQuestions(questionList.filter((question) => question.isAnswered));
+        break;
+      case options.not_answered:
+        setQuestions(questionList.filter((question) => !question.isAnswered));
+        break;
+      default:
+        setQuestions(questionList);
+    }
+  };
+
   return (
     <DialogContent
       sx={{
@@ -70,22 +111,30 @@ export default function QuestionBoxClientContent({
       <Stack
         sx={{
           width: '100%',
-          height: 300
+          height: 500
         }}
         spacing={1}
+        mt={2}
       >
+        <FormControl fullWidth>
+          <Select
+            id="demo-simple-select"
+            value={inputFilter}
+            displayEmpty
+            onChange={onChangeFilter}
+          >
+            <MenuItem value={options.all}>All</MenuItem>
+            <MenuItem value={options.answered}>Questions Answered</MenuItem>
+            <MenuItem value={options.not_answered}>
+              Questions Not Answered
+            </MenuItem>
+          </Select>
+        </FormControl>
         <Stack flex={1} spacing={2} overflow="auto">
-          {questions &&
-            questions.map((question) => {
-              return (
-                <QuestionClientItem
-                  ref={ref}
-                  key={question.id}
-                  question={question}
-                />
-              );
-            })}
-          <div ref={ref} />
+          {questions.map((question) => {
+            return <QuestionClientItem key={question.id} question={question} />;
+          })}
+          <Box ref={ref} />
         </Stack>
         <Stack sx={{ flex: '0 0 auto' }} direction="row">
           <TextField
