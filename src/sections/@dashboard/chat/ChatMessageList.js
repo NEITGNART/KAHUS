@@ -14,9 +14,6 @@ ChatMessageList.propTypes = {
 
 export default function ChatMessageList({ conversation }) {
   const scrollRef = useRef(null);
-  const [openLightbox, setOpenLightbox] = useState(false);
-
-  const [selectedImage, setSelectedImage] = useState(0);
 
   useEffect(() => {
     const scrollMessagesToBottom = () => {
@@ -35,8 +32,6 @@ export default function ChatMessageList({ conversation }) {
     const localSelectedImage = imagesLightbox.findIndex(
       (index) => index === url
     );
-    setOpenLightbox(true);
-    setSelectedImage(localSelectedImage);
   };
 
   return (
@@ -54,15 +49,6 @@ export default function ChatMessageList({ conversation }) {
           />
         ))}
       </Scrollbar>
-
-      <LightboxModal
-        images={imagesLightbox}
-        mainSrc={imagesLightbox[selectedImage]}
-        photoIndex={selectedImage}
-        setPhotoIndex={setSelectedImage}
-        isOpen={openLightbox}
-        onCloseRequest={() => setOpenLightbox(false)}
-      />
     </>
   );
 }

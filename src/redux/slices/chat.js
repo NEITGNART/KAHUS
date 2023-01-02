@@ -79,8 +79,18 @@ const slice = createSlice({
     // ON RECEIVE MESSAGE
     onReceiveMessage(state, action) {
       const conversation = action.payload;
-
+      console.log('first');
       state.conversation.messages.push(conversation.message);
+    },
+
+    // ON PARTICIPANT JOIN
+    onParticipantJoinChat(state, action) {
+      const newParticipant = action.payload;
+      console.log('second');
+      state.conversation.participants.push(newParticipant);
+      console.log(state.participants);
+      const newParticipants = [...state.participants, newParticipant];
+      state.participants = newParticipants;
     },
 
     markConversationAsReadSuccess(state, action) {
@@ -94,7 +104,9 @@ const slice = createSlice({
     // GET PARTICIPANTS
     getParticipantsSuccess(state, action) {
       const participants = action.payload;
-      state.participants = participants;
+      if (participants) {
+        state.participants = participants;
+      }
     },
 
     // RESET ACTIVE CONVERSATION
@@ -108,8 +120,12 @@ const slice = createSlice({
 export default slice.reducer;
 
 // Actions
-export const { onSendMessage, onReceiveMessage, resetActiveConversation } =
-  slice.actions;
+export const {
+  onSendMessage,
+  onReceiveMessage,
+  resetActiveConversation,
+  onParticipantJoinChat
+} = slice.actions;
 
 // ----------------------------------------------------------------------
 

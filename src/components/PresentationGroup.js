@@ -34,7 +34,7 @@ import RHFMyRadioGroup from './hook-form/RHFMyRadioGroup';
 import { HOST_SK } from '../config';
 import useAuth from '../hooks/useAuth';
 import ChatWindow from '../sections/@dashboard/chat/ChatWindow';
-import { onReceiveMessage } from '../redux/slices/chat';
+import { onParticipantJoinChat, onReceiveMessage } from '../redux/slices/chat';
 import { useDispatch, useSelector } from '../redux/store';
 import { DialogAnimate } from './animate';
 import { SlideType } from '../pages/dashboard/Prestation/value/SlideType';
@@ -157,6 +157,13 @@ function PresentationGroup() {
       }
     });
 
+    socket.on('newParticipantJoinChat', (data) => {
+      console.log(data);
+      if (data) {
+        dispatch(onParticipantJoinChat(data));
+      }
+    });
+
     return () => {
       socket.off('connect');
       socket.off('chart');
@@ -164,6 +171,7 @@ function PresentationGroup() {
       socket.off('vote');
       socket.off('receiveMsg');
       socket.off('disconnect');
+      socket.off('newParticipantJoinChat');
     };
   }, []);
 
