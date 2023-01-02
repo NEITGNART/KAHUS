@@ -69,6 +69,7 @@ const MyDrawer = styled(Drawer, {
 const socket = io(HOST_SK);
 
 const presentationStart = async (groupId, link, presentationId) => {
+  console.log('start');
   if (groupId) {
     await axios
       .post(`api/group/presentation-start`, {
@@ -85,7 +86,7 @@ const presentationStart = async (groupId, link, presentationId) => {
         }
       });
   } else {
-    await axios.post(`api/presentation/presentation-stop`, {
+    await axios.post(`api/presentation/presentation-start`, {
       presentationId
     });
   }
@@ -189,6 +190,13 @@ export default function PresentationEdit() {
       });
   };
 
+  const openPresent = () => {
+    window.open(
+      `/present/${presentation.code}?max=${presentation.slides.length || 0}`,
+      '_blank'
+    );
+  };
+
   const onPresent = async () => {
     await presentationStart(group, presentation.link, presentationId);
     onSave();
@@ -196,7 +204,6 @@ export default function PresentationEdit() {
       `/present/${presentation.code}?max=${presentation.slides.length || 0}`,
       '_blank'
     );
-
     setPresentation((prev) => {
       const newPresentation = { ...prev };
       newPresentation.isPresenting = true;
@@ -462,11 +469,16 @@ export default function PresentationEdit() {
               <Box
                 sx={{ display: 'flex', alignItems: 'center', flexShrink: 0 }}
               >
-                <Button onClick={onSave}> Save </Button>
                 {presentation.isPresenting ? (
-                  <Button onClick={onStopPresent}> Stop Present </Button>
+                  <>
+                    <Button onClick={onStopPresent}> Stop Present </Button>
+                    <Button onClick={openPresent}> Open Present </Button>
+                  </>
                 ) : (
-                  <Button onClick={onPresent}> Present </Button>
+                  <>
+                    <Button onClick={onSave}> Save </Button>
+                    <Button onClick={onPresent}> Present </Button>
+                  </>
                 )}
               </Box>
             </Box>
