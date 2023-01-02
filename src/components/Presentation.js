@@ -20,6 +20,7 @@ import {
   Title,
   Tooltip
 } from 'chart.js';
+import { useSnackbar } from 'notistack';
 
 // eslint-disable-next-line import/no-unresolved
 import { Bar } from 'react-chartjs-2';
@@ -34,6 +35,9 @@ import QuestionBoxClient from '../sections/presentation/question/QuestionBoxClie
 import useAuth from '../hooks/useAuth';
 import { SlideType } from '../pages/dashboard/Prestation/value/SlideType';
 import axios from '../utils/axios';
+import { onParticipantJoinChat, onReceiveMessage } from '../redux/slices/chat';
+import { useDispatch } from '../redux/store';
+import ChatBox from '../sections/presentation/chat/ChatBox';
 
 ChartJS.register(
   CategoryScale,
@@ -83,12 +87,13 @@ function Presentation() {
   const [presentQuestions, setPresentQuestions] = useState([]);
   const [newPresentQuestion, setNewPresentQuestion] = useState();
   const { code } = useParams();
+  const { enqueueSnackbar } = useSnackbar();
 
   // get query params from url
   const [slideIndex, setSlideIndex] = useState(
     Number(searchParams.get('slideIndex'))
   );
-
+  const dispatch = useDispatch();
   const roomCode = code || '123456';
 
   console.log('slideIndex', slideIndex);
@@ -159,6 +164,20 @@ function Presentation() {
           setNumberAnswer(data.numberAnswer);
         }
       });
+
+      socket.on('receiveMsg', (data) => {
+        console.log(data);
+        if (data) {
+          enqueueSnackbar('There is new message', { variant: 'info' });
+          dispatch(onReceiveMessage(data));
+        }
+      });
+
+      socket.on('newParticipantJoinChat', (data) => {
+        if (data) {
+          dispatch(onParticipantJoinChat(data));
+        }
+      });
     });
 
     socket.on('disconnect', () => {
@@ -177,6 +196,8 @@ function Presentation() {
       socket.off('slide-change');
       socket.off('vote');
       socket.off('question');
+      socket.off('receiveMsg');
+      socket.off('newParticipantJoinChat');
     };
   }, []);
 
@@ -200,6 +221,10 @@ function Presentation() {
   const handleSendQuestion = (data) => {
     socket.emit('question', data);
     setPresentQuestions([...presentQuestions, data]);
+  };
+
+  const onSendMessageSocket = (data) => {
+    socket.emit('sendMsg', data);
   };
 
   const onSubmit = async (data) => {
@@ -283,6 +308,9 @@ function Presentation() {
       <Slide backgroundColor="white" slideNum={1}>
         <Heading color="#212B36">{question}</Heading>
         {renderSlide}
+        <Fab sx={{ backgroundColor: 'white' }}>
+          <ChatBox onSendMessageSocket={onSendMessageSocket} />
+        </Fab>
         <Fab sx={{ backgroundColor: 'white' }}>
           <QuestionBoxClient
             onSendQuestion={handleSendQuestion}

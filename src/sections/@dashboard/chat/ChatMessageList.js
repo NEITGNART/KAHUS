@@ -15,6 +15,11 @@ ChatMessageList.propTypes = {
 export default function ChatMessageList({ conversation }) {
   const scrollRef = useRef(null);
 
+  // const messagePerScroll = 7
+  // const numberRolling1 = conversation.message.length() / messagePerScroll
+  // const numberRolling2 = conversation.message.length() % messagePerScroll
+  // const messageContent = conversation.message.slice()
+
   useEffect(() => {
     const scrollMessagesToBottom = () => {
       if (scrollRef.current) {
@@ -22,6 +27,11 @@ export default function ChatMessageList({ conversation }) {
       }
     };
     scrollMessagesToBottom();
+    // scrollRef.current.onscroll = () => {
+    //   if (scrollRef.current.scrollTop === 0) {
+    //     console.log('reach top');
+    //   }
+    // };
   }, [conversation.messages]);
 
   const imagesLightbox = conversation.messages

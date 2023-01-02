@@ -158,7 +158,7 @@ function PresentationGroup() {
 
     socket.on('receiveMsg', (data) => {
       if (data) {
-        enqueueSnackbar('There is new message', { variant: 'success' });
+        enqueueSnackbar('There is new message', { variant: 'info' });
         dispatch(onReceiveMessage(data));
       }
     });

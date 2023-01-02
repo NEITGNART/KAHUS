@@ -46,14 +46,20 @@ export default function ChatMessageItem({
     // eslint-disable-next-line no-underscore-dangle
     (participant) => participant._id === message.senderId
   );
+  // eslint-disable-next-line no-underscore-dangle
+
   const senderDetails =
+    // eslint-disable-next-line no-underscore-dangle
     message.senderId === user.id
       ? { type: 'me' }
-      : { avatar: sender?.avatar, name: sender?.firstName };
+      : {
+          avatar: sender?.avatar,
+          name: sender?.firstName.concat(' ', sender?.lastName)
+        };
 
   const isMe = senderDetails.type === 'me';
   const isImage = message.contentType === 'image';
-  const firstName = senderDetails.name && senderDetails.name.split(' ')[0];
+  const firstName = senderDetails.name;
 
   return (
     <RootStyle>
