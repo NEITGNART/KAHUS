@@ -41,22 +41,20 @@ const conversationSelector = (state) => {
 };
 
 ChatWindow.propTypes = {
-  socket: PropTypes.object
+  onSendMessageSocket: PropTypes.func
 };
 
-export default function ChatWindow({ socket }) {
+export default function ChatWindow({ onSendMessageSocket }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const { code } = useParams();
-  const { participants, activeConversationId, isOpenChatBox } = useSelector(
+  const { activeConversationId, isInChatBox } = useSelector(
     (state) => state.chat
   );
+  console.log(isInChatBox);
   const conversationKey = code;
   const conversation = useSelector((state) => conversationSelector(state));
-  // const displayParticipants = participants.filter(
-  //   (item) => item.id !== '8864c717-587d-472a-929a-8e5f298024da-0'
-  // );
 
   useEffect(() => {
     const getDetails = async () => {
@@ -74,12 +72,6 @@ export default function ChatWindow({ socket }) {
       dispatch(resetActiveConversation());
     }
   }, [conversationKey]);
-
-  // useEffect(() => {
-  //   if (activeConversationId) {
-  //     dispatch(markConversationAsRead(activeConversationId));
-  //   }
-  // }, [dispatch, activeConversationId]);
 
   const handleSendMessage = async (value) => {
     try {
@@ -102,7 +94,7 @@ export default function ChatWindow({ socket }) {
         senderId
       };
 
-      socket.emit('sendMsg', {
+      onSendMessageSocket({
         id: conversationId,
         message: newMessage
       });
@@ -113,24 +105,18 @@ export default function ChatWindow({ socket }) {
   };
 
   return (
-    <>
-      {/* <ChatHeaderDetail participants={displayParticipants} /> */}
+    <Box sx={{ flexGrow: 1, display: 'flex', overflow: 'hidden' }}>
+      <Stack sx={{ flexGrow: 1 }}>
+        <ChatMessageList conversation={conversation} />
 
-      <Divider />
+        <Divider />
 
-      <Box sx={{ flexGrow: 1, display: 'flex', overflow: 'hidden' }}>
-        <Stack sx={{ flexGrow: 1 }}>
-          <ChatMessageList conversation={conversation} />
-
-          <Divider />
-
-          <ChatMessageInput
-            conversationId={activeConversationId}
-            onSend={handleSendMessage}
-            disabled={pathname === PATH_DASHBOARD.chat.new}
-          />
-        </Stack>
-      </Box>
-    </>
+        <ChatMessageInput
+          conversationId={activeConversationId}
+          onSend={handleSendMessage}
+          disabled={pathname === PATH_DASHBOARD.chat.new}
+        />
+      </Stack>
+    </Box>
   );
 }
