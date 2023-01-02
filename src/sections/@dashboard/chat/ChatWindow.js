@@ -14,17 +14,14 @@ import {
 // routes
 import { PATH_DASHBOARD } from '../../../routes/paths';
 //
-import ChatRoom from './ChatRoom';
 import ChatMessageList from './ChatMessageList';
-import ChatHeaderDetail from './ChatHeaderDetail';
 import ChatMessageInput from './ChatMessageInput';
-import ChatHeaderCompose from './ChatHeaderCompose';
 import { DialogAnimate } from '../../../components/animate';
 
 // ----------------------------------------------------------------------
 
 const conversationSelector = (state) => {
-  const { conversation, activeConversationId } = state.chat;
+  const { conversation } = state.chat;
 
   if (conversation) {
     return conversation;
@@ -46,13 +43,11 @@ ChatWindow.propTypes = {
 
 export default function ChatWindow({ onSendMessageSocket }) {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
   const { pathname } = useLocation();
   const { code } = useParams();
   const { activeConversationId, isInChatBox } = useSelector(
     (state) => state.chat
   );
-  console.log(isInChatBox);
   const conversationKey = code;
   const conversation = useSelector((state) => conversationSelector(state));
 
@@ -63,7 +58,6 @@ export default function ChatWindow({ onSendMessageSocket }) {
         await dispatch(getConversation(conversationKey));
       } catch (error) {
         console.error(error);
-        navigate(PATH_DASHBOARD.chat.new);
       }
     };
     if (conversationKey) {
