@@ -23,6 +23,7 @@ import {
 import { Button, Card, DialogContent, Stack } from '@mui/material';
 import MessageIcon from '@mui/icons-material/Message';
 import Fab from '@mui/material/Fab';
+import { useSnackbar } from 'notistack';
 
 // eslint-disable-next-line import/no-unresolved
 import { Bar } from 'react-chartjs-2';
@@ -33,16 +34,9 @@ import { FormProvider } from './hook-form';
 import RHFMyRadioGroup from './hook-form/RHFMyRadioGroup';
 import { HOST_SK } from '../config';
 import useAuth from '../hooks/useAuth';
-import ChatWindow from '../sections/@dashboard/chat/ChatWindow';
-import {
-  onParticipantJoinChat,
-  onReceiveMessage,
-  setInChatBox,
-  setOutChatBox
-} from '../redux/slices/chat';
+import { onParticipantJoinChat, onReceiveMessage } from '../redux/slices/chat';
 
 import { useDispatch, useSelector } from '../redux/store';
-import { DialogAnimate } from './animate';
 import { SlideType } from '../pages/dashboard/Prestation/value/SlideType';
 import QuestionBoxClient from '../sections/presentation/question/QuestionBoxClient';
 import axios from '../utils/axios';
@@ -101,6 +95,7 @@ function PresentationGroup() {
   const [slideIndex, setSlideIndex] = useState(
     Number(searchParams.get('slideIndex'))
   );
+  const { enqueueSnackbar } = useSnackbar();
 
   const roomCode = code || '123456';
 
@@ -163,8 +158,7 @@ function PresentationGroup() {
 
     socket.on('receiveMsg', (data) => {
       if (data) {
-        // if (showChatConsole === false) {
-        // }
+        enqueueSnackbar('There is new message', { variant: 'success' });
         dispatch(onReceiveMessage(data));
       }
     });
