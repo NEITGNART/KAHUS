@@ -37,6 +37,9 @@ import axios from '../utils/axios';
 import QuestionBox from '../sections/presentation/question/QuestionBox';
 import useAuth from '../hooks/useAuth';
 import { SlideType } from '../pages/dashboard/Prestation/value/SlideType';
+import ChatBox from '../sections/presentation/chat/ChatBox';
+import { useDispatch } from '../redux/store';
+import { onParticipantJoinChat, onReceiveMessage } from '../redux/slices/chat';
 
 ChartJS.register(
   CategoryScale,
@@ -85,7 +88,7 @@ function PresentationHost() {
   const { code } = useParams();
   const [presentQuestions, setPresentQuestions] = useState([]);
   const [newPresentQuestion, setNewPresentQuestion] = useState();
-
+  const dispatch = useDispatch();
   // get query params from url
   const totalSlide = searchParams.get('max') || 0;
   let slideIndex = Number(searchParams.get('slideIndex'));
@@ -151,6 +154,19 @@ function PresentationHost() {
         }
       });
 
+      socket.on('receiveMsg', (data) => {
+        if (data) {
+          enqueueSnackbar('There is new message', { variant: 'success' });
+          dispatch(onReceiveMessage(data));
+        }
+      });
+
+      socket.on('newParticipantJoinChat', (data) => {
+        if (data) {
+          dispatch(onParticipantJoinChat(data));
+        }
+      });
+
       socket.on('question', (data) => {
         console.log([...presentQuestions, data]);
         setNewPresentQuestion(data);
@@ -168,6 +184,8 @@ function PresentationHost() {
       socket.off('vote');
       socket.off('slide-change');
       socket.off('question');
+      socket.off('receiveMsg');
+      socket.off('newParticipantJoinChat');
       // socket.off('duplicate');
     };
   }, []);
@@ -235,6 +253,10 @@ function PresentationHost() {
     renderSlide = <div>Waiting</div>;
   }
 
+  const onSendMessageSocket = (data) => {
+    socket.emit('sendMsg', data);
+  };
+
   const handleUpdateQuestion = (data) => {
     socket.emit('update-question', data);
   };
@@ -265,7 +287,10 @@ function PresentationHost() {
         <Heading fontSize="50px" textAlign="left" color="#212B36">
           {question}
         </Heading>
-        {renderSlide}
+        <FlexBox>{renderSlide}</FlexBox>
+        <Fab sx={{ backgroundColor: 'white' }}>
+          <ChatBox onSendMessageSocket={onSendMessageSocket} />
+        </Fab>
         <Fab sx={{ marginBottom: '10px', backgroundColor: 'white' }}>
           <QuestionBox
             questions={presentQuestions}

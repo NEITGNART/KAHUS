@@ -23,6 +23,7 @@ import {
 import { Button, Card, DialogContent, Stack } from '@mui/material';
 import MessageIcon from '@mui/icons-material/Message';
 import Fab from '@mui/material/Fab';
+import { useSnackbar } from 'notistack';
 
 // eslint-disable-next-line import/no-unresolved
 import { Bar } from 'react-chartjs-2';
@@ -33,13 +34,13 @@ import { FormProvider } from './hook-form';
 import RHFMyRadioGroup from './hook-form/RHFMyRadioGroup';
 import { HOST_SK } from '../config';
 import useAuth from '../hooks/useAuth';
-import ChatWindow from '../sections/@dashboard/chat/ChatWindow';
-import { onReceiveMessage } from '../redux/slices/chat';
+import { onParticipantJoinChat, onReceiveMessage } from '../redux/slices/chat';
+
 import { useDispatch, useSelector } from '../redux/store';
-import { DialogAnimate } from './animate';
 import { SlideType } from '../pages/dashboard/Prestation/value/SlideType';
 import QuestionBoxClient from '../sections/presentation/question/QuestionBoxClient';
 import axios from '../utils/axios';
+import ChatBox from '../sections/presentation/chat/ChatBox';
 
 ChartJS.register(
   CategoryScale,
@@ -85,7 +86,6 @@ function PresentationGroup() {
   const [error, setError] = useState(false);
   const [helperText, setHelperText] = useState('Choose wisely');
   const [searchParams, setSearchParams] = useSearchParams();
-  const [showChatConsole, setShowChatConsole] = useState(false);
   const [content, setContent] = useState('');
   const [slideType, setSlideType] = useState('');
   const { code } = useParams();
@@ -95,18 +95,11 @@ function PresentationGroup() {
   const [slideIndex, setSlideIndex] = useState(
     Number(searchParams.get('slideIndex'))
   );
+  const { enqueueSnackbar } = useSnackbar();
 
   const roomCode = code || '123456';
 
   const dispatch = useDispatch();
-
-  const handleCloseChatConsole = () => {
-    setShowChatConsole(false);
-  };
-
-  const handleOpenChatConsole = () => {
-    setShowChatConsole(true);
-  };
 
   useEffect(() => {
     axios.get(`api/presentation/code/${code}`).then((res) => {
@@ -125,7 +118,6 @@ function PresentationGroup() {
     });
 
     socket.on('chart', (data) => {
-      console.log('chart', data);
       if (data) {
         if (data.type === SlideType.MULTIPLE_CHOICE) {
           setLabels(data.answer);
@@ -166,7 +158,14 @@ function PresentationGroup() {
 
     socket.on('receiveMsg', (data) => {
       if (data) {
+        enqueueSnackbar('There is new message', { variant: 'success' });
         dispatch(onReceiveMessage(data));
+      }
+    });
+
+    socket.on('newParticipantJoinChat', (data) => {
+      if (data) {
+        dispatch(onParticipantJoinChat(data));
       }
     });
 
@@ -181,6 +180,7 @@ function PresentationGroup() {
       socket.off('vote');
       socket.off('receiveMsg');
       socket.off('disconnect');
+      socket.off('newParticipantJoinChat');
       socket.off('question');
     };
   }, []);
@@ -195,6 +195,10 @@ function PresentationGroup() {
   const handleSendQuestion = (data) => {
     socket.emit('question', data);
     setPresentQuestions([...presentQuestions, data]);
+  };
+
+  const onSendMessageSocket = (data) => {
+    socket.emit('sendMsg', data);
   };
 
   const datas = {
@@ -293,14 +297,9 @@ function PresentationGroup() {
       <Slide backgroundColor="white" slideNum={1}>
         <Heading color="#212B36">{question}</Heading>
         <FlexBox>{renderSlide}</FlexBox>
-        <Fab
-          color="primary"
-          aria-label="message"
-          onClick={handleOpenChatConsole}
-        >
-          <MessageIcon />
+        <Fab sx={{ backgroundColor: 'white' }}>
+          <ChatBox onSendMessageSocket={onSendMessageSocket} />
         </Fab>
-
         <Fab sx={{ backgroundColor: 'white' }}>
           <QuestionBoxClient
             onSendQuestion={handleSendQuestion}
@@ -308,20 +307,6 @@ function PresentationGroup() {
           />
         </Fab>
       </Slide>
-      <DialogAnimate
-        fullWidth
-        maxWidth="md"
-        open={showChatConsole}
-        onClose={handleCloseChatConsole}
-      >
-        <DialogContent>
-          <Card sx={{ height: '72vh', display: 'flex' }}>
-            <Stack sx={{ flexGrow: 1, minWidth: '1px' }}>
-              <ChatWindow socket={socket} />
-            </Stack>
-          </Card>
-        </DialogContent>
-      </DialogAnimate>
     </Deck>
   );
 }

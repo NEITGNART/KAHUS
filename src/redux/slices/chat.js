@@ -1,5 +1,6 @@
 /* eslint-disable no-underscore-dangle */
 import { createSlice } from '@reduxjs/toolkit';
+import { useSnackbar } from 'notistack';
 // utils
 import axios from '../../utils/axios';
 //
@@ -19,7 +20,8 @@ const initialState = {
   error: null,
   conversation: null,
   activeConversationId: null,
-  participants: []
+  participants: [],
+  isInChatBox: false
 };
 
 const slice = createSlice({
@@ -79,8 +81,15 @@ const slice = createSlice({
     // ON RECEIVE MESSAGE
     onReceiveMessage(state, action) {
       const conversation = action.payload;
-
       state.conversation.messages.push(conversation.message);
+    },
+
+    // ON PARTICIPANT JOIN
+    onParticipantJoinChat(state, action) {
+      const newParticipant = action.payload;
+      state.conversation.participants.push(newParticipant);
+      const newParticipants = [...state.participants, newParticipant];
+      state.participants = newParticipants;
     },
 
     markConversationAsReadSuccess(state, action) {
@@ -94,12 +103,23 @@ const slice = createSlice({
     // GET PARTICIPANTS
     getParticipantsSuccess(state, action) {
       const participants = action.payload;
-      state.participants = participants;
+      if (participants) {
+        state.participants = participants;
+      }
     },
 
     // RESET ACTIVE CONVERSATION
     resetActiveConversation(state) {
       state.activeConversationId = null;
+    },
+
+    setInChatBox(state) {
+      console.log('hahaha');
+      state.isInChatBox = true;
+    },
+    setOutChatBox(state) {
+      console.log('hihihi');
+      state.isInChatBox = false;
     }
   }
 });
@@ -108,8 +128,14 @@ const slice = createSlice({
 export default slice.reducer;
 
 // Actions
-export const { onSendMessage, onReceiveMessage, resetActiveConversation } =
-  slice.actions;
+export const {
+  onSendMessage,
+  onReceiveMessage,
+  resetActiveConversation,
+  onParticipantJoinChat,
+  setInChatBox,
+  setOutChatBox
+} = slice.actions;
 
 // ----------------------------------------------------------------------
 

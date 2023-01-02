@@ -14,17 +14,14 @@ import {
 // routes
 import { PATH_DASHBOARD } from '../../../routes/paths';
 //
-import ChatRoom from './ChatRoom';
 import ChatMessageList from './ChatMessageList';
-import ChatHeaderDetail from './ChatHeaderDetail';
 import ChatMessageInput from './ChatMessageInput';
-import ChatHeaderCompose from './ChatHeaderCompose';
 import { DialogAnimate } from '../../../components/animate';
 
 // ----------------------------------------------------------------------
 
 const conversationSelector = (state) => {
-  const { conversation, activeConversationId } = state.chat;
+  const { conversation } = state.chat;
 
   if (conversation) {
     return conversation;
@@ -41,45 +38,33 @@ const conversationSelector = (state) => {
 };
 
 ChatWindow.propTypes = {
-  socket: PropTypes.object
+  onSendMessageSocket: PropTypes.func
 };
 
-export default function ChatWindow({ socket }) {
+export default function ChatWindow({ onSendMessageSocket }) {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
   const { pathname } = useLocation();
   const { code } = useParams();
-  const { participants, activeConversationId, isOpenChatBox } = useSelector(
+  const { activeConversationId, isInChatBox } = useSelector(
     (state) => state.chat
   );
-  const conversationKey = code;
   const conversation = useSelector((state) => conversationSelector(state));
-  // const displayParticipants = participants.filter(
-  //   (item) => item.id !== '8864c717-587d-472a-929a-8e5f298024da-0'
-  // );
 
   useEffect(() => {
     const getDetails = async () => {
-      dispatch(getParticipants(conversationKey));
+      dispatch(getParticipants(code));
       try {
-        await dispatch(getConversation(conversationKey));
+        await dispatch(getConversation(code));
       } catch (error) {
         console.error(error);
-        navigate(PATH_DASHBOARD.chat.new);
       }
     };
-    if (conversationKey) {
+    if (code) {
       getDetails();
     } else if (activeConversationId) {
       dispatch(resetActiveConversation());
     }
-  }, [conversationKey]);
-
-  // useEffect(() => {
-  //   if (activeConversationId) {
-  //     dispatch(markConversationAsRead(activeConversationId));
-  //   }
-  // }, [dispatch, activeConversationId]);
+  }, [code]);
 
   const handleSendMessage = async (value) => {
     try {
@@ -102,7 +87,7 @@ export default function ChatWindow({ socket }) {
         senderId
       };
 
-      socket.emit('sendMsg', {
+      onSendMessageSocket({
         id: conversationId,
         message: newMessage
       });
@@ -113,24 +98,18 @@ export default function ChatWindow({ socket }) {
   };
 
   return (
-    <>
-      {/* <ChatHeaderDetail participants={displayParticipants} /> */}
+    <Box sx={{ flexGrow: 1, display: 'flex', overflow: 'hidden' }}>
+      <Stack sx={{ flexGrow: 1 }}>
+        <ChatMessageList conversation={conversation} />
 
-      <Divider />
+        <Divider />
 
-      <Box sx={{ flexGrow: 1, display: 'flex', overflow: 'hidden' }}>
-        <Stack sx={{ flexGrow: 1 }}>
-          <ChatMessageList conversation={conversation} />
-
-          <Divider />
-
-          <ChatMessageInput
-            conversationId={activeConversationId}
-            onSend={handleSendMessage}
-            disabled={pathname === PATH_DASHBOARD.chat.new}
-          />
-        </Stack>
-      </Box>
-    </>
+        <ChatMessageInput
+          conversationId={activeConversationId}
+          onSend={handleSendMessage}
+          disabled={pathname === PATH_DASHBOARD.chat.new}
+        />
+      </Stack>
+    </Box>
   );
 }
