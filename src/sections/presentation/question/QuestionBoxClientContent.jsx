@@ -20,7 +20,8 @@ import useAuth from '../../../hooks/useAuth';
 
 QuestionBoxClientContent.propTypes = {
   questionList: PropTypes.array,
-  onSendQuestion: PropTypes.func
+  onSendQuestion: PropTypes.func,
+  onVoteButtonClick: PropTypes.func
 };
 
 const ALL = 'ALL';
@@ -34,10 +35,11 @@ const options = {
 
 export default function QuestionBoxClientContent({
   questionList,
-  onSendQuestion
+  onSendQuestion,
+  onVoteButtonClick
 }) {
   const [questionInput, setQuestionInput] = useState('');
-  const { user } = useAuth();
+  const { user, deviceId } = useAuth();
   const ref = useRef(null);
   const [scroll2Bottom, setScroll2Bottom] = useState(false);
   const [inputFilter, setInputFilter] = useState(options.all);
@@ -60,7 +62,7 @@ export default function QuestionBoxClientContent({
   const handleSendQuestion = () => {
     if (questionInput.trim() !== '') {
       const fullname = user ? `${user.firstName} ${user.lastName}` : null;
-      const email = user ? user.email : null;
+      const email = user ? user.email : deviceId;
       onSendQuestion({
         id: uuid(),
         content: questionInput,
@@ -74,6 +76,10 @@ export default function QuestionBoxClientContent({
     } else {
       /* empty */
     }
+  };
+
+  const handleVoteButtonClick = (question) => {
+    onVoteButtonClick(question);
   };
 
   const onKeyPress = (evt) => {
@@ -132,7 +138,13 @@ export default function QuestionBoxClientContent({
         </FormControl>
         <Stack flex={1} spacing={2} overflow="auto">
           {questions.map((question) => {
-            return <QuestionClientItem key={question.id} question={question} />;
+            return (
+              <QuestionClientItem
+                key={question.id}
+                question={question}
+                onVoteButtonClick={handleVoteButtonClick}
+              />
+            );
           })}
           <Box ref={ref} />
         </Stack>

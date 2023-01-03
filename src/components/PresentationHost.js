@@ -37,6 +37,7 @@ import { SlideType } from '../pages/dashboard/Prestation/value/SlideType';
 import ChatBox from '../sections/presentation/chat/ChatBox';
 import { useDispatch } from '../redux/store';
 import { onParticipantJoinChat, onReceiveMessage } from '../redux/slices/chat';
+import QuestionBox from '../sections/presentation/question/QuestionBox';
 
 ChartJS.register(
   CategoryScale,
@@ -365,9 +366,20 @@ function PresentationHost() {
         )}
 
         {renderSlide}
-        <Fab sx={{ backgroundColor: 'white' }}>
+        <Box
+          sx={{
+            display: 'contents',
+            position: 'absolute',
+            marginBottom: '10px',
+            backgroundColor: 'white'
+          }}
+        >
+          <QuestionBox
+            questions={presentQuestions}
+            onUpdateQuestion={handleUpdateQuestion}
+          />
           <ChatBox onSendMessageSocket={onSendMessageSocket} />
-        </Fab>
+        </Box>
       </Slide>
     </Deck>
   );
