@@ -97,7 +97,13 @@ function Presentation() {
       if (res.data === undefined || res.data === null) {
         return;
       }
-      setPresentQuestions([...res.data.questions, ...presentQuestions]);
+      setPresentQuestions(
+        [...res.data.questions, ...presentQuestions].sort((a, b) => {
+          const va = a.createdAt ? a.createdAt : 0;
+          const vb = b.createdAt ? b.createdAt : 0;
+          return va - vb;
+        })
+      );
     });
   }, []);
 

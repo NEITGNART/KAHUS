@@ -106,7 +106,13 @@ function PresentationGroup() {
       if (res.data === undefined || res.data === null) {
         return;
       }
-      setPresentQuestions([...res.data.questions, ...presentQuestions]);
+      setPresentQuestions(
+        [...res.data.questions, ...presentQuestions].sort((a, b) => {
+          const va = a.createdAt ? a.createdAt : 0;
+          const vb = b.createdAt ? b.createdAt : 0;
+          return va - vb;
+        })
+      );
     });
   }, []);
 
@@ -189,7 +195,13 @@ function PresentationGroup() {
     const filteredPresentQuestions = presentQuestions.filter(
       (presentQuestion) => presentQuestion.id !== newPresentQuestion.id
     );
-    setPresentQuestions([...filteredPresentQuestions, newPresentQuestion]);
+    setPresentQuestions(
+      [...filteredPresentQuestions, newPresentQuestion].sort((a, b) => {
+        const va = a.createdAt ? a.createdAt : 0;
+        const vb = b.createdAt ? b.createdAt : 0;
+        return va - vb;
+      })
+    );
   }, [newPresentQuestion]);
 
   const handleSendQuestion = (data) => {
@@ -253,6 +265,10 @@ function PresentationGroup() {
     formState: { errors, isSubmitting, isSubmitSuccessful }
   } = methods;
 
+  const handleVoteButtonClick = (data) => {
+    socket.emit('vote-question', { ...data });
+  };
+
   let renderSlide;
 
   if (slideType === SlideType.MULTIPLE_CHOICE) {
@@ -297,15 +313,21 @@ function PresentationGroup() {
       <Slide backgroundColor="white" slideNum={1}>
         <Heading color="#212B36">{question}</Heading>
         <FlexBox>{renderSlide}</FlexBox>
-        <Fab sx={{ backgroundColor: 'white' }}>
-          <ChatBox onSendMessageSocket={onSendMessageSocket} />
-        </Fab>
-        <Fab sx={{ backgroundColor: 'white' }}>
+        <Box
+          sx={{
+            display: 'contents',
+            position: 'absolute',
+            marginBottom: '10px',
+            backgroundColor: 'white'
+          }}
+        >
           <QuestionBoxClient
             onSendQuestion={handleSendQuestion}
             questions={presentQuestions}
+            onVoteButtonClick={handleVoteButtonClick}
           />
-        </Fab>
+          <ChatBox onSendMessageSocket={onSendMessageSocket} />
+        </Box>
       </Slide>
     </Deck>
   );
