@@ -68,14 +68,20 @@ const MyDrawer = styled(Drawer, {
 
 const socket = io(HOST_SK);
 
-const presentationStart = async (groupId, link, presentationId) => {
+const presentationStart = async (
+  groupId,
+  link,
+  presentationId,
+  presentLink
+) => {
   console.log('start');
   if (groupId) {
     await axios
       .post(`api/group/presentation-start`, {
         presentationId,
         groupId,
-        link
+        link,
+        presentLink
       })
       .then((res) => {
         if (res.data) {
@@ -131,7 +137,9 @@ export default function PresentationEdit() {
 
   useEffect(() => {
     axios
-      .get(`api/presentation/${presentationId}`)
+      .post(`api/presentation/get-presentation`, {
+        presentationId
+      })
       .then((res) => {
         setPresentation(res.data);
       })
@@ -198,7 +206,16 @@ export default function PresentationEdit() {
   };
 
   const onPresent = async () => {
-    await presentationStart(group, presentation.link, presentationId);
+    const presentLink = `${window.location.origin}/present/${
+      presentation.code
+    }?max=${presentation.slides.length || 0}`;
+
+    await presentationStart(
+      group,
+      presentation.link,
+      presentationId,
+      presentLink
+    );
     onSave();
     window.open(
       `/present/${presentation.code}?max=${presentation.slides.length || 0}`,

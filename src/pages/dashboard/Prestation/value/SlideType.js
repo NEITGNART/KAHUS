@@ -1,9 +1,11 @@
 const MULTIPLE_CHOICE = 'MULTIPLE_CHOICE';
 const HEADING = 'HEADING';
 const PARAGRAPH = 'PARAGRAPH';
+const END = 'END';
 
 export const SlideType = {
   MULTIPLE_CHOICE,
   HEADING,
-  PARAGRAPH
+  PARAGRAPH,
+  END
 };

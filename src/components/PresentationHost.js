@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   Box,
   Deck,
@@ -29,13 +29,10 @@ import { Container, IconButton, Typography } from '@mui/material';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { useSnackbar } from 'notistack';
 import Fab from '@mui/material/Fab';
-import { FormProvider } from './hook-form';
-import RHFMyRadioGroup from './hook-form/RHFMyRadioGroup';
-import { HOST_API, HOST_SK } from '../config';
+import QRCode from 'qrcode.react';
+import { HOST_SK } from '../config';
 import Iconify from './Iconify';
 import axios from '../utils/axios';
-import QuestionBox from '../sections/presentation/question/QuestionBox';
-import useAuth from '../hooks/useAuth';
 import { SlideType } from '../pages/dashboard/Prestation/value/SlideType';
 import ChatBox from '../sections/presentation/chat/ChatBox';
 import { useDispatch } from '../redux/store';
@@ -89,6 +86,8 @@ function PresentationHost() {
   const [presentQuestions, setPresentQuestions] = useState([]);
   const [newPresentQuestion, setNewPresentQuestion] = useState();
   const dispatch = useDispatch();
+  const [endPresenting, setEndPresenting] = useState(false);
+
   // get query params from url
   const totalSlide = searchParams.get('max') || 0;
   let slideIndex = Number(searchParams.get('slideIndex'));
@@ -102,6 +101,24 @@ function PresentationHost() {
       setPresentQuestions([...res.data.questions, ...presentQuestions]);
     });
   }, []);
+
+  const videoRef = useRef(null);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (endPresenting) {
+      video.currentTime = 0;
+      video.play();
+
+      // pause the video after two seconds
+      const interval = setInterval(() => {
+        if (video.currentTime >= 1.9) {
+          video.pause();
+          clearInterval(interval);
+        }
+      }, 50);
+    }
+  }, [endPresenting]);
 
   useEffect(() => {
     const filteredPresentQuestions = presentQuestions.filter(
@@ -128,6 +145,7 @@ function PresentationHost() {
           setSlideType(data.type);
           setQuestion(data.question);
           setLink(data.link);
+          setEndPresenting(false);
         }
       });
 
@@ -151,6 +169,7 @@ function PresentationHost() {
           setSlideType(data.type);
           setQuestion(data.question);
           slideIndex = data.slideIndex;
+          setEndPresenting(false);
         }
       });
 
@@ -161,20 +180,28 @@ function PresentationHost() {
         }
       });
 
+      socket.on('end-presentation', () => {
+        console.log('end presentation');
+        setEndPresenting(true);
+        setContent('You have reached the end of the presentation');
+        setQuestion('Presentation is ended');
+        setSlideType(SlideType.END);
+      });
+
       socket.on('newParticipantJoinChat', (data) => {
         if (data) {
           dispatch(onParticipantJoinChat(data));
         }
-      });
 
+        // socket.on('duplicate', () => {
+        //   console.log('duplicate');
+        //   enqueueSnackbar('Duplicate code', { variant: 'error' });
+        // });
+      });
       socket.on('question', (data) => {
         console.log([...presentQuestions, data]);
         setNewPresentQuestion(data);
       });
-      // socket.on('duplicate', () => {
-      //   console.log('duplicate');
-      //   enqueueSnackbar('Duplicate code', { variant: 'error' });
-      // });
     });
 
     return () => {
@@ -186,6 +213,7 @@ function PresentationHost() {
       socket.off('question');
       socket.off('receiveMsg');
       socket.off('newParticipantJoinChat');
+      socket.off('end-presentation');
       // socket.off('duplicate');
     };
   }, []);
@@ -208,9 +236,13 @@ function PresentationHost() {
           break;
         case 39:
           // Need to restrict number of slide by number of slide in deck
+          // if reach the end of slide, emit event to end presentation
+          if (slideIndex === totalSlide - 1) {
+            socket.emit('end-presentation');
+            break;
+          }
           if (slideIndex < totalSlide - 1) slideIndex += 1;
           changeSlide(slideIndex);
-          console.log(slideIndex);
           break;
         default:
           break;
@@ -249,6 +281,29 @@ function PresentationHost() {
         {content}
       </Text>
     );
+  } else if (slideType === SlideType.END) {
+    renderSlide = (
+      <>
+        {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+        {endPresenting && (
+          <>
+            {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+            <video ref={videoRef} height="70%">
+              <source
+                src="https://mentimeter-static.s3.amazonaws.com/static/images/mentilogo-black.mp4"
+                type="video/mp4"
+              />
+            </video>
+            <Typography variant="h1" color="white" textAlign="center">
+              KAHUS
+            </Typography>
+          </>
+        )}
+        <Text fontSize={32} textAlign="center">
+          {content}
+        </Text>
+      </>
+    );
   } else {
     renderSlide = <div>Waiting</div>;
   }
@@ -263,39 +318,55 @@ function PresentationHost() {
 
   return (
     <Deck template={template}>
-      <Slide backgroundColor="white" slideNum={1}>
-        <Typography
-          padding={0}
-          margin={0}
-          variant="h4"
-          textAlign="center"
-          color="#212B36"
-        >
-          Go to {link}
-          <CopyToClipboard text={link}>
-            <IconButton
-              aria-label="copy"
-              size="large"
-              onClick={() => {
-                enqueueSnackbar('copy link success', { variant: 'success' });
-              }}
+      <Slide
+        backgroundColor={slideType === SlideType.END ? 'dark' : 'white'}
+        slideNum={1}
+      >
+        {!endPresenting && (
+          <div>
+            <Typography
+              padding={0}
+              margin={0}
+              variant="h4"
+              textAlign="center"
+              color="#212B36"
             >
-              <Iconify icon="eva:copy-outline" />
-            </IconButton>
-          </CopyToClipboard>
-        </Typography>
-        <Heading fontSize="50px" textAlign="left" color="#212B36">
-          {question}
-        </Heading>
-        <FlexBox>{renderSlide}</FlexBox>
+              Go to {link}
+              <CopyToClipboard text={link}>
+                <IconButton
+                  aria-label="copy"
+                  size="large"
+                  onClick={() => {
+                    enqueueSnackbar('copy link success', {
+                      variant: 'success'
+                    });
+                  }}
+                >
+                  <Iconify icon="eva:copy-outline" />
+                </IconButton>
+              </CopyToClipboard>
+              <QRCode value={link} style={{ height: '50px', width: '60px' }} />
+            </Typography>
+          </div>
+        )}
+
+        {slideType === SlideType.END ? (
+          <div />
+        ) : (
+          <Heading
+            fontSize="50px"
+            textAlign={slideType === SlideType.END ? 'center' : 'left'}
+            color="#212B36"
+            padding={0}
+            margin={0}
+          >
+            {question}
+          </Heading>
+        )}
+
+        {renderSlide}
         <Fab sx={{ backgroundColor: 'white' }}>
           <ChatBox onSendMessageSocket={onSendMessageSocket} />
-        </Fab>
-        <Fab sx={{ marginBottom: '10px', backgroundColor: 'white' }}>
-          <QuestionBox
-            questions={presentQuestions}
-            onUpdateQuestion={handleUpdateQuestion}
-          />
         </Fab>
       </Slide>
     </Deck>

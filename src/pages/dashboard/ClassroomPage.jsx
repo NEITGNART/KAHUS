@@ -74,10 +74,25 @@ const fetchAllMemberClass = async (classId) => {
   return response.data;
 };
 
+const fetchMyRole = async (classId, email) => {
+  const response = await axios.post(`/api/group/get-role`, {
+    groupId: classId,
+    email
+  });
+  return response.data;
+};
+
 function useGetAllMemberClass(classId) {
   return useQuery({
     queryKey: ['members', classId],
     queryFn: () => fetchAllMemberClass(classId)
+  });
+}
+
+function useGetRole(classId, email) {
+  return useQuery({
+    queryKey: ['role', classId, email],
+    queryFn: () => fetchMyRole(classId, email)
   });
 }
 
@@ -107,45 +122,88 @@ export default function ClassroomPage() {
     classRoom?.owner._id
   );
 
-  const { data: members } = useGetAllMemberClass(classId);
+  // const { data: members, is } = useGetAllMemberClass(classId);
 
-  if (isLoadinClassRoom || isLoadingOwner) return <LoadingScreen />;
+  const { data: role, isLoading: isLoadingRole } = useGetRole(
+    classId,
+    user.email
+  );
+
+  if (isLoadinClassRoom || isLoadingOwner || isLoadingRole)
+    return <LoadingScreen />;
+
   if (error) return <div>Something went wrong ...</div>;
 
-  const PROFILE_TABS = [
-    {
-      value: 'feeds',
-      icon: <Iconify icon="ic:round-account-box" width={20} height={20} />,
-      component: (
-        <Classroom
-          classInfo={{
-            notification: classRoom.notification,
-            description: classRoom.description,
-            linkUrl: classRoom.link
-          }}
-          // posts={_userfeeds}
-          posts={[]}
-        />
-      )
-    },
-    {
-      value: 'memberList',
-      icon: <Iconify icon="eva:people-fill" width={20} height={20} />,
-      component: <MemberList classId={classId} />
-    },
-    {
-      value: 'presentation',
-      icon: (
-        <Iconify icon="ph:presentation-chart-fill" width={20} height={20} />
-      ),
-      component: <PresentationCard classId={classId} />
-    }
-    // {
-    //   value: 'classwork',
-    //   icon: <Iconify icon="ic:round-perm-media" width={20} height={20} />,
-    //   component: <ClassroomWork gallery={_userGallery} />
-    // }
-  ];
+  const PROFILE_TABS =
+    role.role === 'owner'
+      ? [
+          {
+            value: 'feeds',
+            icon: (
+              <Iconify icon="ic:round-account-box" width={20} height={20} />
+            ),
+            component: (
+              <Classroom
+                classInfo={{
+                  notification: classRoom.notification,
+                  description: classRoom.description,
+                  linkUrl: classRoom.link,
+                  role: role.role,
+                  presentLink: classRoom.presentLink
+                }}
+                // posts={_userfeeds}
+                posts={[]}
+              />
+            )
+          },
+          {
+            value: 'memberList',
+            icon: <Iconify icon="eva:people-fill" width={20} height={20} />,
+            component: <MemberList classId={classId} />
+          },
+          {
+            value: 'presentation',
+            icon: (
+              <Iconify
+                icon="ph:presentation-chart-fill"
+                width={20}
+                height={20}
+              />
+            ),
+            component: <PresentationCard classId={classId} />
+          }
+          // {
+          //   value: 'classwork',
+          //   icon: <Iconify icon="ic:round-perm-media" width={20} height={20} />,
+          //   component: <ClassroomWork gallery={_userGallery} />
+          // }
+        ]
+      : [
+          {
+            value: 'feeds',
+            icon: (
+              <Iconify icon="ic:round-account-box" width={20} height={20} />
+            ),
+            component: (
+              <Classroom
+                classInfo={{
+                  notification: classRoom.notification,
+                  description: classRoom.description,
+                  linkUrl: classRoom.link,
+                  role: role.role,
+                  presentLink: classRoom.presentLink
+                }}
+                // posts={_userfeeds}
+                posts={[]}
+              />
+            )
+          },
+          {
+            value: 'memberList',
+            icon: <Iconify icon="eva:people-fill" width={20} height={20} />,
+            component: <MemberList classId={classId} />
+          }
+        ];
 
   return (
     <Page title="Classroom">
@@ -154,7 +212,10 @@ export default function ClassroomPage() {
           heading={classRoom?.name || 'Class Room'}
           links={[
             { name: 'Dashboard', href: PATH_DASHBOARD.root },
-            { name: 'User', href: PATH_DASHBOARD.user.root },
+            {
+              name: 'User',
+              href: PATH_DASHBOARD.user.root
+            },
             { name: user?.displayName || '' }
           ]}
         />

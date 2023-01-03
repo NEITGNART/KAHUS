@@ -21,6 +21,7 @@ import PresentationHost from '../components/PresentationHost';
 import PresentationGroup from '../components/PresentationGroup';
 import RoleBasedGuard from '../guards/RoleBasedGuard';
 import GlobalAlert from '../layout/dashboard/GlobalAlert';
+import RoleBasedGuardClassPage from '../guards/RoleBasedGuardClassPage';
 // ----------------------------------------------------------------------
 
 const Loadable = (Component) =>
@@ -168,7 +169,15 @@ export default function Router() {
             { path: 'create', element: <CreateClass /> },
             {
               path: 'class/:classId',
-              element: <ClassroomPage />
+              element: (
+                <>
+                  <RoleBasedGuardClassPage
+                    accessibleRoles={['member', 'owner', 'co-owner']}
+                  >
+                    <ClassroomPage />
+                  </RoleBasedGuardClassPage>
+                </>
+              )
             },
             { path: 'member', element: <MemberList /> }
           ]
