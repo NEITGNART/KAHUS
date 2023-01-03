@@ -1,4 +1,4 @@
-import PropTypes from 'prop-types';
+import PropTypes, { number } from 'prop-types';
 import { useEffect, useState, useRef } from 'react';
 //
 import Scrollbar from '../../../components/Scrollbar';
@@ -13,12 +13,24 @@ ChatMessageList.propTypes = {
 };
 
 export default function ChatMessageList({ conversation }) {
+  // const messagePerScroll = 7;
   const scrollRef = useRef(null);
-
-  // const messagePerScroll = 7
-  // const numberRolling1 = conversation.message.length() / messagePerScroll
-  // const numberRolling2 = conversation.message.length() % messagePerScroll
-  // const messageContent = conversation.message.slice()
+  // const [scrollTurn, setScrollTurn] = useState(
+  //   Math.floor(conversation.messages.length / messagePerScroll)
+  // );
+  // const messageScrolling = Math.floor(
+  //   conversation.messages.length / messagePerScroll
+  // );
+  const [messageContent, setMessageContent] = useState([]);
+  // const numberRolling1 = Math.floor(
+  //   conversation.messages.length / messagePerScroll
+  // );
+  // const numberRolling2 = conversation.messages.length - numberRolling1 * 7;
+  // let messageContent = conversation.messages.slice(numberRolling1 * 7);
+  // console.log(messageContent);
+  useEffect(() => {
+    setMessageContent(conversation.messages.slice(0));
+  }, []);
 
   useEffect(() => {
     const scrollMessagesToBottom = () => {
@@ -27,12 +39,28 @@ export default function ChatMessageList({ conversation }) {
       }
     };
     scrollMessagesToBottom();
-    // scrollRef.current.onscroll = () => {
-    //   if (scrollRef.current.scrollTop === 0) {
-    //     console.log('reach top');
-    //   }
-    // };
   }, [conversation.messages]);
+
+  // useEffect(() => {
+  //   scrollRef.current.onscroll = () => {
+  //     if (scrollRef.current.scrollTop === 0) {
+  //       console.log((scrollTurn - 1) * 7);
+  //       console.log(conversation.messages.indexOf(messageContent[0]));
+  //       console.log(messageContent[0]);
+  //       if (scrollTurn > 0) {
+  //         setMessageContent(
+  //           conversation.messages
+  //             .slice(
+  //               (scrollTurn - 1) * 7,
+  //               conversation.messages.indexOf(messageContent[0])
+  //             )
+  //             .concat(messageContent)
+  //         );
+  //         setScrollTurn(scrollTurn - 1);
+  //       }
+  //     }
+  //   };
+  // }, [scrollTurn]);
 
   const imagesLightbox = conversation.messages
     .filter((messages) => messages.contentType === 'image')
@@ -50,7 +78,7 @@ export default function ChatMessageList({ conversation }) {
         scrollableNodeProps={{ ref: scrollRef }}
         sx={{ p: 3, height: 1 }}
       >
-        {conversation.messages.map((message) => (
+        {messageContent.map((message) => (
           <ChatMessageItem
             key={message.id}
             message={message}
