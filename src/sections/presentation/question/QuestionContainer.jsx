@@ -2,7 +2,6 @@ import { Box, Button, IconButton, Stack, Typography } from '@mui/material';
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 import Iconify from '../../../components/Iconify';
-import Image from '../../../components/Image';
 
 QuestionContainer.propTypes = {
   questions: PropTypes.array,

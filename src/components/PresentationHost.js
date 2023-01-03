@@ -70,7 +70,7 @@ const options = {
   }
 };
 
-const socket = io(HOST_SK);
+let socket;
 
 function PresentationHost() {
   const [labels, setLabels] = useState([]);
@@ -128,6 +128,7 @@ function PresentationHost() {
   }, [newPresentQuestion]);
 
   useEffect(() => {
+    socket = io(HOST_SK);
     socket.on('connect', () => {
       socket.emit('join', { room: roomCode, slideIndex });
 
