@@ -213,7 +213,11 @@ export default function Router() {
           path: ':presentationId/edit',
           element: (
             <>
-              <Presentation />
+              <AuthGuard>
+                <RoleBasedGuard accessibleRoles={['owner', 'collaborator']}>
+                  <Presentation />
+                </RoleBasedGuard>
+              </AuthGuard>
             </>
           )
         }
@@ -221,7 +225,13 @@ export default function Router() {
     },
     {
       path: '/present/:code',
-      element: <PresentationHost />
+      element: (
+        <AuthGuard>
+          <RoleBasedGuard accessibleRoles={['owner', 'co-owner']}>
+            <PresentationHost />
+          </RoleBasedGuard>
+        </AuthGuard>
+      )
     },
     {
       path: '/present-audience/:code',
@@ -230,9 +240,11 @@ export default function Router() {
     {
       path: '/present-audience-group/:code',
       element: (
-        <RoleBasedGuard accessibleRoles={['admin']}>
-          <PresentationGroup />
-        </RoleBasedGuard>
+        <AuthGuard>
+          <RoleBasedGuard accessibleRoles={['owner', 'co-owner', 'member']}>
+            <PresentationGroup />
+          </RoleBasedGuard>
+        </AuthGuard>
       )
     },
     {

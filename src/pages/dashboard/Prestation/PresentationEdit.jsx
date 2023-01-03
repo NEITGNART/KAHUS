@@ -30,6 +30,7 @@ import Iconify from '../../../components/Iconify';
 import { SlideType } from './value/SlideType';
 import { SlideFactory } from './value/SlideFactory';
 import useAuth from '../../../hooks/useAuth';
+import LoadingScreen from '../../../components/LoadingScreen';
 
 const BarSubmitContainer = styled('div')({
   flexGrow: 1,
@@ -133,7 +134,22 @@ export default function PresentationEdit() {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const slideTypeDialogOpen = Boolean(anchorEl);
   const [open, setOpen] = useState(false);
+  const [role, setCurrentRole] = useState('collaborator');
   const { user } = useAuth();
+
+  useEffect(() => {
+    axios
+      .post(`api/presentation/get-role`, {
+        presentationId
+      })
+      .then((res) => {
+        setCurrentRole(res.data.role);
+      })
+      .catch((error) => {
+        enqueueSnackbar(error.message, { variant: 'error' });
+        navigate('/dashboard/presentations', { replace: true });
+      });
+  }, []);
 
   useEffect(() => {
     axios
@@ -153,39 +169,41 @@ export default function PresentationEdit() {
     socket.on('connect', () => {
       socket.emit('join', {
         room: code,
-        slideIndex: 0,
-        userId: user.id
+        slideIndex: 0
       });
     });
 
     return () => {
       socket.off('connect');
-      socket.off('disconnect');
     };
   }, []);
 
   useEffect(() => {
     socket.on('vote', (data) => {
-      console.log('vote', data);
       if (data) {
-        setPresentation((prev) => {
-          const newPresentation = { ...prev };
-          data.numberAnswer.forEach((number, index) => {
-            if (newPresentation.slides[currentSelect]?.options[index]) {
-              newPresentation.slides[currentSelect].options[
-                index
-              ].numberAnswer = number;
-            }
+        const { slideIndex } = data;
+        console.log(presentation.isPresenting);
+        console.log('?');
+        if (presentation?.isPresenting) {
+          setPresentation((prev) => {
+            const newPresentation = { ...prev };
+            data.numberAnswer.forEach((number, index) => {
+              newPresentation.slides[slideIndex].options[index].numberAnswer =
+                number;
+            });
+            return newPresentation;
           });
-          return newPresentation;
-        });
+        }
       }
     });
-
     return () => {
       socket.off('vote');
     };
-  }, []);
+  }, [presentation]);
+
+  if (!presentation) {
+    return <LoadingScreen />;
+  }
 
   const onSave = () => {
     axios
@@ -372,6 +390,33 @@ export default function PresentationEdit() {
     });
   };
 
+  // if is owner then check condition if it's presenting or not
+
+  let renderButton;
+  if (role === 'owner') {
+    if (presentation.isPresenting) {
+      renderButton = (
+        <>
+          <Button onClick={onStopPresent}>Stop Present</Button>
+          <Button onClick={openPresent}>Open Present</Button>
+        </>
+      );
+    } else {
+      renderButton = (
+        <>
+          <Button onClick={onSave}> Save </Button>
+          <Button onClick={onPresent}> Present </Button>
+        </>
+      );
+    }
+  } else if (!presentation.isPresenting) {
+    renderButton = (
+      <>
+        <Button onClick={onSave}> Save </Button>
+      </>
+    );
+  }
+
   return (
     <>
       <DashboardHeader
@@ -486,19 +531,10 @@ export default function PresentationEdit() {
               <Box
                 sx={{ display: 'flex', alignItems: 'center', flexShrink: 0 }}
               >
-                {presentation.isPresenting ? (
-                  <>
-                    <Button onClick={onStopPresent}> Stop Present </Button>
-                    <Button onClick={openPresent}> Open Present </Button>
-                  </>
-                ) : (
-                  <>
-                    <Button onClick={onSave}> Save </Button>
-                    <Button onClick={onPresent}> Present </Button>
-                  </>
-                )}
+                {renderButton}
               </Box>
             </Box>
+
             <Divider />
             <Grid container alignContent="stretch" spacing={2}>
               <Divider orientation="vertical" variant="middle" flexItem />

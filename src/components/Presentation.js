@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import {
   Box,
@@ -31,7 +31,6 @@ import { FormProvider } from './hook-form';
 import RHFMyRadioGroup from './hook-form/RHFMyRadioGroup';
 import { HOST_SK } from '../config';
 import QuestionBoxClient from '../sections/presentation/question/QuestionBoxClient';
-import useAuth from '../hooks/useAuth';
 import { SlideType } from '../pages/dashboard/Prestation/value/SlideType';
 import axios from '../utils/axios';
 
@@ -67,7 +66,7 @@ const options = {
   }
 };
 
-const socket = io(HOST_SK);
+let socket;
 const cacheAnswerId = new Map();
 
 function Presentation() {
@@ -116,6 +115,7 @@ function Presentation() {
   }, [newPresentQuestion]);
 
   useEffect(() => {
+    socket = io(HOST_SK);
     socket.on('connect', () => {
       socket.emit('join', { room: roomCode, slideIndex });
       socket.on('chart', (data) => {
@@ -137,14 +137,6 @@ function Presentation() {
 
       socket.on('slide-change', (data) => {
         if (data) {
-          // console.log('Slide-change event', slideIndex);
-          // setSlideIndex(data.slideIndex);
-          // setQuestion(data.question);
-          // setLabels(data.answer);
-          // setNumberAnswer(data.numberAnswer);
-          // setError(false);
-          // setHelperText('Choose wisely');
-
           if (data.type === SlideType.MULTIPLE_CHOICE) {
             setLabels(data.answer);
             setNumberAnswer(data.numberAnswer);

@@ -1,13 +1,13 @@
 import PropTypes from 'prop-types';
-import { Container, Alert, AlertTitle } from '@mui/material';
-import React, { Suspense, useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
-import { LoadingButton } from '@mui/lab';
+import { Alert, AlertTitle, Container } from '@mui/material';
+import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
+import { useSnackbar } from 'notistack';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import Login from '../pages/auth/Login';
 import useAuth from '../hooks/useAuth';
-import PresentationGroup from '../components/PresentationGroup';
 import LoadingScreen from '../components/LoadingScreen';
+import axios from '../utils/axios';
 
 // ----------------------------------------------------------------------
 
@@ -22,27 +22,35 @@ const useCurrentRole = () => {
 
 export default function RoleBasedGuard({ accessibleRoles, children }) {
   const { isAuthenticated, isInitialized, user } = useAuth();
-  const [displayChart, setDisplayChart] = useState(false);
+  const [render, setRender] = useState(false);
   const [loading, setLoading] = useState(true);
-  const role = useCurrentRole();
+  const { enqueueSnackbar } = useSnackbar();
+  const { code } = useParams();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const code1 = searchParams.get('code');
+  const navigate = useNavigate();
+
+  const validCode = code || code1;
 
   useEffect(() => {
-    const checkRole = async () => {
-      // create promise in 1 seconds
-      const promise = new Promise((resolve, reject) => {
-        setTimeout(() => resolve('done!'), 1000);
+    axios
+      .post(`api/presentation/get-role-by-code`, {
+        code: validCode
+      })
+      .then((response) => {
+        const { role } = response.data;
+        if (accessibleRoles.includes(role)) {
+          setLoading(false);
+          setRender(true);
+        } else {
+          setLoading(false);
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+        enqueueSnackbar(error.message, { variant: 'error' });
+        navigate('/dashboard/presentations', { replace: true });
       });
-      // wait until the promise returns us a value
-      const result = await promise;
-      // "done!"
-      if (accessibleRoles.includes(role)) {
-        setLoading(false);
-        setDisplayChart(true);
-      } else {
-        setLoading(false);
-      }
-    };
-    checkRole();
   }, []);
 
   if (!isInitialized) {
@@ -57,8 +65,8 @@ export default function RoleBasedGuard({ accessibleRoles, children }) {
     return <LoadingScreen />;
   }
 
-  if (displayChart) {
-    return <PresentationGroup />;
+  if (render) {
+    return <>{children}</>;
   }
 
   return (
