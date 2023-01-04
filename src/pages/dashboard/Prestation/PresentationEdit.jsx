@@ -4,6 +4,11 @@ import {
   Button,
   Card,
   Container,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
   Divider,
   Drawer,
   Grid,
@@ -69,11 +74,38 @@ const MyDrawer = styled(Drawer, {
 
 let socket;
 
+const forcePresentation = async (
+  groupId,
+  link,
+  presentationId,
+  presentLink,
+  callbackSuccess
+) => {
+  await axios
+    .post(`api/group/presentation-start-confirm`, {
+      presentationId,
+      groupId,
+      link,
+      presentLink
+    })
+    .then((res) => {
+      if (res.data) {
+        socket.emit('presentation-started', {
+          groupId,
+          message: `Presentation started in group ${res.data.name}, please join!`
+        });
+        callbackSuccess(res.data.code);
+      }
+    });
+};
+
 const presentationStart = async (
   groupId,
   link,
   presentationId,
-  presentLink
+  presentLink,
+  callbackSuccess,
+  callbackFailure
 ) => {
   if (groupId) {
     await axios
@@ -89,7 +121,11 @@ const presentationStart = async (
             groupId,
             message: `Presentation started in group ${res.data.name}, please join!`
           });
+          callbackSuccess();
         }
+      })
+      .catch((error) => {
+        callbackFailure(error.code);
       });
   } else {
     await axios.post(`api/presentation/presentation-start`, {
@@ -241,12 +277,60 @@ export default function PresentationEdit() {
         enqueueSnackbar(error, { variant: 'error' });
       });
   };
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const onConfirmPresent = () => {
+    const presentLink = `${window.location.origin}/present/${
+      presentation.code
+    }?max=${presentation.slides.length || 0}`;
+
+    const cb = (codePresentation) => {
+      socket.emit('overwrite-presentation', {
+        room: `${codePresentation}`
+      });
+      socket.emit('present-start');
+      onSave();
+      window.open(
+        `/present/${presentation.code}?max=${presentation.slides.length || 0}`,
+        '_blank'
+      );
+    };
+
+    forcePresentation(
+      group,
+      presentation.link,
+      presentationId,
+      presentLink,
+      cb
+    );
+    handleClose();
+  };
 
   const openPresent = () => {
     window.open(
       `/present/${presentation.code}?max=${presentation.slides.length || 0}`,
       '_blank'
     );
+  };
+
+  const callbackSuccess = () => {
+    // this one is for realtime update
+    socket.emit('present-start');
+    onSave();
+    window.open(
+      `/present/${presentation.code}?max=${presentation.slides.length || 0}`,
+      '_blank'
+    );
+  };
+
+  const callbackFailure = () => {
+    handleClickOpen();
   };
 
   const onPresent = async () => {
@@ -258,16 +342,9 @@ export default function PresentationEdit() {
       group,
       presentation.link,
       presentationId,
-      presentLink
-    );
-
-    // this one is for realtime update
-    socket.emit('present-start');
-
-    onSave();
-    window.open(
-      `/present/${presentation.code}?max=${presentation.slides.length || 0}`,
-      '_blank'
+      presentLink,
+      callbackSuccess,
+      callbackFailure
     );
   };
 
@@ -452,6 +529,31 @@ export default function PresentationEdit() {
           }
         }}
       />
+
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          This group has another presentation that is being presented
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Are you certain that you wish to present this material? Another
+            presentation will be terminated as a result.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={onConfirmPresent} color="secondary" autoFocus>
+            Confirm
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       {presentation && (
         <Card sx={{ height: { md: '92vh' }, display: { md: 'flex' } }}>
