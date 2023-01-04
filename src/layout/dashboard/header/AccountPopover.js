@@ -3,9 +3,9 @@ import { useState } from 'react';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 // @mui
 import { alpha } from '@mui/material/styles';
-import { Box, Divider, Typography, Stack, MenuItem } from '@mui/material';
+import { Box, Divider, MenuItem, Stack, Typography } from '@mui/material';
 // routes
-import { PATH_DASHBOARD, PATH_AUTH } from '../../../routes/paths';
+import { PATH_AUTH, PATH_DASHBOARD } from '../../../routes/paths';
 // hooks
 import useAuth from '../../../hooks/useAuth';
 import useIsMountedRef from '../../../hooks/useIsMountedRef';
@@ -26,7 +26,15 @@ const MENU_OPTIONS = [
   //   linkTo: PATH_DASHBOARD.user.profile
   // },
   {
-    label: 'Account management',
+    label: 'Classroom',
+    linkTo: PATH_DASHBOARD.general.classroom
+  },
+  {
+    label: 'Presentations',
+    linkTo: PATH_DASHBOARD.presentation.presentations
+  },
+  {
+    label: 'Account settings',
     linkTo: PATH_DASHBOARD.user.account
   }
 ];

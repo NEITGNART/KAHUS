@@ -28,7 +28,6 @@ import { useParams } from 'react-router';
 import { Container, IconButton, Typography } from '@mui/material';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { useSnackbar } from 'notistack';
-import Fab from '@mui/material/Fab';
 import QRCode from 'qrcode.react';
 import { HOST_SK } from '../config';
 import Iconify from './Iconify';
@@ -380,7 +379,14 @@ function PresentationHost() {
         ) : (
           <Heading
             fontSize="50px"
-            textAlign={slideType === SlideType.END ? 'center' : 'left'}
+            textAlign={
+              // eslint-disable-next-line no-nested-ternary
+              slideType === SlideType.END
+                ? 'center'
+                : slideType === SlideType.START
+                ? 'center'
+                : 'left'
+            }
             color="#212B36"
             padding="0px"
             margin="0px"

@@ -1,15 +1,13 @@
-import PropTypes, { string } from 'prop-types';
-import { Link as RouterLink } from 'react-router-dom';
+import PropTypes from 'prop-types';
 // @mui
-import { styled, alpha } from '@mui/material/styles';
+import { alpha, styled } from '@mui/material/styles';
 import {
-  Box,
-  Link,
-  Card,
   Avatar,
-  Typography,
+  Box,
+  Card,
   CardContent,
-  Stack
+  Link,
+  Typography
 } from '@mui/material';
 // routes
 // hooks
@@ -47,10 +45,12 @@ const RootStyle = styled('div')(({ theme }) => ({
 
 ClassCard.propTypes = {
   classInfo: PropTypes.object.isRequired,
-  index: PropTypes.number
+  index: PropTypes.number,
+  filter: PropTypes.string,
+  handleDelete: PropTypes.func
 };
 
-export default function ClassCard({ classInfo, index }) {
+export default function ClassCard({ classInfo, index, filter, handleDelete }) {
   const isDesktop = useResponsive('up', 'md');
   const { id, name, description, owner, avatar, link } = classInfo;
   const linkTo = PATH_DASHBOARD.general.detailClassroom(id);
@@ -109,7 +109,14 @@ export default function ClassCard({ classInfo, index }) {
         </Box>
 
         <ClassContent title={name} owner={owner} linkTo={linkTo} />
-        <ClassItemAction className="showActions" />
+        {filter !== 'attended' && (
+          <ClassItemAction
+            className="showActions"
+            handleDelete={() => {
+              handleDelete(id);
+            }}
+          />
+        )}
       </RootStyle>
     </Card>
   );

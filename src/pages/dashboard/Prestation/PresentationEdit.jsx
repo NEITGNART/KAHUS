@@ -75,7 +75,6 @@ const presentationStart = async (
   presentationId,
   presentLink
 ) => {
-  console.log('start');
   if (groupId) {
     await axios
       .post(`api/group/presentation-start`, {
@@ -173,10 +172,36 @@ export default function PresentationEdit() {
         room: code,
         slideIndex: 0
       });
+
+      socket.on('present-start', () => {
+        console.log('hello');
+        enqueueSnackbar(
+          'The presentation has started, so you cannot edit at this time.',
+          { variant: 'success' }
+        );
+        setPresentation((prev) => {
+          const newPresentation = { ...prev };
+          newPresentation.isPresenting = true;
+          return newPresentation;
+        });
+      });
+      socket.on('present-end', () => {
+        console.log('end');
+        enqueueSnackbar('The presentation has ended, so now you can edit.', {
+          variant: 'success'
+        });
+        setPresentation((prev) => {
+          const newPresentation = { ...prev };
+          newPresentation.isPresenting = false;
+          return newPresentation;
+        });
+      });
     });
 
     return () => {
       socket.off('connect');
+      socket.off('present-start');
+      socket.off('present-end');
     };
   }, []);
 
@@ -196,6 +221,7 @@ export default function PresentationEdit() {
         }
       }
     });
+
     return () => {
       socket.off('vote');
     };
@@ -234,25 +260,20 @@ export default function PresentationEdit() {
       presentationId,
       presentLink
     );
+
+    // this one is for realtime update
+    socket.emit('present-start');
+
     onSave();
     window.open(
       `/present/${presentation.code}?max=${presentation.slides.length || 0}`,
       '_blank'
     );
-    setPresentation((prev) => {
-      const newPresentation = { ...prev };
-      newPresentation.isPresenting = true;
-      return newPresentation;
-    });
   };
 
   const onStopPresent = async () => {
     await presentationStop(group, presentationId);
-    setPresentation((prev) => {
-      const newPresentation = { ...prev };
-      newPresentation.isPresenting = false;
-      return newPresentation;
-    });
+    socket.emit('present-end');
   };
 
   const onChangeQuestion = (slideId, question) => {

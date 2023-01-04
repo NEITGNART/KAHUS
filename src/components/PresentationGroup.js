@@ -20,7 +20,6 @@ import {
   Title,
   Tooltip
 } from 'chart.js';
-import Fab from '@mui/material/Fab';
 import { useSnackbar } from 'notistack';
 
 // eslint-disable-next-line import/no-unresolved
@@ -126,7 +125,7 @@ function PresentationGroup() {
       enqueueSnackbar('Waiting for the owner to start', { variant: 'error' });
       setSlideType(SlideType.START);
       setQuestion('Waiting for the owner to start');
-      setContent('Waiting for the owner to start');
+      setContent('');
     });
 
     socket.on('chart', (data) => {
@@ -326,7 +325,18 @@ function PresentationGroup() {
   return (
     <Deck template={template}>
       <Slide backgroundColor="white" slideNum={1}>
-        <Heading color="#212B36" fontSize="50px" textAlign="left">
+        <Heading
+          color="#212B36"
+          fontSize="50px"
+          textAlign={
+            // eslint-disable-next-line no-nested-ternary
+            slideType === SlideType.END
+              ? 'center'
+              : slideType === SlideType.START
+              ? 'center'
+              : 'left'
+          }
+        >
           {question}
         </Heading>
         <FlexBox>{renderSlide}</FlexBox>
