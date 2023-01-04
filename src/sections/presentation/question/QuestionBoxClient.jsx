@@ -7,9 +7,14 @@ import { _questions } from '../../../_mock';
 
 QuestionBoxClient.propTypes = {
   questions: PropTypes.array,
-  onSendQuestion: PropTypes.func
+  onSendQuestion: PropTypes.func,
+  onVoteButtonClick: PropTypes.func
 };
-export default function QuestionBoxClient({ questions, onSendQuestion }) {
+export default function QuestionBoxClient({
+  questions,
+  onSendQuestion,
+  onVoteButtonClick
+}) {
   const [open, setOpen] = useState(false);
 
   const handleClickOpen = () => {
@@ -22,6 +27,10 @@ export default function QuestionBoxClient({ questions, onSendQuestion }) {
   const handleSendQuestion = (data) => {
     onSendQuestion(data);
     // add question to list
+  };
+
+  const handleVoteButtonClick = (question) => {
+    onVoteButtonClick(question);
   };
 
   return (
@@ -55,6 +64,7 @@ export default function QuestionBoxClient({ questions, onSendQuestion }) {
         <QuestionBoxClientContent
           onSendQuestion={handleSendQuestion}
           questionList={questions}
+          onVoteButtonClick={handleVoteButtonClick}
         />
       </Dialog>
     </>

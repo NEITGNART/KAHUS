@@ -1,12 +1,14 @@
 import { createContext, useEffect, useMemo, useReducer } from 'react';
 import PropTypes from 'prop-types';
 // utils
+import { v4 as uuid } from 'uuid';
 import axios from '../utils/axios';
 import { isValidToken, setSession } from '../utils/jwt';
 
 // ----------------------------------------------------------------------
 
 const initialState = {
+  deviceId: uuid(),
   isAuthenticated: false,
   isInitialized: false,
   user: null

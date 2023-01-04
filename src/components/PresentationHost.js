@@ -28,7 +28,6 @@ import { useParams } from 'react-router';
 import { Container, IconButton, Typography } from '@mui/material';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { useSnackbar } from 'notistack';
-import Fab from '@mui/material/Fab';
 import QRCode from 'qrcode.react';
 import { HOST_SK } from '../config';
 import Iconify from './Iconify';
@@ -37,6 +36,8 @@ import { SlideType } from '../pages/dashboard/Prestation/value/SlideType';
 import ChatBox from '../sections/presentation/chat/ChatBox';
 import { useDispatch } from '../redux/store';
 import { onParticipantJoinChat, onReceiveMessage } from '../redux/slices/chat';
+import QuestionBox from '../sections/presentation/question/QuestionBox';
+import { ComingSoonIllustration } from '../assets';
 
 ChartJS.register(
   CategoryScale,
@@ -87,10 +88,10 @@ function PresentationHost() {
   const [newPresentQuestion, setNewPresentQuestion] = useState();
   const dispatch = useDispatch();
   const [endPresenting, setEndPresenting] = useState(false);
-
   // get query params from url
   const totalSlide = searchParams.get('max') || 0;
   let slideIndex = Number(searchParams.get('slideIndex'));
+  let isPresenting;
   const roomCode = code || '123456';
 
   useEffect(() => {
@@ -113,7 +114,7 @@ function PresentationHost() {
 
       // pause the video after two seconds
       const interval = setInterval(() => {
-        if (video.currentTime >= 1.9) {
+        if (video.currentTime >= 1.8) {
           video.pause();
           clearInterval(interval);
         }
@@ -133,7 +134,16 @@ function PresentationHost() {
     socket.on('connect', () => {
       socket.emit('join', { room: roomCode, slideIndex });
 
+      socket.on('not-start', () => {
+        isPresenting = false;
+        enqueueSnackbar('Waiting for the owner to start', { variant: 'error' });
+        setSlideType(SlideType.START);
+        setQuestion('Waiting for the owner to start');
+        setContent('');
+      });
+
       socket.on('chart', (data) => {
+        isPresenting = true;
         if (data) {
           if (data.type === SlideType.MULTIPLE_CHOICE) {
             setLabels(data.answer);
@@ -233,19 +243,23 @@ function PresentationHost() {
     document.onkeydown = (e) => {
       switch (e.keyCode) {
         case 37:
-          if (slideIndex > 0) slideIndex -= 1;
-          console.log(slideIndex);
-          changeSlide(slideIndex);
+          if (isPresenting) {
+            if (slideIndex > 0) slideIndex -= 1;
+            console.log(slideIndex);
+            changeSlide(slideIndex);
+          }
           break;
         case 39:
           // Need to restrict number of slide by number of slide in deck
           // if reach the end of slide, emit event to end presentation
-          if (slideIndex === totalSlide - 1) {
-            socket.emit('end-presentation');
-            break;
+          if (isPresenting) {
+            if (slideIndex === totalSlide - 1) {
+              socket.emit('end-presentation');
+              break;
+            }
+            if (slideIndex < totalSlide - 1) slideIndex += 1;
+            changeSlide(slideIndex);
           }
-          if (slideIndex < totalSlide - 1) slideIndex += 1;
-          changeSlide(slideIndex);
           break;
         default:
           break;
@@ -283,6 +297,15 @@ function PresentationHost() {
       <Text color="#212B36" fontSize={32}>
         {content}
       </Text>
+    );
+  } else if (slideType === SlideType.START) {
+    renderSlide = (
+      <div>
+        <ComingSoonIllustration sx={{ my: 10, height: 240 }} />
+        <Text color="#212B36" fontSize={32}>
+          {content}
+        </Text>
+      </div>
     );
   } else if (slideType === SlideType.END) {
     renderSlide = (
@@ -358,19 +381,37 @@ function PresentationHost() {
         ) : (
           <Heading
             fontSize="50px"
-            textAlign={slideType === SlideType.END ? 'center' : 'left'}
+            textAlign={
+              // eslint-disable-next-line no-nested-ternary
+              slideType === SlideType.END
+                ? 'center'
+                : slideType === SlideType.START
+                ? 'center'
+                : 'left'
+            }
             color="#212B36"
-            padding={0}
-            margin={0}
+            padding="0px"
+            margin="0px"
           >
             {question}
           </Heading>
         )}
 
         {renderSlide}
-        <Fab sx={{ backgroundColor: 'white' }}>
+        <Box
+          sx={{
+            display: 'contents',
+            position: 'absolute',
+            marginBottom: '10px',
+            backgroundColor: 'white'
+          }}
+        >
+          <QuestionBox
+            questions={presentQuestions}
+            onUpdateQuestion={handleUpdateQuestion}
+          />
           <ChatBox onSendMessageSocket={onSendMessageSocket} />
-        </Fab>
+        </Box>
       </Slide>
     </Deck>
   );

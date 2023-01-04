@@ -3,6 +3,8 @@ import { Container, Grid, Stack } from '@mui/material';
 // routes
 import React, { useEffect, useState } from 'react';
 // hooks
+import { useSnackbar } from 'notistack';
+import { useNavigate } from 'react-router-dom';
 import useSettings from '../../hooks/useSettings';
 // _mock_
 // components
@@ -26,17 +28,21 @@ export default function ClassroomList() {
 
   const [classrooms, setClassrooms] = useState([]);
   const [filters, setFilters] = useState('attended');
-  const fetchMyClasses = async () => {
-    axios
-      .get(`/api/group/group-invited`)
-      .then((response) => {
-        setClassrooms(response.data);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
+  const { enqueueSnackbar } = useSnackbar();
+  const navigate = useNavigate();
+
   useEffect(() => {
+    const fetchMyClasses = async () => {
+      axios
+        .get(`/api/group/group-invited`)
+        .then((response) => {
+          setClassrooms(response.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    };
+
     fetchMyClasses();
   }, []);
 
@@ -65,6 +71,22 @@ export default function ClassroomList() {
       });
   }, [filters, cache]);
 
+  const handleDelete = (id) => {
+    enqueueSnackbar('Class deleted', { variant: 'success' });
+    classrooms.splice(
+      classrooms.findIndex((item) => item.id === id),
+      1
+    );
+    setClassrooms([...classrooms]);
+    axios
+      .post(`/api/group/remove`, {
+        groupId: id
+      })
+      .catch((err) => {
+        navigate('dashboard/classroom/classes', { replace: true });
+      });
+  };
+
   return (
     <Page title="Classes | KAHUS">
       <Container maxWidth={themeStretch ? false : 'lg'}>
@@ -86,7 +108,12 @@ export default function ClassroomList() {
           <Grid container spacing={3}>
             {classrooms?.map((classroom, index) => (
               <Grid key={classroom.id} item xs={12} sm={6} md={4}>
-                <ClassCard classInfo={classroom} indexs={index} />
+                <ClassCard
+                  classInfo={classroom}
+                  indexs={index}
+                  filter={filters}
+                  handleDelete={handleDelete}
+                />
               </Grid>
             ))}
           </Grid>

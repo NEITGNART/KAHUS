@@ -4,6 +4,11 @@ import {
   Button,
   Card,
   Container,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
   Divider,
   Drawer,
   Grid,
@@ -69,15 +74,41 @@ const MyDrawer = styled(Drawer, {
   }
 }));
 
-const socket = io(HOST_SK);
+let socket;
+
+const forcePresentation = async (
+  groupId,
+  link,
+  presentationId,
+  presentLink,
+  callbackSuccess
+) => {
+  await axios
+    .post(`api/group/presentation-start-confirm`, {
+      presentationId,
+      groupId,
+      link,
+      presentLink
+    })
+    .then((res) => {
+      if (res.data) {
+        socket.emit('presentation-started', {
+          groupId,
+          message: `Presentation started in group ${res.data.name}, please join!`
+        });
+        callbackSuccess(res.data.code);
+      }
+    });
+};
 
 const presentationStart = async (
   groupId,
   link,
   presentationId,
-  presentLink
+  presentLink,
+  callbackSuccess,
+  callbackFailure
 ) => {
-  console.log('start');
   if (groupId) {
     await axios
       .post(`api/group/presentation-start`, {
@@ -92,7 +123,11 @@ const presentationStart = async (
             groupId,
             message: `Presentation started in group ${res.data.name}, please join!`
           });
+          callbackSuccess();
         }
+      })
+      .catch((error) => {
+        callbackFailure(error.code);
       });
   } else {
     await axios.post(`api/presentation/presentation-start`, {
@@ -115,6 +150,7 @@ const presentationStop = async (groupId, presentationId) => {
         //     message: `Presentation started in group ${res.data.name}, please join!`
         //   });
         // }
+        socket.emit('presentation-end');
       });
   } else {
     await axios.post(`api/presentation/presentation-stop`, {
@@ -169,15 +205,42 @@ export default function PresentationEdit() {
   }, []);
 
   useEffect(() => {
+    socket = io(HOST_SK);
     socket.on('connect', () => {
       socket.emit('join', {
         room: code,
         slideIndex: 0
       });
+
+      socket.on('present-start', () => {
+        console.log('hello');
+        enqueueSnackbar(
+          'The presentation has started, so you cannot edit at this time.',
+          { variant: 'success' }
+        );
+        setPresentation((prev) => {
+          const newPresentation = { ...prev };
+          newPresentation.isPresenting = true;
+          return newPresentation;
+        });
+      });
+      socket.on('present-end', () => {
+        console.log('end');
+        enqueueSnackbar('The presentation has ended, so now you can edit.', {
+          variant: 'success'
+        });
+        setPresentation((prev) => {
+          const newPresentation = { ...prev };
+          newPresentation.isPresenting = false;
+          return newPresentation;
+        });
+      });
     });
 
     return () => {
       socket.off('connect');
+      socket.off('present-start');
+      socket.off('present-end');
     };
   }, []);
 
@@ -185,8 +248,6 @@ export default function PresentationEdit() {
     socket.on('vote', (data) => {
       if (data) {
         const { slideIndex } = data;
-        console.log(presentation.isPresenting);
-        console.log('?');
         if (presentation?.isPresenting) {
           setPresentation((prev) => {
             const newPresentation = { ...prev };
@@ -199,6 +260,7 @@ export default function PresentationEdit() {
         }
       }
     });
+
     return () => {
       socket.off('vote');
     };
@@ -218,16 +280,60 @@ export default function PresentationEdit() {
         enqueueSnackbar(error, { variant: 'error' });
       });
   };
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const onConfirmPresent = () => {
+    const presentLink = `${window.location.origin}/present/${
+      presentation.code
+    }?max=${presentation.slides.length || 0}`;
+
+    const cb = (codePresentation) => {
+      socket.emit('overwrite-presentation', {
+        room: `${codePresentation}`
+      });
+      socket.emit('present-start');
+      onSave();
+      window.open(
+        `/present/${presentation.code}?max=${presentation.slides.length || 0}`,
+        '_blank'
+      );
+    };
+
+    forcePresentation(
+      group,
+      presentation.link,
+      presentationId,
+      presentLink,
+      cb
+    );
+    handleClose();
+  };
 
   const openPresent = () => {
     window.open(
       `/present/${presentation.code}?max=${presentation.slides.length || 0}`,
       '_blank'
     );
-    if (!group) {
-      console.log('reached');
-      dispatch(setChatPublic());
-    }
+  };
+
+  const callbackSuccess = () => {
+    // this one is for realtime update
+    socket.emit('present-start');
+    onSave();
+    window.open(
+      `/present/${presentation.code}?max=${presentation.slides.length || 0}`,
+      '_blank'
+    );
+  };
+
+  const callbackFailure = () => {
+    handleClickOpen();
   };
 
   const onPresent = async () => {
@@ -238,35 +344,15 @@ export default function PresentationEdit() {
       group,
       presentation.link,
       presentationId,
-      presentLink
+      presentLink,
+      callbackSuccess,
+      callbackFailure
     );
-
-    console.log(group);
-
-    if (!group) {
-      console.log('reached');
-      dispatch(setChatPublic());
-    }
-
-    onSave();
-    window.open(
-      `/present/${presentation.code}?max=${presentation.slides.length || 0}`,
-      '_blank'
-    );
-    setPresentation((prev) => {
-      const newPresentation = { ...prev };
-      newPresentation.isPresenting = true;
-      return newPresentation;
-    });
   };
 
   const onStopPresent = async () => {
     await presentationStop(group, presentationId);
-    setPresentation((prev) => {
-      const newPresentation = { ...prev };
-      newPresentation.isPresenting = false;
-      return newPresentation;
-    });
+    socket.emit('present-end');
   };
 
   const onChangeQuestion = (slideId, question) => {
@@ -445,6 +531,31 @@ export default function PresentationEdit() {
           }
         }}
       />
+
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          This group has another presentation that is being presented
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Are you certain that you wish to present this material? Another
+            presentation will be terminated as a result.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={onConfirmPresent} color="secondary" autoFocus>
+            Confirm
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       {presentation && (
         <Card sx={{ height: { md: '92vh' }, display: { md: 'flex' } }}>

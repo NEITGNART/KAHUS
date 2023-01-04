@@ -10,20 +10,31 @@ QuestionClientItem.propTypes = {
   onVoteButtonClick: PropTypes.func
 };
 export default function QuestionClientItem({ question, onVoteButtonClick }) {
-  const { user } = useAuth();
+  const { user, deviceId } = useAuth();
 
   let author;
   let isMe = false;
+  let email = deviceId;
   if (question && user && question.email && question.email === user.email) {
     author = 'Me';
     isMe = true;
+    email = user.email;
   } else {
     author = question.author ? question.author : 'anonymous';
     isMe = false;
   }
 
+  if (question.email === deviceId) {
+    author = 'Me';
+    isMe = true;
+  }
+
+  const voted = question.userVotes
+    ? question.userVotes.filter((item) => item.email === email).length
+    : false;
+
   const handleVoteButtonClick = () => {
-    onVoteButtonClick();
+    onVoteButtonClick({ question, email });
   };
   return (
     <>
@@ -52,10 +63,15 @@ export default function QuestionClientItem({ question, onVoteButtonClick }) {
             )}
           </div>
           <Stack alignSelf="flex-start" alignItems="center" mr={1}>
-            <Button variant="outlined" onClick={handleVoteButtonClick}>
+            <Button
+              variant={voted ? 'contained' : 'outlined'}
+              onClick={handleVoteButtonClick}
+            >
               <ThumbUpOffAltOutlinedIcon />
             </Button>
-            <Typography>0</Typography>
+            <Typography>
+              {question.userVotes ? question.userVotes.length : 0}
+            </Typography>
           </Stack>
         </Stack>
       </Stack>

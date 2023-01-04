@@ -20,9 +20,6 @@ import {
   Title,
   Tooltip
 } from 'chart.js';
-import { Button, Card, DialogContent, Stack } from '@mui/material';
-import MessageIcon from '@mui/icons-material/Message';
-import Fab from '@mui/material/Fab';
 import { useSnackbar } from 'notistack';
 
 // eslint-disable-next-line import/no-unresolved
@@ -36,11 +33,12 @@ import { HOST_SK } from '../config';
 import useAuth from '../hooks/useAuth';
 import { onParticipantJoinChat, onReceiveMessage } from '../redux/slices/chat';
 
-import { useDispatch, useSelector } from '../redux/store';
+import { useDispatch } from '../redux/store';
 import { SlideType } from '../pages/dashboard/Prestation/value/SlideType';
 import QuestionBoxClient from '../sections/presentation/question/QuestionBoxClient';
 import axios from '../utils/axios';
 import ChatBox from '../sections/presentation/chat/ChatBox';
+import { ComingSoonIllustration } from '../assets';
 
 ChartJS.register(
   CategoryScale,
@@ -106,7 +104,13 @@ function PresentationGroup() {
       if (res.data === undefined || res.data === null) {
         return;
       }
-      setPresentQuestions([...res.data.questions, ...presentQuestions]);
+      setPresentQuestions(
+        [...res.data.questions, ...presentQuestions].sort((a, b) => {
+          const va = a.createdAt ? a.createdAt : 0;
+          const vb = b.createdAt ? b.createdAt : 0;
+          return va - vb;
+        })
+      );
     });
   }, []);
 
@@ -115,6 +119,13 @@ function PresentationGroup() {
 
     socket.on('connect', () => {
       socket.emit('join', { room: roomCode, slideIndex });
+    });
+
+    socket.on('not-start', () => {
+      enqueueSnackbar('Waiting for the owner to start', { variant: 'error' });
+      setSlideType(SlideType.START);
+      setQuestion('Waiting for the owner to start');
+      setContent('');
     });
 
     socket.on('chart', (data) => {
@@ -189,7 +200,13 @@ function PresentationGroup() {
     const filteredPresentQuestions = presentQuestions.filter(
       (presentQuestion) => presentQuestion.id !== newPresentQuestion.id
     );
-    setPresentQuestions([...filteredPresentQuestions, newPresentQuestion]);
+    setPresentQuestions(
+      [...filteredPresentQuestions, newPresentQuestion].sort((a, b) => {
+        const va = a.createdAt ? a.createdAt : 0;
+        const vb = b.createdAt ? b.createdAt : 0;
+        return va - vb;
+      })
+    );
   }, [newPresentQuestion]);
 
   const handleSendQuestion = (data) => {
@@ -253,6 +270,10 @@ function PresentationGroup() {
     formState: { errors, isSubmitting, isSubmitSuccessful }
   } = methods;
 
+  const handleVoteButtonClick = (data) => {
+    socket.emit('vote-question', { ...data });
+  };
+
   let renderSlide;
 
   if (slideType === SlideType.MULTIPLE_CHOICE) {
@@ -288,6 +309,15 @@ function PresentationGroup() {
         {content}
       </Text>
     );
+  } else if (slideType === SlideType.START) {
+    renderSlide = (
+      <div>
+        <ComingSoonIllustration sx={{ my: 10, height: 240 }} />
+        <Text color="#212B36" fontSize={32}>
+          {content}
+        </Text>
+      </div>
+    );
   } else {
     renderSlide = <div>Waiting</div>;
   }
@@ -295,17 +325,36 @@ function PresentationGroup() {
   return (
     <Deck template={template}>
       <Slide backgroundColor="white" slideNum={1}>
-        <Heading color="#212B36">{question}</Heading>
+        <Heading
+          color="#212B36"
+          fontSize="50px"
+          textAlign={
+            // eslint-disable-next-line no-nested-ternary
+            slideType === SlideType.END
+              ? 'center'
+              : slideType === SlideType.START
+              ? 'center'
+              : 'left'
+          }
+        >
+          {question}
+        </Heading>
         <FlexBox>{renderSlide}</FlexBox>
-        <Fab sx={{ backgroundColor: 'white' }}>
-          <ChatBox onSendMessageSocket={onSendMessageSocket} />
-        </Fab>
-        <Fab sx={{ backgroundColor: 'white' }}>
+        <Box
+          sx={{
+            display: 'contents',
+            position: 'absolute',
+            marginBottom: '10px',
+            backgroundColor: 'white'
+          }}
+        >
           <QuestionBoxClient
             onSendQuestion={handleSendQuestion}
             questions={presentQuestions}
+            onVoteButtonClick={handleVoteButtonClick}
           />
-        </Fab>
+          <ChatBox onSendMessageSocket={onSendMessageSocket} />
+        </Box>
       </Slide>
     </Deck>
   );
