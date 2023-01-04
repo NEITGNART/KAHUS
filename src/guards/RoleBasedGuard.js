@@ -47,9 +47,11 @@ export default function RoleBasedGuard({ accessibleRoles, children }) {
         }
       })
       .catch((error) => {
+        setLoading(false);
+        setRender(true);
         console.log(error);
-        enqueueSnackbar(error.message, { variant: 'error' });
-        navigate('/dashboard/presentations', { replace: true });
+        // enqueueSnackbar(error.message, { variant: 'error' });
+        // navigate('/dashboard/presentations', { replace: true });
       });
   }, []);
 

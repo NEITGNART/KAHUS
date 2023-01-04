@@ -43,8 +43,6 @@ export default function ChatMessageItem({
   onOpenLightbox
 }) {
   const { user } = useAuth();
-  console.log(user.id);
-  console.log(message.sender);
   // const sender = conversation.participants.find(
   //   // eslint-disable-next-line no-underscore-dangle
   //   (participant) => participant._id === message.senderId
@@ -55,6 +53,8 @@ export default function ChatMessageItem({
   let senderDetails;
 
   if (user) {
+    console.log(user);
+    console.log(message);
     senderDetails =
       // eslint-disable-next-line no-underscore-dangle
       message.sender.id === user.id

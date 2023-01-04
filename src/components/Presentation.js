@@ -329,6 +329,7 @@ function Presentation() {
             questions={presentQuestions}
             onVoteButtonClick={handleVoteButtonClick}
           />
+          <ChatBox onSendMessageSocket={onSendMessageSocket} />
         </Box>
       </Slide>
     </Deck>

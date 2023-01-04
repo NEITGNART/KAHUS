@@ -47,7 +47,7 @@ export default function ChatMessageInput({ disabled, conversationId, onSend }) {
       if (user) {
         setSender({
           id: user?.id,
-          displayName: sender?.firstName.concat(' ', sender?.lastName),
+          displayName: user?.firstName.concat(' ', user?.lastName),
           avatar: user?.avatar
         });
       } else {
