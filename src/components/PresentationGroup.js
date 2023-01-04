@@ -20,8 +20,6 @@ import {
   Title,
   Tooltip
 } from 'chart.js';
-import { Button, Card, DialogContent, Stack } from '@mui/material';
-import MessageIcon from '@mui/icons-material/Message';
 import Fab from '@mui/material/Fab';
 import { useSnackbar } from 'notistack';
 
@@ -36,11 +34,12 @@ import { HOST_SK } from '../config';
 import useAuth from '../hooks/useAuth';
 import { onParticipantJoinChat, onReceiveMessage } from '../redux/slices/chat';
 
-import { useDispatch, useSelector } from '../redux/store';
+import { useDispatch } from '../redux/store';
 import { SlideType } from '../pages/dashboard/Prestation/value/SlideType';
 import QuestionBoxClient from '../sections/presentation/question/QuestionBoxClient';
 import axios from '../utils/axios';
 import ChatBox from '../sections/presentation/chat/ChatBox';
+import { ComingSoonIllustration } from '../assets';
 
 ChartJS.register(
   CategoryScale,
@@ -121,6 +120,13 @@ function PresentationGroup() {
 
     socket.on('connect', () => {
       socket.emit('join', { room: roomCode, slideIndex });
+    });
+
+    socket.on('not-start', () => {
+      enqueueSnackbar('Waiting for the owner to start', { variant: 'error' });
+      setSlideType(SlideType.START);
+      setQuestion('Waiting for the owner to start');
+      setContent('Waiting for the owner to start');
     });
 
     socket.on('chart', (data) => {
@@ -304,6 +310,15 @@ function PresentationGroup() {
         {content}
       </Text>
     );
+  } else if (slideType === SlideType.START) {
+    renderSlide = (
+      <div>
+        <ComingSoonIllustration sx={{ my: 10, height: 240 }} />
+        <Text color="#212B36" fontSize={32}>
+          {content}
+        </Text>
+      </div>
+    );
   } else {
     renderSlide = <div>Waiting</div>;
   }
@@ -311,7 +326,9 @@ function PresentationGroup() {
   return (
     <Deck template={template}>
       <Slide backgroundColor="white" slideNum={1}>
-        <Heading color="#212B36">{question}</Heading>
+        <Heading color="#212B36" fontSize="50px" textAlign="left">
+          {question}
+        </Heading>
         <FlexBox>{renderSlide}</FlexBox>
         <Box
           sx={{

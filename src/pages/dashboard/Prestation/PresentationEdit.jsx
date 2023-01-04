@@ -67,7 +67,7 @@ const MyDrawer = styled(Drawer, {
   }
 }));
 
-const socket = io(HOST_SK);
+let socket;
 
 const presentationStart = async (
   groupId,
@@ -113,6 +113,7 @@ const presentationStop = async (groupId, presentationId) => {
         //     message: `Presentation started in group ${res.data.name}, please join!`
         //   });
         // }
+        socket.emit('presentation-end');
       });
   } else {
     await axios.post(`api/presentation/presentation-stop`, {
@@ -166,6 +167,7 @@ export default function PresentationEdit() {
   }, []);
 
   useEffect(() => {
+    socket = io(HOST_SK);
     socket.on('connect', () => {
       socket.emit('join', {
         room: code,
@@ -182,8 +184,6 @@ export default function PresentationEdit() {
     socket.on('vote', (data) => {
       if (data) {
         const { slideIndex } = data;
-        console.log(presentation.isPresenting);
-        console.log('?');
         if (presentation?.isPresenting) {
           setPresentation((prev) => {
             const newPresentation = { ...prev };
