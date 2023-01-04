@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 // @mui
 import { styled } from '@mui/material/styles';
 import {
@@ -15,6 +15,8 @@ import uuidv4 from '../../../utils/uuidv4';
 import Iconify from '../../../components/Iconify';
 import EmojiPicker from '../../../components/EmojiPicker';
 import useAuth from '../../../hooks/useAuth';
+import { useDispatch } from '../../../redux/store';
+import { setAnonymousId } from '../../../redux/slices/chat';
 
 // ----------------------------------------------------------------------
 
@@ -37,6 +39,28 @@ ChatMessageInput.propTypes = {
 export default function ChatMessageInput({ disabled, conversationId, onSend }) {
   const [message, setMessage] = useState('');
   const { user } = useAuth();
+  const [sender, setSender] = useState(null);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (sender == null) {
+      if (user) {
+        setSender({
+          id: user?.id,
+          displayName: sender?.firstName.concat(' ', sender?.lastName),
+          avatar: user?.avatar
+        });
+      } else {
+        const id = uuidv4();
+        dispatch(setAnonymousId(id));
+        setSender({
+          id,
+          displayName: 'anonymous'.concat(id),
+          avatar: user?.avatar
+        });
+      }
+    }
+  }, [user]);
 
   const handleKeyUp = (event) => {
     if (event.key === 'Enter') {
@@ -54,9 +78,10 @@ export default function ChatMessageInput({ disabled, conversationId, onSend }) {
         messageId: uuidv4(),
         message,
         contentType: 'text',
-        createdAt: new Date(),
-        senderId: user.id
+        createdAt: Date.now(),
+        sender
       });
+      console.log(sender);
     }
     return setMessage('');
   };

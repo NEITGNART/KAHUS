@@ -21,7 +21,9 @@ const initialState = {
   conversation: null,
   activeConversationId: null,
   participants: [],
-  isInChatBox: false
+  isInChatBox: false,
+  isPublic: false,
+  anonymousId: null
 };
 
 const slice = createSlice({
@@ -63,7 +65,7 @@ const slice = createSlice({
         contentType,
         attachments,
         createdAt,
-        senderId
+        sender
       } = conversation;
 
       const newMessage = {
@@ -72,7 +74,7 @@ const slice = createSlice({
         contentType,
         attachments,
         createdAt,
-        senderId
+        sender
       };
 
       state.conversation.messages.push(newMessage);
@@ -108,17 +110,25 @@ const slice = createSlice({
       }
     },
 
+    // CHAT GROUP OR CHAT PUBLIC
+    setAnonymousId(state, action) {
+      state.anonymousId = action.payload;
+    },
+
+    // CHAT GROUP OR CHAT PUBLIC
+    setChatPublic(state) {
+      state.isPublic = true;
+    },
+
     // RESET ACTIVE CONVERSATION
     resetActiveConversation(state) {
       state.activeConversationId = null;
     },
 
     setInChatBox(state) {
-      console.log('hahaha');
       state.isInChatBox = true;
     },
     setOutChatBox(state) {
-      console.log('hihihi');
       state.isInChatBox = false;
     }
   }
@@ -134,7 +144,9 @@ export const {
   resetActiveConversation,
   onParticipantJoinChat,
   setInChatBox,
-  setOutChatBox
+  setOutChatBox,
+  setChatPublic,
+  setAnonymousId
 } = slice.actions;
 
 // ----------------------------------------------------------------------

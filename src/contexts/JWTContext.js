@@ -73,7 +73,6 @@ function AuthProvider({ children }) {
             }
           });
         } else {
-          console.log('____________________________');
           dispatch({
             type: 'INITIALIZE',
             payload: {

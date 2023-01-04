@@ -4,11 +4,11 @@ import { useState } from 'react';
 import {
   Avatar,
   Checkbox,
-  TableRow,
-  TableCell,
-  Typography,
   MenuItem,
-  TextField
+  TableCell,
+  TableRow,
+  TextField,
+  Typography
 } from '@mui/material';
 // components
 import Iconify from '../../../../components/Iconify';
@@ -27,7 +27,8 @@ MemberTableRow.propTypes = {
   selected: PropTypes.bool,
   onEditRow: PropTypes.func,
   onSelectRow: PropTypes.func,
-  onDeleteRow: PropTypes.func
+  onDeleteRow: PropTypes.func,
+  myRole: PropTypes.string
 };
 
 export default function MemberTableRow({
@@ -36,11 +37,12 @@ export default function MemberTableRow({
   selected,
   onEditRow,
   onSelectRow,
-  onDeleteRow
+  onDeleteRow,
+  myRole
 }) {
   // const theme = useTheme();
 
-  const { firstName, lastName, avatar } = row;
+  const { firstName, lastName, avatar, email } = row;
 
   const [role, setRole] = useState(row.role);
 
@@ -75,6 +77,14 @@ export default function MemberTableRow({
           {`${firstName} ${lastName}`}
         </Typography>
       </TableCell>
+
+      {myRole === 'owner' && (
+        <TableCell align="left">
+          <Typography variant="subtitle2" noWrap>
+            {`${email}`}
+          </Typography>
+        </TableCell>
+      )}
 
       <TableCell align="left" sx={{ textTransform: 'capitalize' }}>
         {currentAccountRole === 'member' ||

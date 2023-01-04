@@ -75,7 +75,7 @@ export default function ChatWindow({ onSendMessageSocket }) {
         contentType,
         attachments,
         createdAt,
-        senderId
+        sender
       } = value;
 
       const newMessage = {
@@ -84,7 +84,7 @@ export default function ChatWindow({ onSendMessageSocket }) {
         contentType,
         attachments,
         createdAt,
-        senderId
+        sender
       };
 
       onSendMessageSocket({

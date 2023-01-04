@@ -60,6 +60,13 @@ const TABLE_HEAD = [
   { id: '' }
 ];
 
+const TABLE_HEAD_OWNER = [
+  { id: 'name', label: 'Name', align: 'left' },
+  { id: 'email', label: 'Email', align: 'left' },
+  { id: 'role', label: 'Role', align: 'left' },
+  { id: '' }
+];
+
 MemberList.propTypes = {
   classId: PropTypes.string,
   className: PropTypes.string
@@ -278,7 +285,9 @@ export default function MemberList({ classId, className }) {
                 <TableHeadCustom
                   order={order}
                   orderBy={orderBy}
-                  headLabel={TABLE_HEAD}
+                  headLabel={
+                    currentRole === 'owner' ? TABLE_HEAD_OWNER : TABLE_HEAD
+                  }
                   rowCount={tableData.length}
                   numSelected={selected.length}
                   onSort={onSort}
@@ -305,6 +314,7 @@ export default function MemberList({ classId, className }) {
                           onEditRow={(newRole, setRole) =>
                             handleEditRole(row.email, newRole, setRole)
                           }
+                          myRole={currentRole}
                         />
                       );
                     })}

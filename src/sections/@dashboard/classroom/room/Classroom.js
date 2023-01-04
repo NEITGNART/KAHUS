@@ -6,8 +6,6 @@ import ClassroomAbout from './ClassroomAbout';
 import ClassroomLink from './ClassroomLink';
 import PostCard from './PostCard';
 import PostInput from './PostInput';
-import ProfileSocialInfo from './ProfileSocialInfo';
-import Iconify from '../../../../components/Iconify';
 import ClassroomLinkAlert from './ClassroomLinkAlert';
 
 // ----------------------------------------------------------------------
@@ -18,6 +16,9 @@ Classroom.propTypes = {
 };
 
 export default function Classroom({ classInfo, posts }) {
+  const isDisplayPresentLink =
+    classInfo.role === 'co-owner' || classInfo.role === 'owner';
+
   return (
     <Grid container spacing={3}>
       <Grid item xs={12} md={4}>
@@ -25,7 +26,11 @@ export default function Classroom({ classInfo, posts }) {
           <Stack spacing={3}>
             <ClassroomLinkAlert
               title="Important notice"
-              linkUrl={classInfo.notification}
+              linkUrl={
+                isDisplayPresentLink
+                  ? classInfo.presentLink
+                  : classInfo.notification
+              }
               description="The presentation has been started. Please join the presentation using the link below."
             />
           </Stack>

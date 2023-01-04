@@ -5,6 +5,7 @@ import Scrollbar from '../../../components/Scrollbar';
 import LightboxModal from '../../../components/LightboxModal';
 import ChatMessageItem from './ChatMessageItem';
 import useAuth from '../../../hooks/useAuth';
+import { useSelector } from '../../../redux/store';
 
 // ----------------------------------------------------------------------
 
@@ -28,10 +29,7 @@ export default function ChatMessageList({ conversation }) {
   // const numberRolling2 = conversation.messages.length - numberRolling1 * 7;
   // let messageContent = conversation.messages.slice(numberRolling1 * 7);
   // console.log(messageContent);
-  useEffect(() => {
-    setMessageContent(conversation.messages.slice(0));
-  }, []);
-
+  const { isPublic } = useSelector((state) => state.chat);
   useEffect(() => {
     const scrollMessagesToBottom = () => {
       if (scrollRef.current) {
@@ -78,7 +76,7 @@ export default function ChatMessageList({ conversation }) {
         scrollableNodeProps={{ ref: scrollRef }}
         sx={{ p: 3, height: 1 }}
       >
-        {messageContent.map((message) => (
+        {conversation.messages.map((message) => (
           <ChatMessageItem
             key={message.id}
             message={message}

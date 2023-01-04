@@ -6,6 +6,7 @@ import { Avatar, Box, Typography } from '@mui/material';
 // components
 import Image from '../../../components/Image';
 import useAuth from '../../../hooks/useAuth';
+import { useSelector } from '../../../redux/store';
 
 // ----------------------------------------------------------------------
 
@@ -42,20 +43,36 @@ export default function ChatMessageItem({
   onOpenLightbox
 }) {
   const { user } = useAuth();
-  const sender = conversation.participants.find(
-    // eslint-disable-next-line no-underscore-dangle
-    (participant) => participant._id === message.senderId
-  );
+  console.log(user.id);
+  console.log(message.sender);
+  // const sender = conversation.participants.find(
+  //   // eslint-disable-next-line no-underscore-dangle
+  //   (participant) => participant._id === message.senderId
+  // );
   // eslint-disable-next-line no-underscore-dangle
+  const { anonymousId } = useSelector((state) => state.chat);
 
-  const senderDetails =
-    // eslint-disable-next-line no-underscore-dangle
-    message.senderId === user.id
-      ? { type: 'me' }
-      : {
-          avatar: sender?.avatar,
-          name: sender?.firstName.concat(' ', sender?.lastName)
-        };
+  let senderDetails;
+
+  if (user) {
+    senderDetails =
+      // eslint-disable-next-line no-underscore-dangle
+      message.sender.id === user.id
+        ? { type: 'me' }
+        : {
+            avatar: message.sender.avatar,
+            name: message.sender.displayName
+          };
+  } else {
+    senderDetails =
+      // eslint-disable-next-line no-underscore-dangle
+      message.sender.id === anonymousId
+        ? { type: 'me' }
+        : {
+            avatar: message.sender.avatar,
+            name: message.sender.displayName
+          };
+  }
 
   const isMe = senderDetails.type === 'me';
   const isImage = message.contentType === 'image';

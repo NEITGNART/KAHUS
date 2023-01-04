@@ -94,16 +94,6 @@ export default function PresentationTableRow({
             <>
               <MenuItem
                 onClick={() => {
-                  onDeleteRow();
-                  handleCloseMenu();
-                }}
-                sx={{ color: 'error.main' }}
-              >
-                <Iconify icon="eva:trash-2-outline" />
-                Delete
-              </MenuItem>
-              <MenuItem
-                onClick={() => {
                   onEditRow();
                   handleCloseMenu();
                 }}
@@ -111,38 +101,50 @@ export default function PresentationTableRow({
                 <Iconify icon="eva:edit-fill" />
                 Rename
               </MenuItem>
-
               {role === 'owner' && (
-                <MenuItem
-                  onClick={() => {
-                    onShareRow();
-                    handleCloseMenu();
-                  }}
-                >
-                  <Iconify icon="material-symbols:share-outline" />
-                  Share in group
-                </MenuItem>
+                <>
+                  <MenuItem
+                    onClick={() => {
+                      onShareRow();
+                      handleCloseMenu();
+                    }}
+                  >
+                    <Iconify icon="material-symbols:share-outline" />
+                    Share in group
+                  </MenuItem>
+
+                  <MenuItem
+                    onClick={() => {
+                      onInviteRow();
+                      handleCloseMenu();
+                    }}
+                  >
+                    <Iconify icon="wpf:collaborator" />
+                    Manage Collaborator
+                  </MenuItem>
+
+                  <MenuItem
+                    onClick={() => {
+                      onDuplicateRow();
+                      handleCloseMenu();
+                    }}
+                  >
+                    <Iconify icon="fad:duplicate" />
+                    Duplicate
+                  </MenuItem>
+
+                  <MenuItem
+                    onClick={() => {
+                      onDeleteRow();
+                      handleCloseMenu();
+                    }}
+                    sx={{ color: 'error.main' }}
+                  >
+                    <Iconify icon="eva:trash-2-outline" />
+                    Delete
+                  </MenuItem>
+                </>
               )}
-
-              <MenuItem
-                onClick={() => {
-                  onInviteRow();
-                  handleCloseMenu();
-                }}
-              >
-                <Iconify icon="wpf:collaborator" />
-                Manage Collaborator
-              </MenuItem>
-
-              <MenuItem
-                onClick={() => {
-                  onDuplicateRow();
-                  handleCloseMenu();
-                }}
-              >
-                <Iconify icon="fad:duplicate" />
-                Duplicate
-              </MenuItem>
             </>
           }
         />
