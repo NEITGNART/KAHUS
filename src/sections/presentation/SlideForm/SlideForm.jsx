@@ -110,7 +110,11 @@ export default function SlideForm({
               />
             ))}
           </Scrollbar>
-          <Button onClick={onAddButtonClick} variant="contained">
+          <Button
+            onClick={onAddButtonClick}
+            style={{ width: '100%' }}
+            variant="contained"
+          >
             <AddIcon /> Add option
           </Button>
         </Box>
