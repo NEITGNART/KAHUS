@@ -29,7 +29,6 @@ export default function ChatMessageList({ conversation }) {
   // const numberRolling2 = conversation.messages.length - numberRolling1 * 7;
   // let messageContent = conversation.messages.slice(numberRolling1 * 7);
   // console.log(messageContent);
-  const { isPublic } = useSelector((state) => state.chat);
   useEffect(() => {
     const scrollMessagesToBottom = () => {
       if (scrollRef.current) {
