@@ -22,6 +22,7 @@ import PresentationGroup from '../components/PresentationGroup';
 import RoleBasedGuard from '../guards/RoleBasedGuard';
 import GlobalAlert from '../layout/dashboard/GlobalAlert';
 import RoleBasedGuardClassPage from '../guards/RoleBasedGuardClassPage';
+import RoleBasedGuardGroup from '../guards/RoleBasedGuardGroup';
 // ----------------------------------------------------------------------
 
 const Loadable = (Component) =>
@@ -227,9 +228,9 @@ export default function Router() {
       path: '/present/:code',
       element: (
         <AuthGuard>
-          <RoleBasedGuard accessibleRoles={['owner', 'co-owner']}>
+          <RoleBasedGuardGroup accessibleRoles={['owner', 'co-owner']}>
             <PresentationHost />
-          </RoleBasedGuard>
+          </RoleBasedGuardGroup>
         </AuthGuard>
       )
     },
@@ -241,9 +242,11 @@ export default function Router() {
       path: '/present-audience-group/:code',
       element: (
         <AuthGuard>
-          <RoleBasedGuard accessibleRoles={['owner', 'co-owner', 'member']}>
+          <RoleBasedGuardGroup
+            accessibleRoles={['owner', 'co-owner', 'member']}
+          >
             <PresentationGroup />
-          </RoleBasedGuard>
+          </RoleBasedGuardGroup>
         </AuthGuard>
       )
     },

@@ -36,7 +36,6 @@ import { SlideType } from './value/SlideType';
 import { SlideFactory } from './value/SlideFactory';
 import useAuth from '../../../hooks/useAuth';
 import LoadingScreen from '../../../components/LoadingScreen';
-import { setChatPublic } from '../../../redux/slices/chat';
 import { useDispatch } from '../../../redux/store';
 
 const BarSubmitContainer = styled('div')({
@@ -103,9 +102,9 @@ const forcePresentation = async (
 
 const presentationStart = async (
   groupId,
-  link,
+  memberLink,
   presentationId,
-  presentLink,
+  hostLink,
   callbackSuccess,
   callbackFailure
 ) => {
@@ -114,8 +113,8 @@ const presentationStart = async (
       .post(`api/group/presentation-start`, {
         presentationId,
         groupId,
-        link,
-        presentLink
+        link: memberLink,
+        presentLink: hostLink
       })
       .then((res) => {
         if (res.data) {
@@ -133,6 +132,7 @@ const presentationStart = async (
     await axios.post(`api/presentation/presentation-start`, {
       presentationId
     });
+    callbackSuccess();
   }
 };
 
@@ -156,6 +156,7 @@ const presentationStop = async (groupId, presentationId) => {
     await axios.post(`api/presentation/presentation-stop`, {
       presentationId
     });
+    socket.emit('presentation-end');
   }
 };
 
@@ -288,10 +289,19 @@ export default function PresentationEdit() {
     setOpen(false);
   };
 
+  function presentLink() {
+    if (group) {
+      return `${window.location.origin}/present/${presentation.code}?max=${
+        presentation.slides.length || 0
+      }&groupId=${group}`;
+    }
+    return `${window.location.origin}/present/${presentation.code}?max=${
+      presentation.slides.length || 0
+    }`;
+  }
+
   const onConfirmPresent = () => {
-    const presentLink = `${window.location.origin}/present/${
-      presentation.code
-    }?max=${presentation.slides.length || 0}`;
+    const link = presentLink();
 
     const cb = (codePresentation) => {
       socket.emit('overwrite-presentation', {
@@ -299,37 +309,38 @@ export default function PresentationEdit() {
       });
       socket.emit('present-start');
       onSave();
+      openNewWindow();
+    };
+
+    forcePresentation(group, presentation.link, presentationId, link, cb);
+    handleClose();
+  };
+
+  function openNewWindow() {
+    if (group) {
+      window.open(
+        `/present/${presentation.code}?max=${
+          presentation.slides.length || 0
+        }&groupId=${group}`,
+        '_blank'
+      );
+    } else {
       window.open(
         `/present/${presentation.code}?max=${presentation.slides.length || 0}`,
         '_blank'
       );
-    };
-
-    forcePresentation(
-      group,
-      presentation.link,
-      presentationId,
-      presentLink,
-      cb
-    );
-    handleClose();
-  };
+    }
+  }
 
   const openPresent = () => {
-    window.open(
-      `/present/${presentation.code}?max=${presentation.slides.length || 0}`,
-      '_blank'
-    );
+    openNewWindow();
   };
 
   const callbackSuccess = () => {
     // this one is for realtime update
     socket.emit('present-start');
     onSave();
-    window.open(
-      `/present/${presentation.code}?max=${presentation.slides.length || 0}`,
-      '_blank'
-    );
+    openNewWindow();
   };
 
   const callbackFailure = () => {
@@ -337,14 +348,12 @@ export default function PresentationEdit() {
   };
 
   const onPresent = async () => {
-    const presentLink = `${window.location.origin}/present/${
-      presentation.code
-    }?max=${presentation.slides.length || 0}`;
+    const hostLink = presentLink();
     await presentationStart(
       group,
       presentation.link,
       presentationId,
-      presentLink,
+      hostLink,
       callbackSuccess,
       callbackFailure
     );
