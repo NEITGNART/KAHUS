@@ -38,6 +38,8 @@ import useAuth from '../../../hooks/useAuth';
 import LoadingScreen from '../../../components/LoadingScreen';
 import { useDispatch } from '../../../redux/store';
 import QuestionBox from '../../../sections/presentation/question/QuestionBox';
+import { getConversation, onReceiveMessage } from '../../../redux/slices/chat';
+import ChatBox from '../../../sections/presentation/chat/ChatBox';
 
 const BarSubmitContainer = styled('div')({
   flexGrow: 1,
@@ -181,6 +183,18 @@ export default function PresentationEdit() {
   const [newPresentQuestion, setNewPresentQuestion] = useState();
 
   useEffect(() => {
+    const getDetails = async () => {
+      // dispatch(getParticipants(code));
+      try {
+        await dispatch(getConversation(code));
+      } catch (e) {
+        console.error(e);
+      }
+    };
+    getDetails();
+  }, [code]);
+
+  useEffect(() => {
     axios
       .post(`api/presentation/get-role`, {
         presentationId
@@ -249,6 +263,12 @@ export default function PresentationEdit() {
       socket.on('question', (data) => {
         setNewPresentQuestion(data);
       });
+      socket.on('receiveMsg', (data) => {
+        if (data) {
+          enqueueSnackbar('There is new message', { variant: 'info' });
+          dispatch(onReceiveMessage(data));
+        }
+      });
     });
 
     return () => {
@@ -256,6 +276,7 @@ export default function PresentationEdit() {
       socket.off('present-start');
       socket.off('present-end');
       socket.off('question');
+      socket.off('receiveMsg');
     };
   }, []);
 
@@ -406,6 +427,10 @@ export default function PresentationEdit() {
       newPresentation.slides = newState;
       return newPresentation;
     });
+  };
+
+  const onSendMessageSocket = (data) => {
+    socket.emit('sendMsg', data);
   };
 
   const onChangeContent = (slideId, content) => {
@@ -695,6 +720,7 @@ export default function PresentationEdit() {
                 questions={presentQuestions}
                 onUpdateQuestion={handleUpdateQuestion}
               />
+              <ChatBox onSendMessageSocket={onSendMessageSocket} />
               <Box
                 sx={{ display: 'flex', alignItems: 'center', flexShrink: 0 }}
               >

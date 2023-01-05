@@ -101,7 +101,7 @@ function PresentationHost() {
 
   useEffect(() => {
     const getDetails = async () => {
-      dispatch(getParticipants(code));
+      // dispatch(getParticipants(code));
       try {
         await dispatch(getConversation(code));
       } catch (error) {
