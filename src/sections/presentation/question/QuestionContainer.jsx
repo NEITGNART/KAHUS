@@ -182,10 +182,12 @@ export default function QuestionContainer({ questions, onUpdateQuestion }) {
               width: '100%',
               minWidth: 200,
               height: '100%',
+              maxHeight: '500px',
               bgcolor: 'background.paper',
               boxShadow: 6,
               borderRadius: 5,
-              marginRight: 10
+              marginRight: 10,
+              overflow: 'auto'
             }}
             component="nav"
             aria-labelledby="nested-list-subheader"
@@ -236,7 +238,7 @@ export default function QuestionContainer({ questions, onUpdateQuestion }) {
                           variant="body2"
                           color="text.primary"
                         >
-                          {`asked by ${q.author}`}
+                          {`asked by ${q.author ? q.author : 'anonymous'}`}
                         </Typography>
                         {` - ${moment(q.createdAt).calendar()}`}
                       </>
