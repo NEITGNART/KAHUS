@@ -11,16 +11,12 @@ import axios from '../utils/axios';
 
 // ----------------------------------------------------------------------
 
-RoleBasedGuard.propTypes = {
+RoleBasedGuardGroup.propTypes = {
   accessibleRoles: PropTypes.array, // Example ['admin', 'leader']
   children: PropTypes.node
 };
 
-const useCurrentRole = () => {
-  return 'admin';
-};
-
-export default function RoleBasedGuard({ accessibleRoles, children }) {
+export default function RoleBasedGuardGroup({ accessibleRoles, children }) {
   const { isAuthenticated, isInitialized, user } = useAuth();
   const [render, setRender] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -32,26 +28,52 @@ export default function RoleBasedGuard({ accessibleRoles, children }) {
 
   const validCode = code || code1;
 
+  const groupId = searchParams.get('groupId');
+
   useEffect(() => {
-    axios
-      .post(`api/presentation/get-role-by-code`, {
-        code: validCode
-      })
-      .then((response) => {
-        const { role } = response.data;
-        if (accessibleRoles.includes(role)) {
-          setLoading(false);
-          setRender(true);
-        } else {
-          setLoading(false);
-        }
-      })
-      .catch((error) => {
-        console.log(error);
-        enqueueSnackbar(error.message, { variant: 'error' });
-        navigate('/dashboard/presentations', { replace: true });
-      });
-  }, []);
+    if (!user.email) return;
+    if (groupId) {
+      axios
+        .post(`api/group/get-role`, {
+          groupId,
+          email: user.email
+        })
+        .then((response) => {
+          const { role } = response.data;
+          console.log(role);
+          if (accessibleRoles.includes(role)) {
+            setLoading(false);
+            setRender(true);
+          } else {
+            setLoading(false);
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+          enqueueSnackbar(error.message, { variant: 'error' });
+          navigate('/dashboard/presentations', { replace: true });
+        });
+    } else {
+      axios
+        .post(`api/presentation/get-role-by-code`, {
+          code: validCode
+        })
+        .then((response) => {
+          const { role } = response.data;
+          if (accessibleRoles.includes(role)) {
+            setLoading(false);
+            setRender(true);
+          } else {
+            setLoading(false);
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+          enqueueSnackbar(error.message, { variant: 'error' });
+          navigate('/dashboard/presentations', { replace: true });
+        });
+    }
+  }, [user]);
 
   if (!isInitialized) {
     return <LoadingScreen />;
