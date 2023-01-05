@@ -38,7 +38,7 @@ ChatMessageInput.propTypes = {
 
 export default function ChatMessageInput({ disabled, conversationId, onSend }) {
   const [message, setMessage] = useState('');
-  const { user } = useAuth();
+  const { user, deviceId } = useAuth();
   const [sender, setSender] = useState(null);
   const dispatch = useDispatch();
 
@@ -51,7 +51,7 @@ export default function ChatMessageInput({ disabled, conversationId, onSend }) {
           avatar: user?.avatar
         });
       } else {
-        const id = uuidv4();
+        const id = deviceId;
         dispatch(setAnonymousId(id));
         setSender({
           id,

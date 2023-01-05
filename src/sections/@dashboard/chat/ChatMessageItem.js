@@ -42,7 +42,7 @@ export default function ChatMessageItem({
   conversation,
   onOpenLightbox
 }) {
-  const { user } = useAuth();
+  const { user, deviceId } = useAuth();
   // const sender = conversation.participants.find(
   //   // eslint-disable-next-line no-underscore-dangle
   //   (participant) => participant._id === message.senderId
@@ -66,7 +66,7 @@ export default function ChatMessageItem({
   } else {
     senderDetails =
       // eslint-disable-next-line no-underscore-dangle
-      message.sender.id === anonymousId
+      message.sender.id === deviceId
         ? { type: 'me' }
         : {
             avatar: message.sender.avatar,
