@@ -112,8 +112,6 @@ export default function SlideReport({ slide, link }) {
         </CopyToClipboard>
       </Typography>
       {renderSlide}
-      <QuestionBox />
-      <QuestionBoxClient />
     </Container>
   );
 }

@@ -37,6 +37,7 @@ import { SlideFactory } from './value/SlideFactory';
 import useAuth from '../../../hooks/useAuth';
 import LoadingScreen from '../../../components/LoadingScreen';
 import { useDispatch } from '../../../redux/store';
+import QuestionBox from '../../../sections/presentation/question/QuestionBox';
 
 const BarSubmitContainer = styled('div')({
   flexGrow: 1,
@@ -176,6 +177,8 @@ export default function PresentationEdit() {
   const [role, setCurrentRole] = useState('collaborator');
   const { user } = useAuth();
   const dispatch = useDispatch();
+  const [presentQuestions, setPresentQuestions] = useState([]);
+  const [newPresentQuestion, setNewPresentQuestion] = useState();
 
   useEffect(() => {
     axios
@@ -189,6 +192,13 @@ export default function PresentationEdit() {
         enqueueSnackbar(error.message, { variant: 'error' });
         navigate('/dashboard/presentations', { replace: true });
       });
+    axios.get(`api/presentation/code/${code}`).then((res) => {
+      console.log(res.data);
+      if (res.data === undefined || res.data === null) {
+        return;
+      }
+      setPresentQuestions([...res.data.questions, ...presentQuestions]);
+    });
   }, []);
 
   useEffect(() => {
@@ -236,14 +246,29 @@ export default function PresentationEdit() {
           return newPresentation;
         });
       });
+      socket.on('question', (data) => {
+        setNewPresentQuestion(data);
+      });
     });
 
     return () => {
       socket.off('connect');
       socket.off('present-start');
       socket.off('present-end');
+      socket.off('question');
     };
   }, []);
+
+  useEffect(() => {
+    socket.emit('question');
+  }, [presentQuestions]);
+
+  useEffect(() => {
+    const filteredPresentQuestions = presentQuestions.filter(
+      (presentQuestion) => presentQuestion.id !== newPresentQuestion.id
+    );
+    setPresentQuestions([...filteredPresentQuestions, newPresentQuestion]);
+  }, [newPresentQuestion]);
 
   useEffect(() => {
     socket.on('vote', (data) => {
@@ -270,6 +295,10 @@ export default function PresentationEdit() {
   if (!presentation) {
     return <LoadingScreen />;
   }
+
+  const handleUpdateQuestion = (data) => {
+    socket.emit('update-question', data);
+  };
 
   const onSave = () => {
     axios
@@ -662,6 +691,10 @@ export default function PresentationEdit() {
             <Box sx={{ p: 1, display: 'flex' }}>
               <Typography> {presentation.title}</Typography>
               <Box sx={{ flexGrow: 1 }} />
+              <QuestionBox
+                questions={presentQuestions}
+                onUpdateQuestion={handleUpdateQuestion}
+              />
               <Box
                 sx={{ display: 'flex', alignItems: 'center', flexShrink: 0 }}
               >

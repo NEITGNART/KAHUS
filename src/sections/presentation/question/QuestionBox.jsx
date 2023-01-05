@@ -13,15 +13,6 @@ import QuestionContainer from './QuestionContainer';
 import { _questions } from '../../../_mock';
 import socket from '../../../utils/socket';
 
-const QuestionDialog = styled(Dialog)(({ theme }) => ({
-  '& .MuiDialogContent-root': {
-    // padding: theme.spacing(2)
-  },
-  '& .MuiDialogActions-root': {
-    // padding: theme.spacing(1)
-  }
-}));
-
 QuestionDialogTitle.propTypes = {
   onClose: PropTypes.func,
   children: PropTypes.node
@@ -84,10 +75,11 @@ export default function QuestionBox({ questions, onUpdateQuestion }) {
       >
         <Iconify icon="mdi:message-question-outline" />
       </IconButton>
-      <QuestionDialog
+      <Dialog
         open={open}
         onClose={handleClose}
         aria-labelledby="question-dialog-title"
+        maxWidth="xl"
       >
         <QuestionDialogTitle id="question-dialog-title" onClose={handleClose} />
         <DialogContent
@@ -101,7 +93,7 @@ export default function QuestionBox({ questions, onUpdateQuestion }) {
             onUpdateQuestion={handleUpdateQuestion}
           />
         </DialogContent>
-      </QuestionDialog>
+      </Dialog>
     </>
   );
 }
