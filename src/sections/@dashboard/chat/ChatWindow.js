@@ -44,27 +44,8 @@ ChatWindow.propTypes = {
 export default function ChatWindow({ onSendMessageSocket }) {
   const dispatch = useDispatch();
   const { pathname } = useLocation();
-  const { code } = useParams();
-  const { activeConversationId, isInChatBox } = useSelector(
-    (state) => state.chat
-  );
+  const { activeConversationId } = useSelector((state) => state.chat);
   const conversation = useSelector((state) => conversationSelector(state));
-
-  useEffect(() => {
-    const getDetails = async () => {
-      dispatch(getParticipants(code));
-      try {
-        await dispatch(getConversation(code));
-      } catch (error) {
-        console.error(error);
-      }
-    };
-    if (code) {
-      getDetails();
-    } else if (activeConversationId) {
-      dispatch(resetActiveConversation());
-    }
-  }, [code]);
 
   const handleSendMessage = async (value) => {
     try {

@@ -53,8 +53,6 @@ export default function ChatMessageItem({
   let senderDetails;
 
   if (user) {
-    console.log(user);
-    console.log(message);
     senderDetails =
       // eslint-disable-next-line no-underscore-dangle
       message.sender.id === user.id

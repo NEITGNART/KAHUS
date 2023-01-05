@@ -34,7 +34,12 @@ import { HOST_SK } from '../config';
 import QuestionBoxClient from '../sections/presentation/question/QuestionBoxClient';
 import { SlideType } from '../pages/dashboard/Prestation/value/SlideType';
 import axios from '../utils/axios';
-import { onParticipantJoinChat, onReceiveMessage } from '../redux/slices/chat';
+import {
+  getConversation,
+  getParticipants,
+  onParticipantJoinChat,
+  onReceiveMessage
+} from '../redux/slices/chat';
 import { useDispatch } from '../redux/store';
 import ChatBox from '../sections/presentation/chat/ChatBox';
 
@@ -94,6 +99,18 @@ function Presentation() {
   );
   const dispatch = useDispatch();
   const roomCode = code || '123456';
+
+  useEffect(() => {
+    const getDetails = async () => {
+      dispatch(getParticipants(code));
+      try {
+        await dispatch(getConversation(code));
+      } catch (e) {
+        console.error(e);
+      }
+    };
+    getDetails();
+  }, [code]);
 
   console.log('slideIndex', slideIndex);
 
