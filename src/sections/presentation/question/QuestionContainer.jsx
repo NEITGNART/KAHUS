@@ -182,10 +182,12 @@ export default function QuestionContainer({ questions, onUpdateQuestion }) {
               width: '100%',
               minWidth: 200,
               height: '100%',
+              maxHeight: '500px',
               bgcolor: 'background.paper',
               boxShadow: 6,
               borderRadius: 5,
-              marginRight: 10
+              marginRight: 10,
+              overflow: 'auto'
             }}
             component="nav"
             aria-labelledby="nested-list-subheader"
