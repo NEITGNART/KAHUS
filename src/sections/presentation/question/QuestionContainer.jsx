@@ -238,7 +238,7 @@ export default function QuestionContainer({ questions, onUpdateQuestion }) {
                           variant="body2"
                           color="text.primary"
                         >
-                          {`asked by ${q.author}`}
+                          {`asked by ${q.author ? q.author : 'anonymous'}`}
                         </Typography>
                         {` - ${moment(q.createdAt).calendar()}`}
                       </>
