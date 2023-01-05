@@ -35,7 +35,12 @@ import axios from '../utils/axios';
 import { SlideType } from '../pages/dashboard/Prestation/value/SlideType';
 import ChatBox from '../sections/presentation/chat/ChatBox';
 import { useDispatch } from '../redux/store';
-import { onParticipantJoinChat, onReceiveMessage } from '../redux/slices/chat';
+import {
+  getConversation,
+  getParticipants,
+  onParticipantJoinChat,
+  onReceiveMessage
+} from '../redux/slices/chat';
 import QuestionBox from '../sections/presentation/question/QuestionBox';
 import { ComingSoonIllustration } from '../assets';
 
@@ -93,6 +98,18 @@ function PresentationHost() {
   let slideIndex = Number(searchParams.get('slideIndex'));
   let isPresenting;
   const roomCode = code || '123456';
+
+  useEffect(() => {
+    const getDetails = async () => {
+      dispatch(getParticipants(code));
+      try {
+        await dispatch(getConversation(code));
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    getDetails();
+  }, [code]);
 
   useEffect(() => {
     axios.get(`api/presentation/code/${code}`).then((res) => {

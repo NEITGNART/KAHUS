@@ -31,7 +31,12 @@ import { FormProvider } from './hook-form';
 import RHFMyRadioGroup from './hook-form/RHFMyRadioGroup';
 import { HOST_SK } from '../config';
 import useAuth from '../hooks/useAuth';
-import { onParticipantJoinChat, onReceiveMessage } from '../redux/slices/chat';
+import {
+  getConversation,
+  getParticipants,
+  onParticipantJoinChat,
+  onReceiveMessage
+} from '../redux/slices/chat';
 
 import { useDispatch } from '../redux/store';
 import { SlideType } from '../pages/dashboard/Prestation/value/SlideType';
@@ -98,6 +103,18 @@ function PresentationGroup() {
   const roomCode = code || '123456';
 
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    const getDetails = async () => {
+      dispatch(getParticipants(code));
+      try {
+        await dispatch(getConversation(code));
+      } catch (e) {
+        console.error(e);
+      }
+    };
+    getDetails();
+  }, [code]);
 
   useEffect(() => {
     axios.get(`api/presentation/code/${code}`).then((res) => {
