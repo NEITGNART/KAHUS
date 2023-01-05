@@ -48,7 +48,9 @@ export default function QuestionContainer({ questions, onUpdateQuestion }) {
   const [sortFilter, setSortFilter] = useState(sortOptions.timeAsc);
 
   useEffect(() => {
-    setDisableNext(currentIndex + 1 >= questionList.length);
+    const length =
+      questionList && questionList.length ? questionList.length : 0;
+    setDisableNext(currentIndex + 1 >= length);
     setDisablePrev(currentIndex <= 0);
   }, [currentIndex, questionList]);
 
