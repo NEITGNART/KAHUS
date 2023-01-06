@@ -13,12 +13,12 @@ ChatMessageList.propTypes = {
   conversation: PropTypes.object.isRequired
 };
 
-const pageSize = 6;
+const pageSize = 5;
 
 export default function ChatMessageList({ conversation }) {
   const scrollRef = useRef(null);
   const [scrollTurn, setScrollTurn] = useState(
-    Math.floor(conversation.messages.length / pageSize - 1)
+    Math.floor(conversation.messages.length / pageSize)
   );
   const [messageContent, setMessageContent] = useState(
     // scrollTurn === 0
@@ -56,13 +56,14 @@ export default function ChatMessageList({ conversation }) {
           conversation.messages.slice((scrollTurn - 1) * pageSize)
         );
       }
-      scrollMessagesToBottom();
+      // scrollMessagesToBottom();
     }
   }, [conversation.messages]);
 
   useEffect(() => {
     if (isNewMsg || isFirstTime) {
       scrollMessagesToBottom();
+      setIsNewMsg(false);
     }
   }, [messageContent]);
 
