@@ -1,6 +1,7 @@
 import { Card, Stack, Typography } from '@mui/material';
 import './SlideItem.scss';
 import PropTypes from 'prop-types';
+import Iconify from '../../../components/Iconify';
 
 SlideItem.propTypes = {
   slide: PropTypes.object,
@@ -23,7 +24,15 @@ export default function SlideItem({ index, slide, onClick, isSelected }) {
         variant="outlined"
         style={{ width: '100%' }}
       >
-        <Typography>{slide.question}</Typography>
+        <Stack justifyContent="center" alignItems="center">
+          <Typography>{slide.question}</Typography>
+          <Iconify
+            icon="material-symbols:bar-chart"
+            width={50}
+            height={50}
+            color="#48cae4"
+          />
+        </Stack>
       </Card>
     </Stack>
   );
