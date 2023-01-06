@@ -27,7 +27,6 @@ import { Bar } from 'react-chartjs-2';
 import io from 'socket.io-client';
 import { useSearchParams } from 'react-router-dom';
 import { useParams } from 'react-router';
-import Fab from '@mui/material/Fab';
 import { FormProvider } from './hook-form';
 import RHFMyRadioGroup from './hook-form/RHFMyRadioGroup';
 import { HOST_SK } from '../config';
@@ -36,12 +35,12 @@ import { SlideType } from '../pages/dashboard/Prestation/value/SlideType';
 import axios from '../utils/axios';
 import {
   getConversation,
-  getParticipants,
   onParticipantJoinChat,
   onReceiveMessage
 } from '../redux/slices/chat';
 import { useDispatch } from '../redux/store';
 import ChatBox from '../sections/presentation/chat/ChatBox';
+import { ComingSoonIllustration } from '../assets';
 
 ChartJS.register(
   CategoryScale,
@@ -146,6 +145,14 @@ function Presentation() {
     socket = io(HOST_SK);
     socket.on('connect', () => {
       socket.emit('join', { room: roomCode, slideIndex });
+
+      socket.on('not-start', () => {
+        enqueueSnackbar('Waiting for the owner to start', { variant: 'error' });
+        setSlideType(SlideType.START);
+        setQuestion('Waiting for the owner to start');
+        setContent('');
+      });
+
       socket.on('chart', (data) => {
         if (data) {
           console.log(data);
@@ -320,6 +327,15 @@ function Presentation() {
         {content}
       </Text>
     );
+  } else if (slideType === SlideType.START) {
+    renderSlide = (
+      <div>
+        <ComingSoonIllustration sx={{ my: 10, height: 240 }} />
+        <Text color="#212B36" fontSize={32}>
+          {content}
+        </Text>
+      </div>
+    );
   } else if (slideType === SlideType.PARAGRAPH) {
     renderSlide = (
       <Text color="#212B36" fontSize={32}>
@@ -331,7 +347,20 @@ function Presentation() {
   return (
     <Deck template={template}>
       <Slide backgroundColor="white" slideNum={1}>
-        <Heading color="#212B36">{question}</Heading>
+        <Heading
+          color="#212B36"
+          fontSize="50px"
+          textAlign={
+            // eslint-disable-next-line no-nested-ternary
+            slideType === SlideType.END
+              ? 'center'
+              : slideType === SlideType.START
+              ? 'center'
+              : 'left'
+          }
+        >
+          {question}
+        </Heading>
         {renderSlide}
         <Box
           sx={{
