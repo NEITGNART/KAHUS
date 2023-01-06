@@ -32,23 +32,11 @@ const InfoStyle = styled(Typography)(({ theme }) => ({
 // ----------------------------------------------------------------------
 
 ChatMessageItem.propTypes = {
-  message: PropTypes.object.isRequired,
-  conversation: PropTypes.object.isRequired,
-  onOpenLightbox: PropTypes.func
+  message: PropTypes.object.isRequired
 };
 
-export default function ChatMessageItem({
-  message,
-  conversation,
-  onOpenLightbox
-}) {
+export default function ChatMessageItem({ message }) {
   const { user, deviceId } = useAuth();
-  // const sender = conversation.participants.find(
-  //   // eslint-disable-next-line no-underscore-dangle
-  //   (participant) => participant._id === message.senderId
-  // );
-  // eslint-disable-next-line no-underscore-dangle
-  const { anonymousId } = useSelector((state) => state.chat);
 
   let senderDetails;
 
@@ -113,20 +101,7 @@ export default function ChatMessageItem({
               ...(isImage && { p: 0 })
             }}
           >
-            {isImage ? (
-              <Image
-                alt="attachment"
-                src={message.body}
-                onClick={() => onOpenLightbox(message.body)}
-                sx={{
-                  borderRadius: 1,
-                  cursor: 'pointer',
-                  '&:hover': { opacity: 0.8 }
-                }}
-              />
-            ) : (
-              <Typography variant="body2">{message.body}</Typography>
-            )}
+            <Typography variant="body2">{message.body}</Typography>
           </ContentStyle>
         </div>
       </Box>

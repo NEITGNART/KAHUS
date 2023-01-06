@@ -43,7 +43,6 @@ export default function ChatMessageInput({ disabled, conversationId, onSend }) {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    console.log(user);
     if (sender == null) {
       if (user) {
         setSender({
@@ -82,7 +81,6 @@ export default function ChatMessageInput({ disabled, conversationId, onSend }) {
         createdAt: Date.now(),
         sender
       });
-      console.log(sender);
     }
     return setMessage('');
   };

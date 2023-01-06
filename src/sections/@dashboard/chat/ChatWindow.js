@@ -44,7 +44,6 @@ ChatWindow.propTypes = {
 export default function ChatWindow({ onSendMessageSocket }) {
   const dispatch = useDispatch();
   const { pathname } = useLocation();
-  console.log(pathname);
   const { activeConversationId } = useSelector((state) => state.chat);
   const conversation = useSelector((state) => conversationSelector(state));
 
