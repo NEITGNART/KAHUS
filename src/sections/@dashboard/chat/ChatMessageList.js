@@ -21,12 +21,13 @@ export default function ChatMessageList({ conversation }) {
     Math.floor(conversation.messages.length / pageSize - 1)
   );
   const [messageContent, setMessageContent] = useState(
-    scrollTurn === 0
-      ? conversation.messages.slice(0)
-      : conversation.messages.slice(
-          (scrollTurn - 1) * pageSize,
-          scrollTurn * pageSize
-        )
+    // scrollTurn === 0
+    //   ? conversation.messages.slice(0)
+    //   : conversation.messages.slice(
+    //       (scrollTurn - 1) * pageSize,
+    //       scrollTurn * pageSize
+    //     )
+    []
   );
   const [isNewMsg, setIsNewMsg] = useState(false);
   const [isFirstTime, setIsFirstTime] = useState(true);
@@ -47,6 +48,14 @@ export default function ChatMessageList({ conversation }) {
       ]);
     } else {
       setIsFirstTime(false);
+      if (scrollTurn === 0) {
+        console.log(conversation.messages.slice(0));
+        setMessageContent(conversation.messages.slice(0));
+      } else {
+        setMessageContent(
+          conversation.messages.slice((scrollTurn - 1) * pageSize)
+        );
+      }
       scrollMessagesToBottom();
     }
   }, [conversation.messages]);
