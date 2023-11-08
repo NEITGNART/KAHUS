@@ -131,11 +131,6 @@ export default function Login() {
                 OR
               </Typography>
             </Divider>
-
-            <Alert severity="info" sx={{ mt: 1, mb: 3 }}>
-              Use email : <strong>demo@kahus.com</strong> / password :
-              <strong> demo1234</strong>
-            </Alert>
             <LoginForm />
             {!smUp && (
               <Typography variant="body2" align="center" sx={{ mt: 3 }}>
