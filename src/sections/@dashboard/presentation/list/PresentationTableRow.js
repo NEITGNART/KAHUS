@@ -103,7 +103,7 @@ export default function PresentationTableRow({
               </MenuItem>
               {role === 'owner' && (
                 <>
-                  <MenuItem
+                  {/* <MenuItem
                     onClick={() => {
                       onShareRow();
                       handleCloseMenu();
@@ -111,9 +111,9 @@ export default function PresentationTableRow({
                   >
                     <Iconify icon="material-symbols:share-outline" />
                     Share in group
-                  </MenuItem>
+                  </MenuItem> */}
 
-                  <MenuItem
+                  {/* <MenuItem
                     onClick={() => {
                       onInviteRow();
                       handleCloseMenu();
@@ -121,9 +121,9 @@ export default function PresentationTableRow({
                   >
                     <Iconify icon="wpf:collaborator" />
                     Manage Collaborator
-                  </MenuItem>
+                  </MenuItem> */}
 
-                  <MenuItem
+                  {/* <MenuItem
                     onClick={() => {
                       onDuplicateRow();
                       handleCloseMenu();
@@ -131,7 +131,7 @@ export default function PresentationTableRow({
                   >
                     <Iconify icon="fad:duplicate" />
                     Duplicate
-                  </MenuItem>
+                  </MenuItem> */}
 
                   <MenuItem
                     onClick={() => {

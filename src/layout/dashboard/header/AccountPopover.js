@@ -17,18 +17,18 @@ import { IconButtonAnimate } from '../../../components/animate';
 // ----------------------------------------------------------------------
 
 const MENU_OPTIONS = [
-  {
-    label: 'Home',
-    linkTo: '/'
-  },
+  // {
+  //   label: 'Home',
+  //   linkTo: '/'
+  // },
   // {
   //   label: 'Profile',
   //   linkTo: PATH_DASHBOARD.user.profile
   // },
-  {
-    label: 'Classroom',
-    linkTo: PATH_DASHBOARD.general.classroom
-  },
+  // {
+  //   label: 'Classroom',
+  //   linkTo: PATH_DASHBOARD.general.classroom
+  // },
   {
     label: 'Presentations',
     linkTo: PATH_DASHBOARD.presentation.presentations

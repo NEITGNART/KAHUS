@@ -29,11 +29,10 @@ import { useSearchParams } from 'react-router-dom';
 import { useParams } from 'react-router';
 import { FormProvider } from './hook-form';
 import RHFMyRadioGroup from './hook-form/RHFMyRadioGroup';
-import { HOST_SK } from '../config';
+import { HOST_API } from '../config';
 import useAuth from '../hooks/useAuth';
 import {
   getConversation,
-  getParticipants,
   onParticipantJoinChat,
   onReceiveMessage
 } from '../redux/slices/chat';
@@ -132,7 +131,7 @@ function PresentationGroup() {
   }, []);
 
   useEffect(() => {
-    socket = io(HOST_SK);
+    socket = io(HOST_API);
 
     socket.on('connect', () => {
       socket.emit('join', { room: roomCode, slideIndex });

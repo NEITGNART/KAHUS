@@ -1,12 +1,5 @@
 import PropTypes from 'prop-types';
-import {
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle
-} from '@mui/material';
+import { Button, Dialog, DialogActions, DialogTitle } from '@mui/material';
 
 ChooseSlideTypeDialog.propTypes = {
   open: PropTypes.bool,

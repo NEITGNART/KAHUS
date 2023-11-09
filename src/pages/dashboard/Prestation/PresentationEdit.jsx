@@ -25,7 +25,7 @@ import { useSnackbar } from 'notistack';
 import io from 'socket.io-client';
 import DashboardHeader from '../../../layout/dashboard/header';
 import './Prestation.scss';
-import { HEADER, HOST_SK, NAVBAR } from '../../../config';
+import { HEADER, HOST_API, NAVBAR } from '../../../config';
 import SlideItem from '../../../sections/presentation/slideItem/SlideItem';
 import SlideReport from '../../../sections/presentation/slideReport/SlideReport';
 import SlideForm from '../../../sections/presentation/SlideForm/SlideForm';
@@ -37,9 +37,7 @@ import { SlideFactory } from './value/SlideFactory';
 import useAuth from '../../../hooks/useAuth';
 import LoadingScreen from '../../../components/LoadingScreen';
 import { useDispatch } from '../../../redux/store';
-import QuestionBox from '../../../sections/presentation/question/QuestionBox';
 import { getConversation, onReceiveMessage } from '../../../redux/slices/chat';
-import ChatBox from '../../../sections/presentation/chat/ChatBox';
 
 const BarSubmitContainer = styled('div')({
   flexGrow: 1,
@@ -207,7 +205,7 @@ export default function PresentationEdit() {
         navigate('/dashboard/presentations', { replace: true });
       });
     axios.get(`api/presentation/code/${code}`).then((res) => {
-      console.log(res.data);
+      // console.log(res.data);
       if (res.data === undefined || res.data === null) {
         return;
       }
@@ -230,7 +228,7 @@ export default function PresentationEdit() {
   }, []);
 
   useEffect(() => {
-    socket = io(HOST_SK);
+    socket = io(HOST_API);
     socket.on('connect', () => {
       socket.emit('join', {
         room: code,
@@ -238,7 +236,7 @@ export default function PresentationEdit() {
       });
 
       socket.on('present-start', () => {
-        console.log('hello');
+        // console.log('hello');
         enqueueSnackbar(
           'The presentation has started, so you cannot edit at this time.',
           { variant: 'success' }
@@ -485,7 +483,7 @@ export default function PresentationEdit() {
   };
 
   const addNewSlide = (slideType) => {
-    console.log(slideType);
+    // console.log(slideType);
     const { length } = presentation.slides || { length: 0 };
     const id = length > 0 ? presentation.slides[length - 1].id + 1 : 0;
     const slide = SlideFactory.createNew(slideType, id);
@@ -542,7 +540,7 @@ export default function PresentationEdit() {
         slide.options = slide.options.filter(
           (option) => option.id !== deleteOptionId
         );
-        console.log(deleteOptionId);
+        // console.log(deleteOptionId);
       }
       return slide;
     });
@@ -716,11 +714,11 @@ export default function PresentationEdit() {
             <Box sx={{ p: 1, display: 'flex' }}>
               <Typography> {presentation.title}</Typography>
               <Box sx={{ flexGrow: 1 }} />
-              <QuestionBox
+              {/* <QuestionBox
                 questions={presentQuestions}
                 onUpdateQuestion={handleUpdateQuestion}
               />
-              <ChatBox onSendMessageSocket={onSendMessageSocket} />
+              <ChatBox onSendMessageSocket={onSendMessageSocket} /> */}
               <Box
                 sx={{ display: 'flex', alignItems: 'center', flexShrink: 0 }}
               >

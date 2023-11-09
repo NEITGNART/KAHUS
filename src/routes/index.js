@@ -139,7 +139,7 @@ export default function Router() {
       ),
       children: [
         {
-          element: <Navigate to="/dashboard/classroom" replace />,
+          element: <Navigate to="/dashboard/presentations" replace />,
           index: true
         },
         {
@@ -252,7 +252,7 @@ export default function Router() {
     },
     {
       path: '/',
-      element: <Navigate to="/dashboard/classroom" replace />
+      element: <Navigate to="/dashboard/presentations" replace />
     }
     // { path: '*', element: <Navigate to="/404" replace /> }
   ]);

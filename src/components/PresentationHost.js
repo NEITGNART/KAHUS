@@ -29,7 +29,7 @@ import { Container, IconButton, Typography } from '@mui/material';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { useSnackbar } from 'notistack';
 import QRCode from 'qrcode.react';
-import { HOST_SK } from '../config';
+import { HOST_API } from '../config';
 import Iconify from './Iconify';
 import axios from '../utils/axios';
 import { SlideType } from '../pages/dashboard/Prestation/value/SlideType';
@@ -37,7 +37,6 @@ import ChatBox from '../sections/presentation/chat/ChatBox';
 import { useDispatch } from '../redux/store';
 import {
   getConversation,
-  getParticipants,
   onParticipantJoinChat,
   onReceiveMessage
 } from '../redux/slices/chat';
@@ -113,7 +112,7 @@ function PresentationHost() {
 
   useEffect(() => {
     axios.get(`api/presentation/code/${code}`).then((res) => {
-      console.log(res.data);
+      // console.log(res.data);
       if (res.data === undefined || res.data === null) {
         return;
       }
@@ -147,7 +146,7 @@ function PresentationHost() {
   }, [newPresentQuestion]);
 
   useEffect(() => {
-    socket = io(HOST_SK);
+    socket = io(HOST_API);
     socket.on('connect', () => {
       socket.emit('join', { room: roomCode, slideIndex });
 
@@ -171,7 +170,7 @@ function PresentationHost() {
           ) {
             setContent(data.content);
           }
-          console.log(data);
+          // console.log(data);
           setSlideType(data.type);
           setQuestion(data.question);
           setLink(data.link);
@@ -211,7 +210,7 @@ function PresentationHost() {
       });
 
       socket.on('end-presentation', () => {
-        console.log('end presentation');
+        // console.log('end presentation');
         setEndPresenting(true);
         setContent('You have reached the end of the presentation');
         setQuestion('Presentation is ended');
@@ -229,7 +228,7 @@ function PresentationHost() {
         // });
       });
       socket.on('question', (data) => {
-        console.log([...presentQuestions, data]);
+        // console.log([...presentQuestions, data]);
         setNewPresentQuestion(data);
       });
     });
@@ -262,7 +261,7 @@ function PresentationHost() {
         case 37:
           if (isPresenting) {
             if (slideIndex > 0) slideIndex -= 1;
-            console.log(slideIndex);
+            // console.log(slideIndex);
             changeSlide(slideIndex);
           }
           break;
@@ -333,7 +332,7 @@ function PresentationHost() {
             {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
             <video ref={videoRef} height="70%">
               <source
-                src="https://mentimeter-static.s3.amazonaws.com/static/images/mentilogo-black.mp4"
+                src="https://static.mentimeter.com/static/images/mentilogo-black.mp4"
                 type="video/mp4"
               />
             </video>
@@ -415,7 +414,7 @@ function PresentationHost() {
         )}
 
         {renderSlide}
-        <Box
+        {/* <Box
           sx={{
             display: 'contents',
             position: 'absolute',
@@ -428,7 +427,7 @@ function PresentationHost() {
             onUpdateQuestion={handleUpdateQuestion}
           />
           <ChatBox onSendMessageSocket={onSendMessageSocket} />
-        </Box>
+        </Box> */}
       </Slide>
     </Deck>
   );
